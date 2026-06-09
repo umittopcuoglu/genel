@@ -27,13 +27,13 @@ class AICLI:
                 'client': None
             },
             'claude1': {
-                'name': 'Claude Pro #1',
+                'name': 'Koray',
                 'email': os.getenv('CLAUDE_EMAIL_1', ''),
                 'key': os.getenv('CLAUDE_API_KEY_1', ''),
                 'client': None
             },
             'claude2': {
-                'name': 'Claude Pro #2',
+                'name': 'Umit',
                 'email': os.getenv('CLAUDE_EMAIL_2', ''),
                 'key': os.getenv('CLAUDE_API_KEY_2', ''),
                 'client': None
