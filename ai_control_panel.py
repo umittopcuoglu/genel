@@ -34,12 +34,14 @@ class AIControlPanel:
             'claude_pro_1': {
                 'name': 'Claude Pro #1',
                 'type': 'subscription',
+                'email': os.getenv('CLAUDE_EMAIL_1', ''),
                 'api_key': os.getenv('CLAUDE_API_KEY_1', ''),
                 'status': 'configured' if os.getenv('CLAUDE_API_KEY_1') else 'pending'
             },
             'claude_pro_2': {
                 'name': 'Claude Pro #2',
                 'type': 'subscription',
+                'email': os.getenv('CLAUDE_EMAIL_2', ''),
                 'api_key': os.getenv('CLAUDE_API_KEY_2', ''),
                 'status': 'configured' if os.getenv('CLAUDE_API_KEY_2') else 'pending'
             },
