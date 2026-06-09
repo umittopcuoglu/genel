@@ -1,0 +1,60 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "genel-main"
+    },
+    {
+      "path": "openclaw",
+      "name": "openclaw"
+    },
+    {
+      "path": "claudex",
+      "name": "claudex"
+    },
+    {
+      "path": "loveable",
+      "name": "loveable"
+    },
+    {
+      "path": "whisper-flow",
+      "name": "whisper-flow"
+    },
+    {
+      "path": "manus",
+      "name": "manus"
+    }
+  ],
+  "settings": {
+    "python.defaultInterpreterPath": "${workspaceFolder}/venv/bin/python",
+    "python.linting.enabled": true,
+    "python.formatting.provider": "black",
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[python]": {
+      "editor.defaultFormatter": "ms-python.python",
+      "editor.formatOnSave": true
+    },
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/*.pyc": true,
+      "**/node_modules": true
+    },
+    "search.exclude": {
+      "**/.git": true,
+      "**/.venv": true,
+      "**/venv": true,
+      "**/node_modules": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "esbenp.prettier-vscode",
+      "ms-vscode.makefile-tools",
+      "gitpod.workspace-full",
+      "GitHub.copilot"
+    ]
+  }
+}
