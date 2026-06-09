@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 AI CLI - Terminal interface for Deepseek, Claude Pro #1, Claude Pro #2, and Gemini Pro
 """
@@ -8,6 +9,11 @@ import sys
 from pathlib import Path
 from dotenv import load_dotenv
 import argparse
+
+# Fix Windows encoding
+if sys.platform == 'win32':
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # Load environment variables
 load_dotenv()
