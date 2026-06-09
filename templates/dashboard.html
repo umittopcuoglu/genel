@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Control Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 AI Control Panel</h1>
+            <p>Manage Gemini Pro, Claude Pro, and Deepseek APIs</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>{{ configured_apis }}/{{ total_apis }}</h3>
+                <p>APIs Configured</p>
+            </div>
+            <div class="stat-card">
+                <h3>{{ total_apps }}</h3>
+                <p>Applications</p>
+            </div>
+        </div>
+
+        <section class="section">
+            <h2>📡 AI Services</h2>
+            <div class="services-grid">
+                {% for key, api in apis.items() %}
+                <div class="service-card" data-api="{{ key }}">
+                    <div class="service-header">
+                        <h3>{{ api.name }}</h3>
+                        <span class="badge" id="status-{{ key }}">{{ api.status }}</span>
+                    </div>
+                    <p class="service-type">{{ api.type.upper() }}</p>
+                    <div class="service-actions">
+                        <button class="btn btn-small" onclick="showConfigModal('{{ key }}')">
+                            Configure
+                        </button>
+                        <button class="btn btn-small btn-test" onclick="testAPI('{{ key }}')">
+                            Test
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>📦 Applications</h2>
+            <div class="apps-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Path</th>
+                            <th>Git URL</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in apps %}
+                        <tr>
+                            <td><strong>{{ app.name }}</strong></td>
+                            <td><code>{{ app.path }}</code></td>
+                            <td>
+                                {% if app.git_url %}
+                                    <a href="{{ app.git_url }}" target="_blank">GitHub</a>
+                                {% else %}
+                                    <span class="text-muted">Local</span>
+                                {% endif %}
+                            </td>
+                            <td><span class="status-badge">{{ app.status }}</span></td>
+                            <td>
+                                <button class="btn btn-tiny" onclick="openApp('{{ app.path }}')">
+                                    Open
+                                </button>
+                                <button class="btn btn-tiny" onclick="syncApp('{{ app.name }}')">
+                                    Sync
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn btn-primary" onclick="syncAllApps()">Sync All Applications</button>
+        </section>
+    </div>
+
+    <!-- Configuration Modal -->
+    <div id="configModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeConfigModal()">&times;</span>
+            <h2>Configure API</h2>
+            <form id="configForm" onsubmit="saveConfig(event)">
+                <div class="form-group">
+                    <label for="apiKey">API Key</label>
+                    <input type="password" id="apiKey" placeholder="Enter API key" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Configuration</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

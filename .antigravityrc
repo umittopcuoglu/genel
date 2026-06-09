@@ -1,0 +1,10 @@
+{
+  "workspace": "./",
+  "defaultLanguage": "python",
+  "autoFormat": true,
+  "extensions": [
+    "python",
+    "javascript",
+    "git"
+  ]
+}
