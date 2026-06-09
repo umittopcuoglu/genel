@@ -43,7 +43,7 @@ Everything is pre-configured in `.antigravityrc`:
 - **Usage:** Terminal → `umit`
 
 ### Gemini Pro
-- **API Key:** AQ.Ab8RN6KUbRU8ip8N3lSXhJ8WWJFtZQLaT5CrMWI4bkecCQXBLw
+- **API Key:** (stored in .env)
 - **Model:** gemini-2.0-flash
 - **Status:** ⚡ Ready (quota may needed)
 - **Usage:** Terminal → `gemini`
@@ -92,8 +92,8 @@ cd claudex              # Open claudex app
 Auto-loaded when Antigravity starts:
 
 ```bash
-DEEPSEEK_API_KEY=sk-5e9a1781e51240b6afb635abff65bcc1
-GEMINI_API_KEY=AQ.Ab8RN6KUbRU8ip8N3lSXhJ8WWJFtZQLaT5CrMWI4bkecCQXBLw
+DEEPSEEK_API_KEY=(from .env)
+GEMINI_API_KEY=(from .env)
 CLAUDE_EMAIL_1=korayumit@gmail.com
 CLAUDE_EMAIL_2=birumit@yandex.com.tr
 ```
