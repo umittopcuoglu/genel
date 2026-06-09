@@ -6,5 +6,35 @@
     "python",
     "javascript",
     "git"
-  ]
+  ],
+  "ai": {
+    "providers": {
+      "deepseek": {
+        "enabled": true,
+        "model": "deepseek-chat",
+        "note": "API key from .env"
+      },
+      "claude_koray": {
+        "enabled": true,
+        "name": "Koray",
+        "email": "korayumit@gmail.com",
+        "model": "claude-opus-4-1"
+      },
+      "claude_umit": {
+        "enabled": true,
+        "name": "Umit",
+        "email": "birumit@yandex.com.tr",
+        "model": "claude-opus-4-1"
+      },
+      "gemini": {
+        "enabled": true,
+        "model": "gemini-2.0-flash",
+        "note": "API key from .env, quota may be required"
+      }
+    }
+  },
+  "terminal": {
+    "environment": "loaded from .env file",
+    "note": "All API keys and credentials loaded from .env"
+  }
 }
