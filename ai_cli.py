@@ -42,6 +42,11 @@ class AICLI:
                 'name': 'Gemini Pro',
                 'key': os.getenv('GEMINI_API_KEY', ''),
                 'client': None
+            },
+            'openrouter': {
+                'name': 'OpenRouter',
+                'key': os.getenv('OPENROUTER_API_KEY', ''),
+                'client': None
             }
         }
         self.current_api = None
@@ -131,6 +136,8 @@ class AICLI:
                 response = self._query_claude(api_key, message)
             elif api_key == 'gemini':
                 response = self._query_gemini(message)
+            elif api_key == 'openrouter':
+                response = self._query_openrouter(message)
 
             if response:
                 print(f"\n✅ {api['name']} Response:\n")
@@ -220,6 +227,41 @@ class AICLI:
         except Exception as e:
             return f"Error: {str(e)}"
 
+    def _query_openrouter(self, message):
+        """Query OpenRouter API"""
+        try:
+            import requests
+            api_key = self.apis['openrouter']['key']
+
+            headers = {
+                'Authorization': f'Bearer {api_key}',
+                'HTTP-Referer': 'https://github.com/umittopcuoglu/genel',
+                'X-Title': 'Genel AI CLI',
+                'Content-Type': 'application/json'
+            }
+
+            data = {
+                'model': 'openrouter/auto',
+                'messages': [
+                    {'role': 'user', 'content': message}
+                ],
+                'max_tokens': 1024
+            }
+
+            response = requests.post(
+                'https://openrouter.ai/api/v1/chat/completions',
+                headers=headers,
+                json=data
+            )
+
+            if response.status_code == 200:
+                result = response.json()
+                return result['choices'][0]['message']['content']
+            else:
+                return f"Error: {response.status_code} - {response.text}"
+        except Exception as e:
+            return f"Error: {str(e)}"
+
     def interactive_mode(self):
         """Interactive CLI mode"""
         print("\n🚀 AI CLI - Interactive Mode")
@@ -258,7 +300,7 @@ def main():
     )
     parser.add_argument(
         '--api',
-        choices=['deepseek', 'claude1', 'claude2', 'gemini'],
+        choices=['deepseek', 'claude1', 'claude2', 'gemini', 'openrouter'],
         help='Specify API directly'
     )
     parser.add_argument(

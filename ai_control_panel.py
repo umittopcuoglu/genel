@@ -50,6 +50,12 @@ class AIControlPanel:
                 'type': 'api',
                 'api_key': os.getenv('DEEPSEEK_API_KEY', ''),
                 'status': 'configured' if os.getenv('DEEPSEEK_API_KEY') else 'pending'
+            },
+            'openrouter': {
+                'name': 'OpenRouter',
+                'type': 'api',
+                'api_key': os.getenv('OPENROUTER_API_KEY', ''),
+                'status': 'configured' if os.getenv('OPENROUTER_API_KEY') else 'pending'
             }
         }
 
