@@ -161,11 +161,31 @@ class AICLI:
         """Query Gemini API"""
         try:
             genai = self.apis['gemini']['client']
-            model = genai.GenerativeModel('gemini-pro')
-            response = model.generate_content(message)
-            return response.text
+
+            # Try newer models first
+            models_to_try = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-pro']
+
+            for model_name in models_to_try:
+                try:
+                    model = genai.GenerativeModel(model_name)
+                    response = model.generate_content(message)
+                    return response.text
+                except Exception as model_error:
+                    error_str = str(model_error)
+                    if "quota" in error_str.lower():
+                        return (
+                            "Gemini API quota exceeded. Please upgrade:\n"
+                            "1. Go to: https://console.cloud.google.com/apis/api/generativelanguage.googleapis.com\n"
+                            "2. Enable Generative AI API\n"
+                            "3. Set up billing in Google Cloud Console\n"
+                            "4. Try again after quota refresh"
+                        )
+                    continue
+
+            return "Gemini API: No available models. Please check your API key and quota."
+
         except Exception as e:
-            return f"Error: {str(e)}"
+            return f"Gemini Error: {str(e)}"
 
     def _query_deepseek(self, message):
         """Query Deepseek API"""
