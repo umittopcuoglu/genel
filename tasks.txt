@@ -1,0 +1,14 @@
+a) Masa üstünde yer alan genel klasörürün içine şu uygulamaları yükle, daha önce yüklenenler var ise düzelterek istediğim şekline dönüştür. Kurulumlar esnasında soru sorma ve herşeyi kabul ettiğimi varsayarak ilerle.  
+
+1) Openclaw
+2) claudex
+3) Loveable
+4) Wishper flow
+5) Manus
+
+b) Deepseek api keyi genel klasörünün içinde api txt var bunun içinde api key var bunu kullan
+c) Genel klasörü github içinde bir repo olarak çalışacak ve bu repoda ben bu uygulamaları kullanacağım ayrıca claude code ile de erişimim olacak. yani her yerden tüm bu uygulamalara ve bu uygulamarın ürettiği çıktıları her seviyede kontrol edebilmeliyim. 
+d) Eğer github üzerinde çalıştıracaksan bir hesabım var bunu paylaşabilirim. 
+e) vs code ve antigravity ile bu dosyadaki verileri kullanabilmeliyim. 
+ 
+
