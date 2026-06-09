@@ -1,0 +1,22 @@
+{
+  "projectName": "Lovable AI Project",
+  "description": "AI-powered design and development with Lovable",
+  "integrations": {
+    "github": {
+      "enabled": true,
+      "repository": "https://github.com/umittopcuoglu/genel",
+      "autoSync": true,
+      "branch": "main",
+      "folder": "lovable"
+    },
+    "claude": {
+      "enabled": true,
+      "models": ["claude-opus-4-1", "claude-3-5-sonnet"]
+    }
+  },
+  "deployment": {
+    "platform": "vercel",
+    "autoPreview": true,
+    "autoProduction": false
+  }
+}

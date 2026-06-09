@@ -1,0 +1,16 @@
+{
+  "name": "lovable-project",
+  "version": "1.0.0",
+  "description": "AI-powered design with Lovable + Claude",
+  "scripts": {
+    "dev": "lovable dev",
+    "build": "lovable build",
+    "preview": "lovable preview",
+    "deploy": "lovable deploy"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "keywords": ["lovable", "ai", "claude", "design"],
+  "author": "umittopcuoglu",
+  "license": "MIT"
+}

@@ -1,0 +1,25 @@
+name: Lovable GitHub Integration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lovable/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'lovable/**'
+  workflow_dispatch:
+
+jobs:
+  lovable-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Sync with Lovable
+        run: |
+          echo "Lovable GitHub Integration Active"
+          echo "Repository: umittopcuoglu/genel"
+          echo "Branch: main"
+          echo "Auto-sync enabled for: /lovable/**"
