@@ -1,4 +1,9 @@
 #!/bin/bash
-export DEEPSEEK_API_KEY="sk-928b49e165f44517b815b69b98a2ab07"
-export GITHUB_PAT="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"
-echo "Environment variables setup complete!"
+# Load environment variables from .env file
+if [ -f .env ]; then
+    export $(cat .env | grep -v '^#' | xargs)
+    echo "✅ Environment variables loaded from .env"
+else
+    echo "⚠️  .env file not found"
+    echo "Please create .env file with DEEPSEEK_API_KEY and GITHUB_PAT"
+fi

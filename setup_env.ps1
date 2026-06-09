@@ -1,7 +1,16 @@
-# Deepseek API Key Setup
-$env:DEEPSEEK_API_KEY = "sk-928b49e165f44517b815b69b98a2ab07"
-$env:GITHUB_PAT = "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"
+# Load from .env file or set manually
+$envFile = "$(Get-Location)\.env"
 
-Write-Host "Environment variables setup complete!"
-Write-Host "DEEPSEEK_API_KEY is set"
-Write-Host "GITHUB_PAT is set"
+if (Test-Path $envFile) {
+    Get-Content $envFile | ForEach-Object {
+        if ($_ -match '(.+?)=(.+)') {
+            $name = $matches[1]
+            $value = $matches[2]
+            Set-Item -Path "env:$name" -Value $value
+        }
+    }
+    Write-Host "✅ Environment variables loaded from .env"
+} else {
+    Write-Host "⚠️  .env file not found"
+    Write-Host "Please create .env file with DEEPSEEK_API_KEY and GITHUB_PAT"
+}
