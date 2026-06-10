@@ -1,6 +1,7 @@
 {
   "workspace": "./",
   "defaultLanguage": "python",
+  "defaultModel": "claude-opus-4-1",
   "autoFormat": true,
   "extensions": [
     "python",
@@ -30,6 +31,20 @@
         "enabled": true,
         "model": "gemini-2.0-flash",
         "note": "API key from .env, quota may be required"
+      },
+      "claude": {
+        "enabled": true,
+        "model": "claude-opus-4-1",
+        "apiKey": "${ANTHROPIC_API_KEY}",
+        "provider": "anthropic",
+        "note": "Default Claude provider"
+      },
+      "openrouter": {
+        "enabled": true,
+        "model": "openrouter/auto",
+        "apiKey": "${OPENROUTER_API_KEY}",
+        "provider": "openrouter",
+        "note": "100+ model access"
       }
     }
   },
