@@ -14,7 +14,7 @@ import uuid
 from app.core.config import settings
 from app.core.db import engine
 from app.core.audit import AuditMiddleware
-from app.routers import auth, health, front_office, reservations, rate_plans, availability, folios, night_audit, reports, folios, night_audit, reports, folios, night_audit, reports
+from app.routers import auth, health, front_office, reservations, rate_plans, availability, folios, night_audit, reports, housekeeping, lost_found, minibar, folios, night_audit, reports, folios, night_audit, reports
 
 # Logging yapılandırması
 logging.basicConfig(level=logging.INFO)
@@ -129,12 +129,21 @@ app.include_router(availability.router, prefix="/api/v1", tags=["Availability"])
 app.include_router(folios.router, prefix="/api/v1", tags=["Finance"])
 app.include_router(night_audit.router, prefix="/api/v1", tags=["Night Audit"])
 app.include_router(reports.router, prefix="/api/v1", tags=["Reports"])
+app.include_router(housekeeping.router, prefix="/api/v1", tags=["Housekeeping"])
+app.include_router(lost_found.router, prefix="/api/v1", tags=["Lost & Found"])
+app.include_router(minibar.router, prefix="/api/v1", tags=["Minibar"])
 app.include_router(folios.router, prefix="/api/v1", tags=["Finance"])
 app.include_router(night_audit.router, prefix="/api/v1", tags=["Night Audit"])
 app.include_router(reports.router, prefix="/api/v1", tags=["Reports"])
+app.include_router(housekeeping.router, prefix="/api/v1", tags=["Housekeeping"])
+app.include_router(lost_found.router, prefix="/api/v1", tags=["Lost & Found"])
+app.include_router(minibar.router, prefix="/api/v1", tags=["Minibar"])
 app.include_router(folios.router, prefix="/api/v1", tags=["Finance"])
 app.include_router(night_audit.router, prefix="/api/v1", tags=["Night Audit"])
 app.include_router(reports.router, prefix="/api/v1", tags=["Reports"])
+app.include_router(housekeeping.router, prefix="/api/v1", tags=["Housekeeping"])
+app.include_router(lost_found.router, prefix="/api/v1", tags=["Lost & Found"])
+app.include_router(minibar.router, prefix="/api/v1", tags=["Minibar"])
 
 
 @app.get("/", include_in_schema=False)
