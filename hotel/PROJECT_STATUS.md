@@ -3,7 +3,7 @@
 > Bu dosya canlı durum kaydıdır. Her review/teslimat sonrası güncellenir.
 > Nightly QA workflow'u test sonuçlarını buraya işler.
 
-**Son güncelleme:** 2026-06-11 (Faz 2 görev talimatları oluşturuldu) · **Faz:** 1 (MVP) — 4/5 modül tamamlandı · **Faz 2 kuyrukta**
+**Son güncelleme:** 2026-06-11 (Faz 3 görev talimatları oluşturuldu: TASK-014…020) · **Faz:** 1-3 · **Faz 2 kuyruğu aktif, Faz 3 kuyrukta**
 
 ## Modül Durumu
 
@@ -40,6 +40,16 @@ Durum: ⬜ bekliyor · 🟡 devam · 🟠 review'da · ✅ kabul · ❌ düzeltm
 | TASK-011 | Modül 8: CRM & Misafir 360 & Loyalty | ⬜ Faz 2 kuyruğu | 2 | — |
 | TASK-012 | Modül 8 AI: GuestAI Chatbot (WhatsApp) | ⬜ Faz 2 kuyruğu | 2 | — |
 | TASK-013 | Modül 10: Raporlama & InsightAI | ⬜ Faz 2 kuyruğu | 2 | — |
+| TASK-014 | Modül 3: Gruplar & Etkinlikler (MICE) + EventIQ AI | ⬜ Faz 3 kuyruğu | 3 | — |
+| TASK-015 | Modül 6: Bakım & Teknik Servis + TechCare AI | ⬜ Faz 3 kuyruğu | 3 | — |
+| TASK-016 | Modül 7: F&B & POS Entegrasyonu + ChefIQ AI | ⬜ Faz 3 kuyruğu | 3 | — |
+| TASK-017 | Modül 9: Güvenlik & Erişim Kontrol & KVKK + SecureAI | ⬜ Faz 3 kuyruğu | 3 | — |
+| TASK-018 | HR & Vardiya Modülü + ShiftAI | ⬜ Faz 3 kuyruğu | 3 | — |
+| TASK-019 | GDS Entegrasyonu (Amadeus/Sabre/Travelport) | ⬜ Faz 3 kuyruğu | 3 | — |
+| TASK-020 | IoT / Akıllı Oda Entegrasyonu (Nest, KNX, Hue) | ⬜ Faz 3 kuyruğu | 3 | — |
+
+## Notlar
+- **Gelişmiş Analitik Dashboard** = Claude frontend görev (TASK-013 ekranlarının genişletilmesi); ayrı backend task değil
 
 ## Açık Geri Bildirimler (orchestrator/feedback/)
 _Yok. (FB-001 kapatıldı — düzeltmeler ağ engeli nedeniyle denetçi/Claude tarafından uygulandı.)_
