@@ -1,0 +1,45 @@
+name: E2E CI
+
+on:
+  push:
+    paths:
+      - "frontend/**"
+      - "qa/e2e/**"
+      - ".github/workflows/e2e-ci.yml"
+  pull_request:
+    paths:
+      - "frontend/**"
+      - "qa/e2e/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: hotel/qa/e2e
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests (mock API mode)
+        run: npx playwright test
+        env:
+          CI: "true"
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screenshots
+          path: qa/e2e/screenshots/

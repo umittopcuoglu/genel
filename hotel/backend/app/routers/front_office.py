@@ -321,6 +321,12 @@ async def check_in(
         )
     res = await service.get_reservation(data.reservation_id)
     room = await service.get_room(data.room_id)
+
+    # TASK-006: WebSocket emit
+    from app.ws.events import emit_checkin
+    guest_name = f"{res.guest.first_name} {res.guest.last_name}" if res.guest else ""
+    await emit_checkin(str(res.id), room.room_number, guest_name)
+
     return CheckInResponse(
         stay_id=stay.id,
         reservation=res,
@@ -370,6 +376,32 @@ async def check_out(
                 }
             }
         )
+
+    # TASK-006: WebSocket emit
+    from app.ws.events import emit_checkout
+    guest_name = ""
+    try:
+        from sqlalchemy.orm import selectinload
+        from sqlalchemy import select as sel2
+        from app.models.front_office import Reservation as ResModel
+        r_stmt = sel2(ResModel).options(selectinload(ResModel.guest)).where(ResModel.id == stay.reservation_id)
+        r_res = await db.execute(r_stmt)
+        r = r_res.scalar_one_or_none()
+        if r and r.guest:
+            guest_name = f"{r.guest.first_name} {r.guest.last_name}"
+    except Exception:
+        pass
+    room_no = ""
+    try:
+        from app.models.front_office import Room as RoomModel
+        r_stmt2 = sel2(RoomModel).where(RoomModel.id == stay.room_id)
+        r_res2 = await db.execute(r_stmt2)
+        rm = r_res2.scalar_one_or_none()
+        if rm:
+            room_no = rm.room_number
+    except Exception:
+        pass
+    await emit_checkout(str(stay.reservation_id), room_no, guest_name)
 
     return CheckOutResponse(
         stay_id=stay.id,

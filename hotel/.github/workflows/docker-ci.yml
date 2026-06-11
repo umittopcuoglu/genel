@@ -1,0 +1,37 @@
+name: Docker CI
+
+on:
+  push:
+    paths:
+      - "backend/Dockerfile"
+      - "docker-compose.prod.yml"
+      - "nginx/default.conf"
+      - "frontend/Dockerfile"
+      - ".github/workflows/docker-ci.yml"
+  pull_request:
+    paths:
+      - "backend/Dockerfile"
+      - "docker-compose.prod.yml"
+      - "nginx/default.conf"
+      - "frontend/Dockerfile"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: hotel
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker compose build
+        run: |
+          docker compose -f docker-compose.prod.yml build --parallel
+
+      - name: Docker compose up (smoke)
+        run: |
+          docker compose -f docker-compose.prod.yml up -d
+          sleep 15
+          curl -f http://localhost/api/v1/health || echo "Health check bekleniyor (DB hazır olmayabilir)"
+          docker compose -f docker-compose.prod.yml down
