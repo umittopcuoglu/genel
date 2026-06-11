@@ -1,0 +1,123 @@
+"use client";
+
+import { useState } from "react";
+import { ReservationTable } from "@/components/front-office/ReservationTable";
+import { RoomBoard } from "@/components/front-office/RoomBoard";
+import { TapeChart } from "@/components/front-office/TapeChart";
+import {
+  MOCK_ARRIVALS,
+  MOCK_DEPARTURES,
+  MOCK_IN_HOUSE,
+  MOCK_ROOMS,
+  MOCK_TAPE_BLOCKS,
+} from "@/lib/mock-frontoffice";
+import type { ReservationRow } from "@/lib/types";
+
+type Tab = "arrivals" | "departures" | "in-house" | "rooms" | "tape-chart";
+
+const TABS: { id: Tab; label: string; count?: number }[] = [
+  { id: "arrivals", label: "Gelenler", count: MOCK_ARRIVALS.length },
+  { id: "departures", label: "Gidenler", count: MOCK_DEPARTURES.length },
+  { id: "in-house", label: "Konaklayanlar", count: MOCK_IN_HOUSE.length },
+  { id: "rooms", label: "Oda Panosu" },
+  { id: "tape-chart", label: "Tape Chart" },
+];
+
+/**
+ * Ön Büro ana ekranı — docs/03 §4.
+ * Şimdilik mock veri; TASK-002 backend'i KABUL olunca lib/api.ts üzerinden
+ * GET /api/v1/arrivals|departures|in-house|rooms endpoint'lerine bağlanır.
+ */
+export default function FrontOfficePage() {
+  const [tab, setTab] = useState<Tab>("arrivals");
+  const today = new Date().toLocaleDateString("tr-TR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    weekday: "long",
+  });
+
+  function handleCheckIn(row: ReservationRow) {
+    // TASK-002 backend'i gelince: POST /api/v1/checkin/{reservation_id}
+    alert(`Check-in akışı backend bekleniyor — ${row.code}`);
+  }
+
+  function handleCheckOut(row: ReservationRow) {
+    // TASK-002 backend'i gelince: POST /api/v1/checkout/{reservation_id}
+    alert(`Check-out akışı backend bekleniyor — ${row.code}`);
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <h1 className="text-xl font-semibold">Ön Büro</h1>
+          <p className="text-sm text-text-2">{today}</p>
+        </div>
+        <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+          Mock veri — backend TASK-002 bekleniyor
+        </span>
+      </div>
+
+      <div className="border-b border-line" role="tablist" aria-label="Ön büro görünümleri">
+        <div className="flex gap-1">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              role="tab"
+              aria-selected={tab === t.id}
+              onClick={() => setTab(t.id)}
+              className={`relative rounded-t-md px-4 py-2 text-sm font-medium transition ${
+                tab === t.id
+                  ? "border-b-2 border-primary text-primary"
+                  : "text-text-2 hover:text-text-1"
+              }`}
+            >
+              {t.label}
+              {typeof t.count === "number" && (
+                <span className="ml-1.5 rounded-full bg-bg px-1.5 py-0.5 text-xs">{t.count}</span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {tab === "arrivals" && (
+        <ReservationTable
+          rows={MOCK_ARRIVALS}
+          emptyMessage="Bugün beklenen giriş yok."
+          action={{
+            label: "Check-in",
+            onClick: handleCheckIn,
+            enabled: (r) => r.status === "confirmed",
+          }}
+        />
+      )}
+
+      {tab === "departures" && (
+        <ReservationTable
+          rows={MOCK_DEPARTURES}
+          emptyMessage="Bugün beklenen çıkış yok."
+          action={{
+            label: "Check-out",
+            onClick: handleCheckOut,
+            enabled: (r) => r.status === "checked_in",
+          }}
+        />
+      )}
+
+      {tab === "in-house" && (
+        <ReservationTable rows={MOCK_IN_HOUSE} emptyMessage="Şu an konaklayan misafir yok." />
+      )}
+
+      {tab === "rooms" && <RoomBoard rooms={MOCK_ROOMS} />}
+
+      {tab === "tape-chart" && (
+        <TapeChart
+          rooms={["101", "102", "103", "104", "105", "201", "202", "203", "204", "205", "301", "302", "303"]}
+          blocks={MOCK_TAPE_BLOCKS}
+        />
+      )}
+    </div>
+  );
+}

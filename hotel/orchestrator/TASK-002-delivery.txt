@@ -1,0 +1,299 @@
+================================================================================
+TASK-002 DELIVERY PROMPT FOR DEEPSEEK
+================================================================================
+
+Aşağıdaki sistem promptu + görevi kopyala DeepSeek'e yapıştır.
+
+================================================================================
+SYSTEM PROMPT (02_DEEPSEEK_TALIMATLARI.md özeti)
+================================================================================
+
+Sen HotelOps backend geliştiricisin. Aşağıdaki kurallara uy:
+
+1. Python 3.11 + FastAPI (async/await zorunlu)
+2. SQLAlchemy 2.0 async + Alembic (migration)
+3. PostgreSQL 15; her tablo: id (UUID), created_at, updated_at, created_by, updated_by, deleted_at (soft delete)
+4. RESTful + JSON; /api/v1/... versiyonlama
+5. Auth: JWT (access 15dk, refresh 7gün); RBAC 9 rol
+6. Tüm POST/PUT/PATCH/DELETE → audit_log tablosuna yazılmalı
+7. Hata formatı: { "error": { "code": "STRING", "message": "TR", "details": {...} } }
+8. Her endpoint: pytest + httpx ile happy-path + error-path testi
+9. p95 < 300ms hedefi
+10. OpenAPI 3.1; summary + description Türkçe + örnek payload
+11. Frontend hata raporları ile PR'da reproduce + fix + test eklenmeli
+
+Önceki TASK-001 (Auth+RBAC+Audit) ✅ tamamlandı. Bu TASK-002 buna dayanıyor.
+
+================================================================================
+TASK-002: MODÜL 1 (ÖN BÜRO / FRONT OFFICE)
+================================================================================
+
+## Kapsam
+Veri modeli: 6 tablo (room_types, rooms, guests, reservations, stays, traces)
+Endpoint'ler: 10 adet (check-in/out, arrivals/departures/in-house, oda yönetimi, konuk geçmişi, traces)
+FrontDesk AI: oda atama önerisi (temel)
+Test'ler: 20+ pytest
+
+## 1. Veri Modeli
+
+### room_types
+- id (UUID, PK) [BaseModel]
+- code (VARCHAR 10, UNIQUE)
+- name (VARCHAR 100)
+- description (TEXT nullable)
+- base_rate (DECIMAL 10,2)
+- capacity (INT, default=2)
+- amenities (JSONB)
+- created_at, updated_at, created_by, updated_by, deleted_at [BaseModel]
+- Index: code, name
+
+### rooms
+- id (UUID, PK) [BaseModel]
+- room_no (VARCHAR 20, UNIQUE)
+- room_type_id (FK → room_types.id)
+- floor (INT)
+- status (VARCHAR 20, DEFAULT="clean") — clean/dirty/inspected/out_of_order
+- connect_room_id (UUID FK nullable, self-join)
+- notes (TEXT nullable)
+- created_at, updated_at, created_by, updated_by, deleted_at [BaseModel]
+- Index: room_no, status, floor
+- Constraint: status IN ('clean', 'dirty', 'inspected', 'out_of_order')
+
+### guests
+- id (UUID, PK) [BaseModel]
+- first_name (VARCHAR 50)
+- last_name (VARCHAR 50)
+- email (VARCHAR 100)
+- phone (VARCHAR 20 nullable)
+- nationality (VARCHAR 3) — ISO 3166-1 alpha-3
+- id_type (VARCHAR 20 nullable) — passport, tc_kimlik, driver_license
+- id_no (VARCHAR 30 nullable)
+- date_of_birth (DATE nullable)
+- preferences (JSONB) — {"room_view": "sea", "high_floor": true, ...}
+- tags (JSONB) — ["vip", "repeat_guest", ...]
+- created_at, updated_at, created_by, updated_by, deleted_at [BaseModel]
+- Index: email, last_name, nationality
+
+### reservations
+- id (UUID, PK) [BaseModel]
+- code (VARCHAR 20, UNIQUE) — "RES-20260612-001"
+- guest_id (FK → guests.id)
+- room_type_id (FK → room_types.id)
+- assigned_room_id (UUID FK nullable)
+- check_in (DATE)
+- check_out (DATE)
+- adults (INT, default=1)
+- kids (INT, default=0)
+- status (VARCHAR 20, DEFAULT="confirmed") — confirmed/checked_in/checked_out/cancelled/no_show
+- source (VARCHAR 20) — direct/ota/walkin/phone/corporate
+- rate_plan_id (UUID FK nullable)
+- special_requests (TEXT nullable)
+- total_amount (DECIMAL 12,2)
+- balance (DECIMAL 12,2)
+- created_at, updated_at, created_by, updated_by, deleted_at [BaseModel]
+- Index: code, guest_id, status, check_in, check_out
+- Constraint: status IN (...)
+
+### stays
+- id (UUID, PK) [BaseModel]
+- reservation_id (FK → reservations.id, UNIQUE)
+- actual_check_in (TIMESTAMP nullable)
+- actual_check_out (TIMESTAMP nullable)
+- folio_id (UUID FK nullable)
+- created_at, updated_at, created_by, updated_by, deleted_at [BaseModel]
+- Index: reservation_id, folio_id
+
+### traces (append-only — NO deleted_at)
+- id (UUID, PK)
+- reservation_id (FK → reservations.id, NOT NULL)
+- department (VARCHAR 50) — housekeeping/maintenance/concierge/front_office/manager
+- message (TEXT)
+- created_by (UUID FK)
+- created_at (TIMESTAMP)
+- resolved (BOOLEAN, default=False)
+- resolved_by (UUID FK nullable)
+- resolved_at (TIMESTAMP nullable)
+- due_date (DATE nullable)
+
+## 2. Endpoint'ler
+
+### POST /api/v1/checkin/{reservation_id}
+Auth: frontdesk, manager, superadmin
+Body: { assigned_room_id, notes? }
+Success 200: { data: { reservation_id, assigned_room_id, actual_check_in, folio_id }, meta: {} }
+İş: rez confirmed/checked_in/no_show durumlarından birinde mi? oda clean/inspected? Ata, status→checked_in, Stays kaydı oluştur, room status→occupied, WebSocket emit.
+Error 409: bakiye sıfır değilse
+
+### POST /api/v1/checkout/{reservation_id}
+Auth: frontdesk, manager, superadmin
+Body: { folio_balance }
+Success 200: { data: { reservation_id, actual_check_out }, meta: {} }
+Error 409: { error: { code: "OUTSTANDING_BALANCE", message: "...", details: { outstanding_amount } } }
+İş: checked_in mi? balance=0 mi? actual_check_out ← şu anda, room status→dirty, rez status→checked_out, WebSocket emit.
+
+### GET /api/v1/arrivals?date=YYYY-MM-DD
+Auth: frontdesk, manager, housekeeping, superadmin
+Success 200: { data: [ { reservation_id, code, guest: {...}, room_type: {...}, check_in, check_out, adults, kids, status, special_requests } ], meta: { page, per_page, total } }
+İş: check_in=date, status!="cancelled", sort check_in ASC
+
+### GET /api/v1/departures?date=YYYY-MM-DD
+Auth: frontdesk, manager, housekeeping, superadmin
+Same structure, check_out=date, status IN ("checked_in", "no_show")
+
+### GET /api/v1/in-house?date=YYYY-MM-DD
+Auth: frontdesk, manager, housekeeping, superadmin
+Same structure, check_in≤date AND check_out>date AND status="checked_in"
+
+### GET /api/v1/rooms?status=&type=&floor=
+Auth: frontdesk, manager, housekeeping, superadmin
+Query: status (clean/dirty/inspected/out_of_order), type (room_type_id), floor (INT)
+Success 200: { data: [ { id, room_no, room_type: {...}, floor, status, notes, connect_room_id, current_guest: {...}|null } ], meta: { page, per_page, total } }
+İş: filtrele, status=occupied ise current_guest şu anki stays'ten al, sort floor ASC, room_no ASC
+
+### PATCH /api/v1/rooms/{id}/status
+Auth: housekeeping, manager, superadmin
+Body: { status, notes? }
+Success 200: { data: { id, room_no, status, notes, updated_at }, meta: {} }
+Error 422: { error: { code: "INVALID_ROOM_STATUS", message: "...", details: { received, valid_values: ["clean", "dirty", "inspected", "out_of_order"] } } }
+İş: status → enum kontrol, update, WebSocket room.status.changed emit
+
+### POST /api/v1/room-assign
+Auth: frontdesk, manager, superadmin
+Body: { reservation_id, room_id, mode: "manual"|"auto" }
+Success 200: { data: { reservation_id, assigned_room_id, reason }, meta: {} }
+İş:
+  - mode="manual": room_id boş + clean/inspected durumda mı? Ata.
+  - mode="auto": FrontDesk AI /api/v1/ai/frontdesk/auto-assign çağır, dönen room_id ata.
+  - reservations.assigned_room_id ← room_id, AuditLog + WebSocket
+
+### GET /api/v1/guests/{id}/history
+Auth: frontdesk, manager, superadmin
+Success 200: { data: { guest: {...}, stays: [ { reservation_id, check_in, check_out, room_no, room_type, total_nights, total_spent, rating, notes } ], lifetime_stats: { total_stays, total_nights, total_spent, avg_rating } }, meta: {} }
+İş: guest al, stays'i getir (checked_out, deleted_at IS NULL), lifetime stats hesapla
+
+### POST /api/v1/traces
+Auth: frontdesk, manager, housekeeping, superadmin (concierge not in this phase)
+Body: { reservation_id, department: "housekeeping"|"maintenance"|"concierge"|"front_office"|"manager", message, due_date? }
+Success 201: { data: { id, reservation_id, department, message, created_by, created_at, resolved, due_date }, meta: {} }
+İş: rez var mı? Append-only: INSERT traces. created_by ← current_user (context'ten).
+
+### PATCH /api/v1/traces/{id}/resolve
+Auth: frontdesk, manager, housekeeping, superadmin
+Body: { notes? }
+Success 200: { data: { id, resolved: true, resolved_by, resolved_at }, meta: {} }
+İş: resolved ← true, resolved_by ← current_user, resolved_at ← şu anda
+
+## 3. FrontDesk AI Agent
+
+### POST /api/v1/ai/frontdesk/auto-assign
+Auth: internal (frontdesk/manager/superadmin çağırabilir)
+Body: { reservation_id, available_rooms: [uuid, uuid, ...] }
+Success 200: { data: { recommended_room_id, reasoning }, meta: {} }
+İş:
+  1. Rez al, guest preferences, geçmiş stays kontrol
+  2. available_rooms filtrele: clean/inspected, capacity ≥ (adults+kids)
+  3. Puanla:
+     - Preferences match (sea view, high floor, smoking) → +10
+     - repeat_guest tag → -0.5
+     - connected rooms → +5
+     - random tie-break
+  4. Top 1 döndür + gerekçe
+
+## 4. Test'ler (minimum 20)
+
+### Happy Path (13)
+1. POST /checkin — başarılı
+2. POST /checkout — başarılı (balance=0)
+3. GET /arrivals — 1 kayıt, tarih filtresi
+4. GET /departures — 1 kayıt
+5. GET /in-house — 1 kayıt
+6. GET /rooms — 50 oda, status filtresi
+7. PATCH /rooms/{id}/status — clean → inspected
+8. POST /room-assign (manual) — oda atanır
+9. POST /room-assign (auto) — AI önerisi
+10. GET /guests/{id}/history — lifetime stats
+11. POST /traces — trace oluşturulur
+12. PATCH /traces/{id}/resolve — resolved=true
+13. POST /ai/frontdesk/auto-assign — room_id döner
+
+### Error Path (7)
+1. POST /checkin — rez bulunamadı (404)
+2. POST /checkin — oda occupied (400)
+3. POST /checkout — balance sıfır değil (409)
+4. PATCH /rooms/{id}/status — geçersiz status (422)
+5. GET /arrivals — token yok (401)
+6. PATCH /traces/{id}/resolve — trace bulunamadı (404)
+7. POST /checkin — housekeeping RBAC (403)
+
+## 5. Teslim Dosyaları
+
+### FILE: backend/app/models/frontoffice.py
+(RoomType, Room, Guest, Reservation, Stay, Trace SQLAlchemy modelleri)
+
+### FILE: backend/app/routers/frontoffice.py
+(10 endpoint'in tümü: checkin, checkout, arrivals, departures, in-house, rooms GET/PATCH, room-assign, guests history, traces)
+
+### FILE: backend/app/routers/ai_frontdesk.py
+(FrontDesk AI endpoint: auto-assign)
+
+### FILE: backend/tests/test_modules/test_frontoffice.py
+(20+ pytest testi)
+
+### FILE: backend/migrations/versions/002_add_frontoffice_tables.py
+(Alembic migration: 6 tablo CREATE)
+
+### FILE: backend/OPENAPI_ENDPOINTS.md
+(Türkçe endpoint dokümantasyonu)
+
+---
+
+Dosyaları oluşturduktan sonra, teslim şu formatta olmalı:
+
+### FILE: backend/app/models/frontoffice.py
+```python
+...
+```
+
+### FILE: backend/app/routers/frontoffice.py
+```python
+...
+```
+
+[vb. tüm 6 dosya]
+
+---
+
+## Kabul Kriterleri (denetim raporunda kontrol edilecek)
+
+- pytest backend/tests tümü yeşil ✅
+- pytest qa/contract tümü yeşil ✅
+- Model alanları: UUID id, timestamps, soft delete ✅
+- Audit log yazılıyor ✅
+- Hata formatı: { "error": {...} } ✅
+- OpenAPI spec: /api/v1/openapi.json 200 ✅
+- RBAC: housekeeping checkin YAPAMAZ (403) ✅
+- Soft delete: deleted_at alanları var ✅
+
+================================================================================
+NOTLAR
+================================================================================
+
+1. TASK-001 fixtures'ı (test_superadmin, test_frontdesk, async_client) kullan conftest'ten
+2. Room status "occupied" olduğunda, o anki misafirim bulabilmek için stays join lazım
+3. Traces append-only → UPDATE'ler sadece resolved/resolved_by/resolved_at için
+4. WebSocket emit kodu: komment bırak, önem "# TODO: WebSocket room.status.changed"
+5. Email/SMS gönderim: TODO, TASK-003'te yapılacak
+6. Fotoğraf upload (traces): TODO, TASK-003'te
+7. Rate plan entegrasyonu: TODO, TASK-003'te (şimdilik room_types.base_rate yeterli)
+
+================================================================================
+BAŞLAT!
+================================================================================
+
+Yukarıdaki speci uygula. İlk adım: models/frontoffice.py'yi yaz, ardından
+routers/frontoffice.py'nin 10 endpoint'ini implement et, test'leri yaz,
+Alembic migration'ı oluştur. Tüm dosyaları "### FILE: ..." formatında teslim et.
+
+Başarılar! 🚀
+
+================================================================================

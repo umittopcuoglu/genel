@@ -41,10 +41,17 @@ def run(cmd: list[str], cwd: Path | None = None) -> tuple[int, str]:
         return 124, "timeout"
 
 
+def python_bin() -> str:
+    """Backend venv'i varsa onu tercih et (sistem paketi çakışmalarına karşı)."""
+    venv_python = BACKEND / ".venv" / "bin" / "python"
+    return str(venv_python) if venv_python.exists() else "python3"
+
+
 def check_pytest(path: Path, label: str) -> dict:
     if not path.exists() or not any(path.rglob("test_*.py")):
         return {"label": label, "status": "SKIP", "detail": f"{path.relative_to(HOTEL)} altında test yok"}
-    code, out = run(["python3", "-m", "pytest", str(path), "-q", "--no-header"])
+    cwd = BACKEND if path.is_relative_to(BACKEND) else HOTEL
+    code, out = run([python_bin(), "-m", "pytest", str(path), "-q", "--no-header"], cwd=cwd)
     status = "PASS" if code == 0 else "FAIL"
     return {"label": label, "status": status, "detail": out.strip()[-1500:]}
 
@@ -59,6 +66,13 @@ def check_model_fields() -> dict:
         text = py.read_text(encoding="utf-8")
         # Sadece tablo tanımlayan dosyalara bak
         if "__tablename__" not in text:
+            continue
+        # Kabul edilmiş istisna: append-only tablolar (örn. audit_logs, FB-001)
+        # dosyada "append-only" işareti varsa updated/deleted alanları aranmaz.
+        if "append-only" in text:
+            continue
+        # BaseModel'den türeyen modeller ortak alanları miras alır
+        if "(BaseModel)" in text and "from app.models.base import BaseModel" in text:
             continue
         missing = [f for f in REQUIRED_MODEL_FIELDS if f not in text]
         if missing:
