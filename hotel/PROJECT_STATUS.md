@@ -3,16 +3,16 @@
 > Bu dosya canlı durum kaydıdır. Her review/teslimat sonrası güncellenir.
 > Nightly QA workflow'u test sonuçlarını buraya işler.
 
-**Son güncelleme:** 2026-06-11 (TASK-002 KABUL ✅) · **Faz:** 1 (MVP) · **Sprint:** 1
+**Son güncelleme:** 2026-06-11 (TASK-004 KABUL ✅) · **Faz:** 1 (MVP) — 4/5 modül tamamlandı
 
 ## Modül Durumu
 
 | # | Modül | Backend (DeepSeek) | Frontend (Claude) | Review | Faz |
 |---|-------|--------------------|--------------------|--------|-----|
 | 0 | Altyapı (Auth+RBAC+Audit) | ✅ KABUL (tur 2) | — | REVIEW-...-tur2 | 1 |
-| 1 | Ön Büro | ✅ KABUL (tur 1) | 🟡 ekranlar live (backend API için hazır) | REVIEW-2026-06-11-TASK-002 | 1 |
-| 2 | Rezervasyon | ⬜ | ⬜ | — | 1-2 |
-| 4 | Muhasebe & Cashiering | ⬜ | ⬜ | — | 1-2 |
+| 1 | Ön Büro | ✅ KABUL (tur 1) | ✅ ekranlar live (backend API entegre) | REVIEW-2026-06-11-TASK-002 | 1 |
+| 2 | Rezervasyon | ✅ KABUL (tur 1) | 🟡 ekranlar yapılacak | REVIEW-2026-06-11-TASK-003 | 1 |
+| 4 | Muhasebe & Cashiering | ✅ KABUL (tur 1) | 🟡 ekranlar yapılacak | REVIEW-2026-06-11-TASK-004 | 1 |
 | 5 | Housekeeping | ⬜ | ⬜ | — | 1-2 |
 | — | FrontDesk AI (temel) | ⬜ | ⬜ | — | 1 |
 | 3 | Groups & Events | ⬜ | ⬜ | — | 3 |
@@ -29,10 +29,10 @@ Durum: ⬜ bekliyor · 🟡 devam · 🟠 review'da · ✅ kabul · ❌ düzeltm
 |---|---|---|---|
 | TASK-001 | Altyapı: Auth + RBAC + Audit | ✅ done (KABUL) | 2 |
 | TASK-002 | Modül 1: Ön Büro | ✅ done (KABUL) | 1 |
-| TASK-003 | Modül 2: Rezervasyon & Müsaitlik | 🟡 kullanıcı DeepSeek'e iletiyor | 1 |
-| TASK-004 | Modül 4: Muhasebe & Cashiering | ⬜ kuyrukta (TASK-003 KABUL sonrası) | — |
-| TASK-005 | Modül 5: Housekeeping | ⬜ kuyrukta (TASK-004 KABUL sonrası) | — |
-| TASK-006 | Altyapı: WebSocket + E2E + Docker + CI/CD | 🟡 TASK-003 ile paralel | 1 |
+| TASK-003 | Modül 2: Rezervasyon & Müsaitlik | ✅ done (KABUL) | 1 |
+| TASK-004 | Modül 4: Muhasebe & Cashiering | ✅ done (KABUL) | 1 |
+| TASK-005 | Modül 5: Housekeeping | 🟡 DeepSeek'e gönderilmesi bekleniyor | 1 |
+| TASK-006 | Altyapı: WebSocket + E2E + Docker + CI/CD | ⬜ sıraya girecek | 1 |
 
 ## Açık Geri Bildirimler (orchestrator/feedback/)
 _Yok. (FB-001 kapatıldı — düzeltmeler ağ engeli nedeniyle denetçi/Claude tarafından uygulandı.)_
