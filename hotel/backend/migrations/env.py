@@ -16,6 +16,9 @@ from app.models.user import User, RefreshToken
 from app.models.audit import AuditLog
 from app.models.front_office import RoomType, Room, Guest, Reservation, Stay, Trace
 from app.models.reservation_ext import RatePlan, Availability
+from app.models.finance import Folio, FolioItem, Payment, NightAuditRun
+from app.models.finance import Folio, FolioItem, Payment, NightAuditRun
+from app.models.finance import Folio, FolioItem, Payment, NightAuditRun
 
 target_metadata = Base.metadata
 

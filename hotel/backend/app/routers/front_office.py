@@ -3,6 +3,7 @@ Front Office API router: oda, misafir, rezervasyon, check-in/out, trace endpoint
 """
 import uuid
 from datetime import date
+from decimal import Decimal
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -331,6 +332,7 @@ async def check_in(
 @router.post("/check-out", response_model=CheckOutResponse, summary="Check-out")
 async def check_out(
     data: CheckOutRequest,
+    db: AsyncSession = Depends(get_db),
     service: FrontOfficeService = Depends(get_fo_service),
     current_user: User = Depends(require_roles(["superadmin", "manager", "frontdesk"])),
 ):
@@ -346,13 +348,34 @@ async def check_out(
                 }
             }
         )
+
+    # TASK-004: Gercek folio'dan balance oku
+    from app.models.finance import Folio
+    folio_stmt = select(Folio).where(
+        Folio.reservation_id == stay.reservation_id,
+        Folio.deleted_at.is_(None),
+    )
+    folio_result = await db.execute(folio_stmt)
+    folio = folio_result.scalar_one_or_none()
+    folio_balance = folio.balance if folio else Decimal("0")
+
+    if folio_balance > 0:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={
+                "error": {
+                    "code": "OUTSTANDING_BALANCE",
+                    "message": f"Check-out yapilamaz. Kalan bakiye: {folio_balance}",
+                    "details": {"balance": str(folio_balance)}
+                }
+            }
+        )
+
     return CheckOutResponse(
         stay_id=stay.id,
-        folio_balance=stay.folio_balance,
+        folio_balance=folio_balance,
         message="Check-out basariyla tamamlandi."
     )
-
-
 @router.post("/reservations/{reservation_id}/no-show", response_model=ReservationResponse, summary="No-show isaretle")
 async def mark_no_show(
     reservation_id: uuid.UUID,
