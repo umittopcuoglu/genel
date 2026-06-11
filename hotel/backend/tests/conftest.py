@@ -13,6 +13,7 @@ from app.core.config import settings
 from app.models.user import User
 from app.models.audit import AuditLog
 from app.models.front_office import RoomType, Room, Guest, Reservation, Stay, Trace
+from app.models.reservation_ext import RatePlan, Availability
 from datetime import date, timedelta
 from app.routers.auth import get_password_hash
 

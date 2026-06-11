@@ -14,7 +14,7 @@ import uuid
 from app.core.config import settings
 from app.core.db import engine
 from app.core.audit import AuditMiddleware
-from app.routers import auth, health, front_office
+from app.routers import auth, health, front_office, reservations, rate_plans, availability
 
 # Logging yapılandırması
 logging.basicConfig(level=logging.INFO)
@@ -123,6 +123,9 @@ async def generic_exception_handler(request: Request, exc: Exception):
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(health.router, prefix="/api/v1", tags=["Health"])
 app.include_router(front_office.router, prefix="/api/v1/front-office", tags=["Front Office"])
+app.include_router(reservations.router, prefix="/api/v1", tags=["Reservations"])
+app.include_router(rate_plans.router, prefix="/api/v1", tags=["Rate Plans"])
+app.include_router(availability.router, prefix="/api/v1", tags=["Availability"])
 
 
 @app.get("/", include_in_schema=False)

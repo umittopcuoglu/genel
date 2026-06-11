@@ -217,7 +217,11 @@ class ReservationCreate(BaseModel):
     children: int = Field(default=0, ge=0, le=20)
     room_type_id: Optional[UUID] = None
     assigned_room_id: Optional[UUID] = None
+    rate_plan_id: Optional[UUID]
+    total_amount: Decimal
+    balance: Decimal
     requested_room_number: Optional[str] = None
+    rate_plan_id: Optional[UUID] = None
     special_requests: Optional[str] = None
     payment_method: Optional[str] = None
     deposit_amount: Decimal = Field(default=0, ge=0)
@@ -231,7 +235,11 @@ class ReservationUpdate(BaseModel):
     adults: Optional[int] = None
     children: Optional[int] = None
     assigned_room_id: Optional[UUID] = None
+    rate_plan_id: Optional[UUID]
+    total_amount: Decimal
+    balance: Decimal
     requested_room_number: Optional[str] = None
+    rate_plan_id: Optional[UUID] = None
     special_requests: Optional[str] = None
     payment_method: Optional[str] = None
     deposit_amount: Optional[Decimal] = None
@@ -252,6 +260,9 @@ class ReservationResponse(BaseModel):
     children: int
     room_type_id: Optional[UUID]
     assigned_room_id: Optional[UUID]
+    rate_plan_id: Optional[UUID]
+    total_amount: Decimal
+    balance: Decimal
     requested_room_number: Optional[str]
     special_requests: Optional[str]
     payment_method: Optional[str]
