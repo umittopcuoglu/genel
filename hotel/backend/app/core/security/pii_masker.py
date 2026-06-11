@@ -5,7 +5,7 @@ from typing import Tuple
 class PIIMasker:
     MASK_PATTERNS = {
         "ad": r"\b[A-ZÇĞİÖŞÜ][a-zçğıöşü]+(?:\s[A-ZÇĞİÖŞÜ][a-zçğıöşü]+)*\b",
-        "telefon": r"\b(?:\+90|0)[0-9]{10}\b",
+        "telefon": r"(?:\+90|0)[0-9]{10}\b",
         "email": r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
         "tc": r"\b[0-9]{11}\b",
     }

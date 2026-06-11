@@ -2,8 +2,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import func
-from app.models.guest import Guest
-from app.models.reservation import Reservation
+from app.models.front_office import Guest, Reservation
 from app.models.loyalty_account import LoyaltyAccount
 from app.models.complaint import Complaint
 from app.models.feedback import Feedback
@@ -43,7 +42,7 @@ class Guest360Service:
         return {
             "basic": {
                 "id": str(guest.id),
-                "name": guest.name,
+                "name": f"{guest.first_name} {guest.last_name}",
                 "email": guest.email,
                 "phone": guest.phone,
             },

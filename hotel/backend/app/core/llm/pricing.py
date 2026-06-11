@@ -18,11 +18,13 @@ def calc_cost(
 ) -> float:
     rates = PRICING.get(provider, {})
 
-    if isinstance(rates.get("input"), dict):
-        model_rates = rates.get(model, {})
+    if model in rates and isinstance(rates[model], dict):
+        # Model-bazlı nested fiyatlandırma (openai, claude)
+        model_rates = rates[model]
         input_rate = model_rates.get("input", 0)
         output_rate = model_rates.get("output", 0)
     else:
+        # Düz fiyatlandırma (deepseek)
         input_rate = rates.get("input", 0)
         output_rate = rates.get("output", 0)
 

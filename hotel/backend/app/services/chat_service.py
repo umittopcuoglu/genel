@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.models.chat_session import ChatSession
 from app.models.chat_message import ChatMessage
-from app.models.guest import Guest
+from app.models.front_office import Guest
 
 
 class ChatService:
@@ -59,7 +59,7 @@ class ChatService:
         return message
 
     @staticmethod
-    async def get_session_history(session_id: UUID, limit: int = 10, db: AsyncSession) -> list[ChatMessage]:
+    async def get_session_history(session_id: UUID, db: AsyncSession, limit: int = 10) -> list[ChatMessage]:
         """Oturum mesaj tarihçesi."""
         result = await db.execute(
             select(ChatMessage)

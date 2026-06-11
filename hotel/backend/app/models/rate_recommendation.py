@@ -1,6 +1,6 @@
 from uuid import UUID
 from decimal import Decimal
-from sqlalchemy import String, Numeric, Float, ForeignKey, Text
+from sqlalchemy import String, Numeric, Float, ForeignKey, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base import BaseModel
 
@@ -8,7 +8,7 @@ from app.models.base import BaseModel
 class RateRecommendation(BaseModel):
     __tablename__ = "rate_recommendations"
 
-    room_type_id: Mapped[UUID] = mapped_column(ForeignKey("room_types.id"))
+    room_type_id: Mapped[UUID] = mapped_column(Uuid, ForeignKey("room_types.id"))
     date: Mapped[str] = mapped_column(String(10))
     recommended_rate: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     current_rate: Mapped[Decimal] = mapped_column(Numeric(10, 2))

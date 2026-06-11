@@ -51,4 +51,14 @@ class InsightAIAgent(BaseAgent):
         llm_output = response["content"]
         unmasked_output = PIIMasker.unmask(llm_output, mask_map)
 
-        return InsightAIOutput(brief=unmasked_output)
+        # Deterministik KPI özeti (LLM yanıtının önüne eklenir): rakamsal gerçekler
+        occ_delta = input_schema.occupancy_recent - input_schema.occupancy_previous
+        revpar_delta = input_schema.revpar_recent - input_schema.revpar_previous
+        kpi_summary = (
+            f"Doluluk: %{input_schema.occupancy_recent:.1f} "
+            f"(önceki %{input_schema.occupancy_previous:.1f}, {occ_delta:+.1f} puan). "
+            f"RevPAR: {input_schema.revpar_recent:.0f} TL "
+            f"(önceki {input_schema.revpar_previous:.0f} TL, {revpar_delta:+.0f} TL).\n\n"
+        )
+
+        return InsightAIOutput(brief=kpi_summary + unmasked_output)

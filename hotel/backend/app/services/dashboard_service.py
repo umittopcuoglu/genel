@@ -2,9 +2,8 @@ from datetime import date, datetime, timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import func
-from app.models.room import Room
-from app.models.reservation import Reservation
-from app.models.folio import Folio
+from app.models.front_office import Room, Reservation
+from app.models.finance import Folio
 
 
 class DashboardService:
@@ -19,8 +18,8 @@ class DashboardService:
         occupied = await db.execute(
             select(func.count(Reservation.id))
             .where(
-                Reservation.checkin_date <= to_date,
-                Reservation.checkout_date > from_date,
+                Reservation.check_in <= to_date,
+                Reservation.check_out > from_date,
                 Reservation.status.notin_(["cancelled", "no_show"]),
             )
         )
@@ -31,7 +30,7 @@ class DashboardService:
         )
 
         adr = await db.execute(
-            select(func.avg(Folio.total_amount))
+            select(func.avg(Folio.total))
             .where(
                 Folio.closed_date >= from_date,
                 Folio.closed_date <= to_date,
@@ -40,7 +39,7 @@ class DashboardService:
         adr_value = float(adr.scalar() or 0)
 
         total_revenue = await db.execute(
-            select(func.sum(Folio.total_amount))
+            select(func.sum(Folio.total))
             .where(
                 Folio.closed_date >= from_date,
                 Folio.closed_date <= to_date,
@@ -57,8 +56,8 @@ class DashboardService:
         arrivals = await db.execute(
             select(func.count(Reservation.id))
             .where(
-                Reservation.checkin_date >= from_date,
-                Reservation.checkin_date <= to_date,
+                Reservation.check_in >= from_date,
+                Reservation.check_in <= to_date,
                 Reservation.status.notin_(["cancelled", "no_show"]),
             )
         )
@@ -67,8 +66,8 @@ class DashboardService:
         departures = await db.execute(
             select(func.count(Reservation.id))
             .where(
-                Reservation.checkout_date >= from_date,
-                Reservation.checkout_date <= to_date,
+                Reservation.check_out >= from_date,
+                Reservation.check_out <= to_date,
                 Reservation.status.notin_(["cancelled", "no_show"]),
             )
         )

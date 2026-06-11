@@ -1,5 +1,5 @@
 from uuid import UUID
-from sqlalchemy import String, Float, ForeignKey, Integer
+from sqlalchemy import String, Float, ForeignKey, Integer, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base import BaseModel
 
@@ -7,8 +7,7 @@ from app.models.base import BaseModel
 class OccupancyForecast(BaseModel):
     __tablename__ = "occupancy_forecasts"
 
-    room_type_id: Mapped[UUID | None] = mapped_column(
-        ForeignKey("room_types.id"), nullable=True
+    room_type_id: Mapped[UUID | None] = mapped_column(Uuid, ForeignKey("room_types.id"), nullable=True
     )
     forecast_date: Mapped[str] = mapped_column(String(10))
     predicted_occupancy_percent: Mapped[float] = mapped_column(Float)

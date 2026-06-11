@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 from app.models.base import Base
 from app.models.chart_of_accounts import ChartOfAccount
 from app.models.ledger_entry import LedgerEntry
-from app.models.guest import Guest
+from app.models.front_office import Guest
 from app.models.chat_session import ChatSession
 from app.services.accounting_service import AccountingService
 from app.services.chat_service import ChatService

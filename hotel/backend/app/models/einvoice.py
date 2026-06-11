@@ -1,6 +1,6 @@
 from uuid import UUID
 from decimal import Decimal
-from sqlalchemy import String, Numeric, Text, LargeBinary, ForeignKey
+from sqlalchemy import String, Numeric, Text, LargeBinary, ForeignKey, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base import BaseModel
 
@@ -24,4 +24,4 @@ class EInvoice(BaseModel):
     pdf_content: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
     gib_response_code: Mapped[str | None] = mapped_column(String(50), nullable=True)
     gib_error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
-    source_folio_id: Mapped[UUID | None] = mapped_column(ForeignKey("folios.id"), nullable=True)
+    source_folio_id: Mapped[UUID | None] = mapped_column(Uuid, ForeignKey("folios.id"), nullable=True)
