@@ -1,0 +1,34 @@
+name: HotelOps Backend CI
+
+on:
+  push:
+    paths: ["hotel/backend/**", "hotel/qa/**", "hotel/orchestrator/**"]
+  pull_request:
+    paths: ["hotel/backend/**", "hotel/qa/**"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: hotel
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Bağımlılıklar
+        run: |
+          pip install pytest httpx
+          if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+      - name: Backend testleri (DeepSeek)
+        run: |
+          if ls backend/tests/test_*.py >/dev/null 2>&1; then
+            python -m pytest backend/tests -q
+          else
+            echo "Backend testi henüz yok (TASK-001 bekleniyor) — atlandı."
+          fi
+      - name: Kontrat testleri (Claude)
+        run: python -m pytest qa/contract -q
+      - name: Denetim raporu (statik kontroller)
+        run: python orchestrator/review.py --task CI --dry-run

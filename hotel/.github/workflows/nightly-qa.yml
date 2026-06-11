@@ -1,0 +1,36 @@
+name: HotelOps Nightly QA (Claude'un gece denetimi)
+
+on:
+  schedule:
+    - cron: "0 1 * * *" # her gece 01:00 UTC
+  workflow_dispatch: {} # elle tetiklenebilir
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: hotel
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Bağımlılıklar
+        run: |
+          pip install pytest httpx
+          if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+      - name: Denetim raporu üret
+        run: python orchestrator/review.py --task NIGHTLY
+      - name: Raporu commit'le
+        run: |
+          cd ..
+          git config user.name "hotelops-nightly-qa"
+          git config user.email "qa@hotelops.local"
+          git add hotel/docs/reviews/
+          if ! git diff --cached --quiet; then
+            git commit -m "Nightly QA raporu ($(date +%F))"
+            git push
+          else
+            echo "Rapor değişmedi — commit yok."
+          fi
