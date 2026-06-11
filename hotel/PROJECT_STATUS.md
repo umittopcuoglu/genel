@@ -32,6 +32,7 @@ Durum: ⬜ bekliyor · 🟡 devam · 🟠 review'da · ✅ kabul · ❌ düzeltm
 | TASK-003 | Modül 2: Rezervasyon & Müsaitlik | 🟡 kullanıcı DeepSeek'e iletiyor | 1 |
 | TASK-004 | Modül 4: Muhasebe & Cashiering | ⬜ kuyrukta (TASK-003 KABUL sonrası) | — |
 | TASK-005 | Modül 5: Housekeeping | ⬜ kuyrukta (TASK-004 KABUL sonrası) | — |
+| TASK-006 | Altyapı: WebSocket + E2E + Docker + CI/CD | 🟡 TASK-003 ile paralel | 1 |
 
 ## Açık Geri Bildirimler (orchestrator/feedback/)
 _Yok. (FB-001 kapatıldı — düzeltmeler ağ engeli nedeniyle denetçi/Claude tarafından uygulandı.)_
