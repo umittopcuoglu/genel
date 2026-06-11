@@ -36,15 +36,20 @@ def upgrade() -> None:
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
     op.create_index(op.f('ix_users_deleted_at'), 'users', ['deleted_at'], unique=False)
 
-    # refresh_tokens tablosu
+    # refresh_tokens tablosu (FB-001 Bulgu 8: BaseModel alanları eklendi)
     op.create_table('refresh_tokens',
         sa.Column('id', UUID(as_uuid=True), nullable=False),
+        sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('created_by', sa.String(length=36), nullable=True),
+        sa.Column('updated_by', sa.String(length=36), nullable=True),
+        sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
         sa.Column('user_id', UUID(as_uuid=True), nullable=False),
         sa.Column('token', sa.String(length=500), nullable=False),
         sa.Column('expires_at', sa.DateTime(timezone=True), nullable=False),
         sa.Column('revoked', sa.Boolean(), nullable=False),
-        sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint('id'),
+        sa.ForeignKeyConstraint(['user_id'], ['users.id']),
         sa.UniqueConstraint('token')
     )
     op.create_index(op.f('ix_refresh_tokens_token'), 'refresh_tokens', ['token'], unique=False)

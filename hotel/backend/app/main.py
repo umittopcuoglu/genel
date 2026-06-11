@@ -59,6 +59,31 @@ app.add_middleware(AuditMiddleware)
 
 
 # Global exception handler'lar
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    """FB-001 ek bulgu: HTTPException(detail={"error": ...}) FastAPI tarafından
+    {"detail": {...}} içine sarılıyordu — sözleşme {"error": ...} zarfı ister (02 §0.7).
+    Bu handler zarfı düzleştirir; düz string detail'leri de zarfa çevirir."""
+    if isinstance(exc.detail, dict) and "error" in exc.detail:
+        content = exc.detail
+    else:
+        content = {
+            "error": {
+                "code": "HTTP_ERROR",
+                "message": str(exc.detail),
+                "details": {}
+            }
+        }
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=content,
+        headers=getattr(exc, "headers", None),
+    )
+
+
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """Pydantic doğrulama hatalarını standart formata dönüştür."""

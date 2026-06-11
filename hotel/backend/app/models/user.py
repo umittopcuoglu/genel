@@ -4,11 +4,12 @@ RefreshToken modeli de burada tanımlanır.
 """
 import uuid
 from datetime import datetime
-from sqlalchemy import String, Boolean, DateTime, Index
+from sqlalchemy import String, Boolean, DateTime, ForeignKey, Index, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import BaseModel
 from app.core.db import Base
-from app.core.rbac import ALL_ROLES
+# FB-001 ek bulgu: core.rbac import'u (rbac → auth → user) döngüsel import yaratıyordu
+# ve ALL_ROLES burada kullanılmıyordu — kaldırıldı.
 
 
 class User(BaseModel):
@@ -27,27 +28,23 @@ class User(BaseModel):
         return f"<User {self.email} ({self.role})>"
 
 
-class RefreshToken(Base):
-    """Refresh token'ları veritabanında tutmak için (opsiyonel, ek güvenlik)."""
-    __tablename__ = "refresh_tokens"
-    __table_args__ = (
-        Index("ix_refresh_tokens_token", "token"),
-    )
+class RefreshToken(BaseModel):
+    """Refresh token'ları veritabanında tutmak için (opsiyonel, ek güvenlik).
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        BaseModel.__annotations__["id"].type,
-        primary_key=True,
-        default=uuid.uuid4
-    )
+    FB-001 Bulgu 2+8: geçersiz __annotations__ tip ifadesi kaldırıldı;
+    02 Talimatları §0.3 gereği BaseModel'den türetildi (timestamps + soft delete).
+    """
+    __tablename__ = "refresh_tokens"
+
     user_id: Mapped[uuid.UUID] = mapped_column(
-        BaseModel.__annotations__["id"].type,
+        Uuid,
+        ForeignKey("users.id"),
         nullable=False,
         index=True
     )
-    token: Mapped[str] = mapped_column(String(500), nullable=False, unique=True)
+    token: Mapped[str] = mapped_column(String(500), nullable=False, unique=True, index=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     revoked: Mapped[bool] = mapped_column(Boolean, default=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.now)
 
     # İlişkiler
     user: Mapped["User"] = relationship(back_populates="refresh_tokens")

@@ -9,7 +9,7 @@
 
 | # | Modül | Backend (DeepSeek) | Frontend (Claude) | Review | Faz |
 |---|-------|--------------------|--------------------|--------|-----|
-| 0 | Altyapı (Auth+RBAC+Audit) | ❌ Tur 1 teslim edildi → DÜZELTME (FB-001) | — | REVIEW-2026-06-11 | 1 |
+| 0 | Altyapı (Auth+RBAC+Audit) | ✅ KABUL (tur 2) | — | REVIEW-...-tur2 | 1 |
 | 1 | Ön Büro | ⬜ bekliyor | ⬜ bekliyor | — | 1 |
 | 2 | Rezervasyon | ⬜ | ⬜ | — | 1-2 |
 | 4 | Muhasebe & Cashiering | ⬜ | ⬜ | — | 1-2 |
@@ -27,15 +27,15 @@ Durum: ⬜ bekliyor · 🟡 devam · 🟠 review'da · ✅ kabul · ❌ düzeltm
 ## Açık Görevler (orchestrator/tasks/)
 | Görev | Modül | Durum | Tur |
 |---|---|---|---|
-| TASK-001 | Altyapı: Auth + RBAC + Audit | düzeltme bekleniyor | 2 |
+| TASK-001 | Altyapı: Auth + RBAC + Audit | ✅ done (KABUL) | 2 |
+| TASK-002 | Modül 1: Ön Büro | hazırlanıyor | — |
 
 ## Açık Geri Bildirimler (orchestrator/feedback/)
-| FB | Görev | Şiddet | Özet |
-|---|---|---|---|
-| FB-001 | TASK-001 | critical | 4 critical (import hataları, yanlış JWT paketi), 3 high, 3 minor bulgu — testler import'ta çöküyor |
+_Yok. (FB-001 kapatıldı — düzeltmeler ağ engeli nedeniyle denetçi/Claude tarafından uygulandı.)_
 
 ## Son Review Raporları (docs/reviews/)
-- `REVIEW-2026-06-11-TASK-001.md` — **DÜZELTME GEREKLİ** ❌ (tur 1)
+- `REVIEW-2026-06-11-TASK-001-tur2.md` — **KABUL** ✅ (6/6 backend testi + 6 kontrat testi yeşil, canlı API doğrulandı)
+- `REVIEW-2026-06-11-TASK-001.md` — DÜZELTME GEREKLİ ❌ (tur 1, FB-001)
 
 ## Bilinen Engeller
 - ⚠️ `api.deepseek.com` cloud ortam allowlist'inde kapalı → görevler manuel modla

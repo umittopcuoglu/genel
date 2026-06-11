@@ -91,8 +91,9 @@ async def refresh_token(refresh_data: RefreshTokenRequest, db: AsyncSession = De
         # Bu örnekte refresh token değişmiyor, ancak güvenlik için rotasyon önerilir. Basit bırakıyoruz.
         # Kullanıcı bilgilerini refresh token'dan al
         from app.core.auth import verify_token
+        import uuid as uuid_lib
         payload = await verify_token(refresh_data.refresh_token, token_type="refresh")
-        user_id = payload.get("sub")
+        user_id = uuid_lib.UUID(payload.get("sub"))
         stmt = select(User).where(User.id == user_id, User.deleted_at.is_(None))
         result = await db.execute(stmt)
         user = result.scalar_one_or_none()

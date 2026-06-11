@@ -12,7 +12,12 @@ from app.core.db import get_db, Base
 from app.core.config import settings
 from app.models.user import User
 from app.models.audit import AuditLog
-from app.core.auth import get_password_hash
+from app.routers.auth import get_password_hash
+
+# FB-001 Bulgu 4/5: testlerde gerçek Redis yok — fakeredis ile blacklist simüle edilir.
+import fakeredis.aioredis
+from app.core import auth as auth_module
+auth_module.redis_client = fakeredis.aioredis.FakeRedis(decode_responses=True)
 
 # Test veritabanı URL'i (SQLite in-memory ile hızlı test, ancak PostgreSQL özellikleri için ayrı test db kullanılabilir)
 # Burada basitlik için SQLite kullanıyoruz; ancak UUID ve diğer özellikler çalışır.

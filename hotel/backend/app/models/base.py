@@ -4,8 +4,8 @@ Soft delete (deleted_at), created_by, updated_by, id (UUID), timestamps.
 """
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, String, DateTime, text
-from sqlalchemy.dialects.postgresql import UUID
+from typing import Optional
+from sqlalchemy import Column, String, DateTime, Uuid, text
 from sqlalchemy.orm import declared_attr, Mapped, mapped_column
 from app.core.db import Base
 from app.core.audit import get_current_user_id_from_context
@@ -15,11 +15,12 @@ class BaseModel(Base):
     """Tüm modellerin türeyeceği temel sınıf."""
     __abstract__ = True
 
+    # FB-001 Bulgu 5: dialect-bağımsız Uuid tipi (SQLite testlerde de çalışır);
+    # gen_random_uuid() server_default kaldırıldı, Python tarafı default yeterli.
     id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
+        Uuid,
         primary_key=True,
         default=uuid.uuid4,
-        server_default=text("gen_random_uuid()")
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

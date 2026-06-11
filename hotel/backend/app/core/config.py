@@ -15,11 +15,12 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     # Veritabanı
-    DATABASE_URL: str = Field(..., env="DATABASE_URL")
+    # FB-001 Bulgu 7: test-dostu güvenli default'lar — production .env ile override eder.
+    DATABASE_URL: str = Field("sqlite+aiosqlite:///./dev.db", env="DATABASE_URL")
     TEST_DATABASE_URL: str = Field("sqlite+aiosqlite:///./test.db", env="TEST_DATABASE_URL")
 
     # JWT
-    JWT_SECRET_KEY: str = Field(..., env="JWT_SECRET_KEY")
+    JWT_SECRET_KEY: str = Field("dev-secret-change-me", env="JWT_SECRET_KEY")
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7

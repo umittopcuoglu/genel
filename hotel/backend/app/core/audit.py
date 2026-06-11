@@ -9,7 +9,8 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.db import AsyncSessionLocal
 from app.models.audit import AuditLog
-from app.core.auth import get_current_user  # doğrudan çağıramayız, dependency var
+# FB-001 Bulgu 3: app.core.auth import'u döngüsel import yaratıyordu — kaldırıldı
+# (dispatch içinde lokal import kullanılıyor).
 import uuid
 from datetime import datetime, timezone
 import logging
@@ -77,7 +78,7 @@ class AuditMiddleware(BaseHTTPMiddleware):
             try:
                 async with AsyncSessionLocal() as db_session:
                     audit_entry = AuditLog(
-                        user_id=user_id,
+                        user_id=uuid.UUID(user_id) if user_id else None,
                         action=method,
                         resource=path,
                         old_value=None,  # Middleware için eski değer zor, basit bırakıyoruz

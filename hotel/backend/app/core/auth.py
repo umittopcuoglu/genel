@@ -1,6 +1,7 @@
 """
 JWT token üretme, doğrulama, kullanıcı alımı ve refresh token yönetimi.
 """
+import uuid as uuid_lib
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict, Any
 import jwt
@@ -102,7 +103,21 @@ async def get_current_user(
             }
         )
     # Kullanıcıyı veritabanından al (soft delete kontrolü)
-    stmt = select(User).where(User.id == user_id, User.deleted_at.is_(None))
+    # JWT sub string'dir; Uuid kolonuyla karşılaştırmadan önce UUID'ye çevrilir.
+    try:
+        user_uuid = uuid_lib.UUID(user_id)
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={
+                "error": {
+                    "code": "INVALID_TOKEN",
+                    "message": "Token içindeki kullanıcı kimliği geçersiz.",
+                    "details": {}
+                }
+            }
+        )
+    stmt = select(User).where(User.id == user_uuid, User.deleted_at.is_(None))
     result = await db.execute(stmt)
     user = result.scalar_one_or_none()
     if user is None:
