@@ -3,13 +3,13 @@
 > Bu dosya canlı durum kaydıdır. Her review/teslimat sonrası güncellenir.
 > Nightly QA workflow'u test sonuçlarını buraya işler.
 
-**Son güncelleme:** 2026-06-11 · **Faz:** 1 (MVP) · **Sprint:** 0 (kuruluş)
+**Son güncelleme:** 2026-06-11 (TASK-001 tur 1 denetimi) · **Faz:** 1 (MVP) · **Sprint:** 1
 
 ## Modül Durumu
 
 | # | Modül | Backend (DeepSeek) | Frontend (Claude) | Review | Faz |
 |---|-------|--------------------|--------------------|--------|-----|
-| 0 | Altyapı (Auth+RBAC+Audit) | 🟡 TASK-001 hazır, gönderilecek | — | — | 1 |
+| 0 | Altyapı (Auth+RBAC+Audit) | ❌ Tur 1 teslim edildi → DÜZELTME (FB-001) | — | REVIEW-2026-06-11 | 1 |
 | 1 | Ön Büro | ⬜ bekliyor | ⬜ bekliyor | — | 1 |
 | 2 | Rezervasyon | ⬜ | ⬜ | — | 1-2 |
 | 4 | Muhasebe & Cashiering | ⬜ | ⬜ | — | 1-2 |
@@ -27,13 +27,15 @@ Durum: ⬜ bekliyor · 🟡 devam · 🟠 review'da · ✅ kabul · ❌ düzeltm
 ## Açık Görevler (orchestrator/tasks/)
 | Görev | Modül | Durum | Tur |
 |---|---|---|---|
-| TASK-001 | Altyapı: Auth + RBAC + Audit | open | 1 |
+| TASK-001 | Altyapı: Auth + RBAC + Audit | düzeltme bekleniyor | 2 |
 
 ## Açık Geri Bildirimler (orchestrator/feedback/)
-_Yok._
+| FB | Görev | Şiddet | Özet |
+|---|---|---|---|
+| FB-001 | TASK-001 | critical | 4 critical (import hataları, yanlış JWT paketi), 3 high, 3 minor bulgu — testler import'ta çöküyor |
 
 ## Son Review Raporları (docs/reviews/)
-_Henüz teslimat yok._
+- `REVIEW-2026-06-11-TASK-001.md` — **DÜZELTME GEREKLİ** ❌ (tur 1)
 
 ## Bilinen Engeller
 - ⚠️ `api.deepseek.com` cloud ortam allowlist'inde kapalı → görevler manuel modla

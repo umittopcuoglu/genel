@@ -31,7 +31,10 @@ class TestGenelSozlesme:
         assert status == 200
 
     def test_openapi_spec_yayinda(self, base_url):
-        status, spec = get(base_url, "/openapi.json")
+        # REVIEW-2026-06-11: DeepSeek spec'i /api/v1/openapi.json altında yayınlıyor — kabul edildi.
+        status, spec = get(base_url, "/api/v1/openapi.json")
+        if status == 404:
+            status, spec = get(base_url, "/openapi.json")
         assert status == 200
         assert spec.get("openapi", "").startswith("3.")
 
