@@ -3,7 +3,7 @@
 > Bu dosya canlı durum kaydıdır. Her review/teslimat sonrası güncellenir.
 > Nightly QA workflow'u test sonuçlarını buraya işler.
 
-**Son güncelleme:** 2026-06-11 (TASK-001 tur 1 denetimi) · **Faz:** 1 (MVP) · **Sprint:** 1
+**Son güncelleme:** 2026-06-12 (TASK-002 spec oluşturuldu) · **Faz:** 1 (MVP) · **Sprint:** 1
 
 ## Modül Durumu
 
@@ -28,7 +28,7 @@ Durum: ⬜ bekliyor · 🟡 devam · 🟠 review'da · ✅ kabul · ❌ düzeltm
 | Görev | Modül | Durum | Tur |
 |---|---|---|---|
 | TASK-001 | Altyapı: Auth + RBAC + Audit | ✅ done (KABUL) | 2 |
-| TASK-002 | Modül 1: Ön Büro | hazırlanıyor | — |
+| TASK-002 | Modül 1: Ön Büro | 🟡 DeepSeek'e gönderilmesi bekleniyor | 1 |
 
 ## Açık Geri Bildirimler (orchestrator/feedback/)
 _Yok. (FB-001 kapatıldı — düzeltmeler ağ engeli nedeniyle denetçi/Claude tarafından uygulandı.)_
