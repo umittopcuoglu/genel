@@ -1,0 +1,25 @@
+name: HotelOps Frontend CI
+
+on:
+  push:
+    paths: ["hotel/frontend/**"]
+  pull_request:
+    paths: ["hotel/frontend/**"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: hotel/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: hotel/frontend/package-lock.json
+      - name: Bağımlılıklar
+        run: npm ci
+      - name: Production build
+        run: npm run build
