@@ -14,6 +14,7 @@ from app.core.db import Base
 from app.models.base import BaseModel
 from app.models.user import User, RefreshToken
 from app.models.audit import AuditLog
+from app.models.front_office import RoomType, Room, Guest, Reservation, Stay, Trace
 
 target_metadata = Base.metadata
 

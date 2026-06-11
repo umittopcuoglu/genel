@@ -1,0 +1,10 @@
+{
+  "name": "genel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "geneL - Multi-app workspace",
+  "scripts": {
+    "start": "cd claudex && npm start",
+    "dev": "cd claudex && npm run dev"
+  }
+}
