@@ -45,3 +45,5 @@ from app.models.mobile_checkin import OCRDocumentScan, EGMSubmission, CheckinSes
 from app.models.blockchain_identity import BlockchainIdentity, VerifiableCredential, IdentityVerificationProof, BlockchainSyncEvent, GuestConsentLog
 # Entegrasyon Ayarları (parametrik dış entegrasyonlar)
 from app.models.integration_setting import IntegrationSetting
+# Misafir Wi-Fi Portal
+from app.models.guest_wifi_session import GuestWiFiSession
