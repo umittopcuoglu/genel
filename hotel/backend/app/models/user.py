@@ -24,6 +24,13 @@ class User(BaseModel):
     # İlişkiler
     refresh_tokens: Mapped[list["RefreshToken"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
+    def get(self, key: str, default=None):
+        """Sözlük-uyumu: bazı servisler current_user'ı dict gibi kullanıp
+        current_user.get("user_id") çağırıyor. "user_id" → str(id), diğerleri attribute."""
+        if key == "user_id":
+            return str(self.id)
+        return getattr(self, key, default)
+
     def __repr__(self):
         return f"<User {self.email} ({self.role})>"
 

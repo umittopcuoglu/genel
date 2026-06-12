@@ -224,3 +224,94 @@ async def trace_db(db: AsyncSession, reservation_db):
 async def db() -> AsyncGenerator[AsyncSession, None]:
     async with TestingSessionLocal() as session:
         yield session
+
+
+# ── DeepSeek modül testleri için köprü fixture'lar ──
+# Faz 3-4 testleri 'client' + '*_headers' isimlerini bekliyor; conftest async_client +
+# token üretiyordu. Aşağıdaki fixture'lar ikisini birbirine bağlar.
+
+@pytest.fixture
+async def client(async_client):
+    """Faz 3-4 testleri 'client' adını kullanıyor → async_client takma adı."""
+    return async_client
+
+
+@pytest.fixture
+async def manager_token(async_client, test_manager):
+    response = await async_client.post(
+        "/api/v1/auth/login",
+        json={"email": "manager@test.com", "password": "Manager123!"}
+    )
+    return response.json()["access_token"]
+
+
+@pytest.fixture
+async def manager_headers(manager_token):
+    return {"Authorization": f"Bearer {manager_token}"}
+
+
+@pytest.fixture
+async def superadmin_headers(superadmin_token):
+    return {"Authorization": f"Bearer {superadmin_token}"}
+
+
+@pytest.fixture
+async def frontdesk_headers(frontdesk_token):
+    return {"Authorization": f"Bearer {frontdesk_token}"}
+
+
+# ── Groups & Maintenance entity fixture'ları (bu testler kendi fixture'ını tanımlamıyor) ──
+from uuid import uuid4 as _uuid4
+
+
+@pytest.fixture
+async def groups_fixture(async_client, manager_headers, room_type_db):
+    """Test grubu (master folio ile) + kullanılabilir room_type_id."""
+    response = await async_client.post(
+        "/api/v1/groups",
+        json={
+            "name": "Test Group",
+            "block_start_date": "2026-07-01",
+            "block_end_date": "2026-07-05",
+            "pax_count": 30,
+            "discount_rate": 10.0,
+        },
+        headers=manager_headers,
+    )
+    assert response.status_code == 201, response.text
+    return {"group_id": response.json()["id"], "room_type_id": str(room_type_db.id)}
+
+
+@pytest.fixture
+async def assets_fixture(async_client, manager_headers):
+    """Test varlığı (category=Electrical — test_get_asset bunu doğruluyor)."""
+    response = await async_client.post(
+        "/api/v1/maintenance/assets",
+        json={
+            "name": "Test Asset",
+            "category": "Electrical",
+            "location": "Room 202",
+            "purchase_date": "2023-01-15",
+        },
+        headers=manager_headers,
+    )
+    assert response.status_code == 201, response.text
+    return {"asset_id": response.json()["id"]}
+
+
+@pytest.fixture
+async def work_order_fixture(async_client, manager_headers):
+    """Test iş emri."""
+    response = await async_client.post(
+        "/api/v1/maintenance/work-orders",
+        json={
+            "room_id": str(_uuid4()),
+            "category": "Plumbing",
+            "priority": "normal",
+            "description": "Test work order",
+            "estimated_hours": 1,
+        },
+        headers=manager_headers,
+    )
+    assert response.status_code == 201, response.text
+    return {"work_order_id": response.json()["id"]}

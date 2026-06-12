@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 from datetime import datetime
-from app.core.security.auth import get_current_user, get_db
-from app.core.security.rbac import require_roles
+from app.core.db import get_db
+from app.core.auth import get_current_user
+from app.core.rbac import require_roles
 from app.schemas.maintenance import (
     AssetCreate, AssetResponse,
     WorkOrderCreate, WorkOrderResponse, WorkOrderStatusUpdate,
@@ -17,10 +18,9 @@ router = APIRouter(prefix="/api/v1/maintenance", tags=["maintenance"])
 
 
 @router.post("/assets", response_model=AssetResponse, status_code=status.HTTP_201_CREATED)
-@require_roles(["superadmin", "manager", "maintenance"])
 async def create_asset(
     asset_data: AssetCreate,
-    current_user: dict = Depends(get_current_user),
+    current_user: dict = Depends(require_roles(["superadmin", "manager", "maintenance"])),
     db: AsyncSession = Depends(get_db),
 ):
     """Yeni varlık (ekipman) ekle."""
@@ -29,7 +29,6 @@ async def create_asset(
 
 
 @router.get("/assets/{asset_id}", response_model=AssetResponse)
-@require_roles(["superadmin", "manager", "maintenance"])
 async def get_asset(
     asset_id: UUID,
     db: AsyncSession = Depends(get_db),
@@ -42,7 +41,6 @@ async def get_asset(
 
 
 @router.get("/assets", response_model=List[AssetResponse])
-@require_roles(["superadmin", "manager", "maintenance"])
 async def list_assets(
     db: AsyncSession = Depends(get_db),
 ):
@@ -52,10 +50,9 @@ async def list_assets(
 
 
 @router.post("/work-orders", response_model=WorkOrderResponse, status_code=status.HTTP_201_CREATED)
-@require_roles(["superadmin", "manager", "maintenance", "housekeeping"])
 async def create_work_order(
     order_data: WorkOrderCreate,
-    current_user: dict = Depends(get_current_user),
+    current_user: dict = Depends(require_roles(["superadmin", "manager", "maintenance", "housekeeping"])),
     db: AsyncSession = Depends(get_db),
 ):
     """Yeni iş emri aç."""
@@ -64,7 +61,6 @@ async def create_work_order(
 
 
 @router.get("/work-orders/{work_order_id}", response_model=WorkOrderResponse)
-@require_roles(["superadmin", "manager", "maintenance"])
 async def get_work_order(
     work_order_id: UUID,
     db: AsyncSession = Depends(get_db),
@@ -77,7 +73,6 @@ async def get_work_order(
 
 
 @router.get("/work-orders", response_model=List[WorkOrderResponse])
-@require_roles(["superadmin", "manager", "maintenance"])
 async def list_work_orders(
     status_filter: str = Query(None),
     db: AsyncSession = Depends(get_db),
@@ -88,11 +83,10 @@ async def list_work_orders(
 
 
 @router.patch("/work-orders/{work_order_id}/status", response_model=WorkOrderResponse)
-@require_roles(["superadmin", "manager", "maintenance"])
 async def update_work_order_status(
     work_order_id: UUID,
     status_update: WorkOrderStatusUpdate,
-    current_user: dict = Depends(get_current_user),
+    current_user: dict = Depends(require_roles(["superadmin", "manager", "maintenance"])),
     db: AsyncSession = Depends(get_db),
 ):
     """İş emri durumunu güncelle."""
@@ -105,11 +99,10 @@ async def update_work_order_status(
 
 
 @router.patch("/work-orders/{work_order_id}/assign", response_model=WorkOrderResponse)
-@require_roles(["superadmin", "manager"])
 async def assign_work_order(
     work_order_id: UUID,
     assignment: dict,
-    current_user: dict = Depends(get_current_user),
+    current_user: dict = Depends(require_roles(["superadmin", "manager"])),
     db: AsyncSession = Depends(get_db),
 ):
     """İş emrini personele ata."""
@@ -121,10 +114,9 @@ async def assign_work_order(
 
 
 @router.post("/preventive-maintenance", response_model=PreventiveMaintenanceResponse, status_code=status.HTTP_201_CREATED)
-@require_roles(["superadmin", "manager", "maintenance"])
 async def create_preventive(
     pm_data: PreventiveMaintenanceCreate,
-    current_user: dict = Depends(get_current_user),
+    current_user: dict = Depends(require_roles(["superadmin", "manager", "maintenance"])),
     db: AsyncSession = Depends(get_db),
 ):
     """Preventif bakım planı oluştur."""
@@ -133,7 +125,6 @@ async def create_preventive(
 
 
 @router.get("/preventive-maintenance/due", response_model=List[PreventiveMaintenanceResponse])
-@require_roles(["superadmin", "manager", "maintenance"])
 async def get_due_maintenance(
     db: AsyncSession = Depends(get_db),
 ):
@@ -143,10 +134,9 @@ async def get_due_maintenance(
 
 
 @router.post("/logs", response_model=MaintenanceLogResponse, status_code=status.HTTP_201_CREATED)
-@require_roles(["superadmin", "manager", "maintenance"])
 async def log_maintenance(
     log_data: MaintenanceLogCreate,
-    current_user: dict = Depends(get_current_user),
+    current_user: dict = Depends(require_roles(["superadmin", "manager", "maintenance"])),
     db: AsyncSession = Depends(get_db),
 ):
     """Yapılan bakım işlemini kaydet."""
@@ -155,7 +145,6 @@ async def log_maintenance(
 
 
 @router.get("/logs/{work_order_id}", response_model=List[MaintenanceLogResponse])
-@require_roles(["superadmin", "manager", "maintenance"])
 async def get_work_order_logs(
     work_order_id: UUID,
     db: AsyncSession = Depends(get_db),

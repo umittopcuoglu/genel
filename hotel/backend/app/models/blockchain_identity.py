@@ -24,7 +24,8 @@ class BlockchainIdentity(BaseModel):
     chain_tx_hash: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     verified_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
-    metadata: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    # 'metadata' Declarative API'de rezerve; Python attr extra_metadata, DB kolonu "metadata"
+    extra_metadata: Mapped[Optional[dict]] = mapped_column("metadata", JSON, nullable=True)
 
     def __repr__(self) -> str:
         return f"<BlockchainIdentity {self.did[:30]}...>" if len(self.did) > 30 else f"<BlockchainIdentity {self.did}>"

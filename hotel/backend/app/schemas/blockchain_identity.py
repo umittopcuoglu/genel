@@ -16,7 +16,7 @@ class BlockchainIdentityResponse(BaseModel):
     chain_tx_hash: Optional[str] = None
     is_verified: bool
     verified_at: Optional[datetime] = None
-    metadata: Optional[dict] = None
+    extra_metadata: Optional[dict] = None
 
     class Config:
         from_attributes = True
@@ -25,7 +25,7 @@ class BlockchainIdentityResponse(BaseModel):
 class BlockchainIdentityCreate(BaseModel):
     guest_id: UUID
     method: str = "polygon"
-    metadata: Optional[dict] = None
+    extra_metadata: Optional[dict] = None
 
 
 # ── VerifiableCredential ──

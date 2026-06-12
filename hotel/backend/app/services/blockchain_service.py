@@ -43,7 +43,7 @@ class BlockchainService:
             public_key=public_key,
             status="active",
             chain_tx_hash=f"0x{tx_hash}",
-            metadata=data.metadata,
+            extra_metadata=data.extra_metadata,
             created_by=current_user.get("user_id"),
         )
         db.add(identity)
