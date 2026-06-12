@@ -39,9 +39,10 @@ class Group(BaseModel):
     discount_rate: Mapped[Decimal] = mapped_column(Numeric(5, 2), default=Decimal("0"), nullable=False)
     notes: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
-    room_blocks: Mapped[list["RoomBlock"]] = relationship("RoomBlock", back_populates="group")
-    events: Mapped[list["Event"]] = relationship("Event", back_populates="group")
-    rooming_list: Mapped[list["GroupRoomingList"]] = relationship("GroupRoomingList", back_populates="group")
+    # lazy="selectin": GroupResponse ilişkileri Pydantic serileştirmede lazy-load (MissingGreenlet) yapmasın
+    room_blocks: Mapped[list["RoomBlock"]] = relationship("RoomBlock", back_populates="group", lazy="selectin")
+    events: Mapped[list["Event"]] = relationship("Event", back_populates="group", lazy="selectin")
+    rooming_list: Mapped[list["GroupRoomingList"]] = relationship("GroupRoomingList", back_populates="group", lazy="selectin")
 
 
 class RoomBlock(BaseModel):

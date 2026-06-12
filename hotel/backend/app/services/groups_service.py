@@ -47,8 +47,8 @@ class GroupsService:
 
         group.group_folio_id = master_folio.id
         await db.commit()
-        await db.refresh(group)
-        return group
+        # İlişkileri (room_blocks/events/rooming_list) eager-load ederek dön
+        return await GroupsService.get_group(db, group.id)
 
     @staticmethod
     async def get_group(db: AsyncSession, group_id: UUID) -> Group:
@@ -102,8 +102,7 @@ class GroupsService:
         group.status = new_status
         group.updated_by = current_user.get("user_id")
         await db.commit()
-        await db.refresh(group)
-        return group
+        return await GroupsService.get_group(db, group_id)
 
     @staticmethod
     async def create_room_block(

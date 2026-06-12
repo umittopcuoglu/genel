@@ -323,3 +323,35 @@ async def work_order_fixture(async_client, manager_headers):
 # kaldırır hem audit kayıtlarını test.db'ye yazar.
 import app.core.audit as _audit_module
 _audit_module.AsyncSessionLocal = TestingSessionLocal
+
+
+@pytest.fixture
+async def user_db(db: AsyncSession):
+    """Genel test kullanıcısı (test_chain property-user atamaları için)."""
+    user = User(
+        email="staff@test.com",
+        hashed_password=get_password_hash("Staff123!"),
+        full_name="Test Staff",
+        role="frontdesk",
+        is_active=True,
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
+
+
+@pytest.fixture
+async def stay_db(db: AsyncSession, reservation_db, room_db, guest_db):
+    """Test konaklaması (mobile check-in EGM/NFC testleri için)."""
+    stay = Stay(
+        reservation_id=reservation_db.id,
+        room_id=room_db.id,
+        guest_id=guest_db.id,
+        pax_count=2,
+        is_checked_in=True,
+    )
+    db.add(stay)
+    await db.commit()
+    await db.refresh(stay)
+    return stay
