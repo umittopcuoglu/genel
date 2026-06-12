@@ -43,3 +43,5 @@ from app.models.chain import Chain, Property, PropertySyncLog, ConsolidatedRepor
 from app.models.mobile_checkin import OCRDocumentScan, EGMSubmission, CheckinSession, FacialRecognitionScan, NFCRoomKey
 # Faz 4 - Blockchain Identity modelleri
 from app.models.blockchain_identity import BlockchainIdentity, VerifiableCredential, IdentityVerificationProof, BlockchainSyncEvent, GuestConsentLog
+# Entegrasyon Ayarları (parametrik dış entegrasyonlar)
+from app.models.integration_setting import IntegrationSetting

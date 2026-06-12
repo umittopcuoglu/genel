@@ -13,3 +13,5 @@ node_modules/
 .idea/
 .vscode/
 *.log
+*.db-journal
+test.db

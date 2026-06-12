@@ -21,6 +21,7 @@ from app.schemas.front_office import (
     GuestCreate, GuestResponse,
     ReservationCreate as ResCreateSchema,
 )
+from app.services.channel_sync_service import ChannelSyncService
 from app.schemas.reservation import (
     ReservationCreate, ReservationUpdate, ReservationResponse,
     CancelResponse, ReservationListResponse, ReservationListItem,
@@ -190,6 +191,11 @@ async def create_reservation(
 
     # 8. Availability güncelle
     await _adjust_availability(db, data.room_type_id, data.check_in, data.check_out, 1)
+
+    # 9. Channel Manager: tüm aktif kanallara yeni envanteri push et
+    await ChannelSyncService.push_inventory_update(
+        db, data.room_type_id, data.check_in, data.check_out, trigger="reservation"
+    )
 
     await db.commit()
     await db.refresh(reservation)

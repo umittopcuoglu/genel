@@ -29,6 +29,10 @@ from app.routers import console
 from app.routers import mobile_checkin
 # Faz 4 router'ları (Blockchain Identity)
 from app.routers import blockchain
+# Entegrasyon Ayarları (parametrik GİB/OTA/GDS/WhatsApp/IoT)
+from app.routers import integrations
+# Booking Engine (public, komisyonsuz doğrudan satış)
+from app.routers import booking_engine
 
 # Logging yapılandırması
 logging.basicConfig(level=logging.INFO)
@@ -165,6 +169,8 @@ app.include_router(voice_webhooks.router)
 app.include_router(console.router)
 app.include_router(mobile_checkin.router)
 app.include_router(blockchain.router)
+app.include_router(integrations.router)
+app.include_router(booking_engine.router)
 
 
 @app.get("/", include_in_schema=False)

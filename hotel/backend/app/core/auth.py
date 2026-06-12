@@ -72,8 +72,13 @@ async def verify_token(token: str, token_type: str = "access") -> Dict[str, Any]
         if payload.get("type") != token_type:
             raise credentials_exception
         # Blacklist kontrolü (sadece access token için yapılabilir)
+        # Redis erişilemezse (lokal kurulum) kontrol atlanır — logout blacklist'i
+        # yalnızca Redis'in bulunduğu ortamlarda devrededir.
         if token_type == "access":
-            is_blacklisted = await redis_client.get(f"blacklist:access:{token}")
+            try:
+                is_blacklisted = await redis_client.get(f"blacklist:access:{token}")
+            except Exception:
+                is_blacklisted = None
             if is_blacklisted:
                 raise credentials_exception
         return payload
@@ -163,7 +168,11 @@ async def refresh_access_token(refresh_token: str) -> str:
     # Not: Burada basitçe blacklist kontrolü yapılabilir. Daha sıkı güvenlik için veritabanında refresh token modeli de tutulabilir.
     # Örnek: RefreshToken tablosundan kontrol et
     # Kısa kesmek için sadece Redis blacklist kullanıyoruz.
-    is_blacklisted = await redis_client.get(f"blacklist:refresh:{refresh_token}")
+    try:
+        is_blacklisted = await redis_client.get(f"blacklist:refresh:{refresh_token}")
+    except Exception:
+        # Redis yoksa (lokal kurulum) blacklist kontrolü atlanır
+        is_blacklisted = None
     if is_blacklisted:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

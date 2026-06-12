@@ -3,6 +3,13 @@
 > Bu dosya canlı durum kaydıdır. Her review/teslimat sonrası güncellenir.
 > Nightly QA workflow'u test sonuçlarını buraya işler.
 
+> **2026-06-12 — HotelRunner/Cloudbeds denklemi tamamlandı:**
+> PMS + **Booking Engine** (`/api/v1/public/*`, komisyonsuz doğrudan satış, `/book` misafir ekranı)
+> + **Channel Manager** (rezervasyonda tüm aktif OTA'lara otomatik stok push + sync log, `/channels` ekranı)
+> + **Entegrasyon Ayarları** (GİB e-Fatura · OTA · GDS · WhatsApp · **Payment Gateway** · IoT/MQTT —
+> admin parametreleri çalışma zamanında girer, şifreli saklanır, tek tıkla canlı bağlantı testi)
+> Frontend "Grand Hotel" tasarım dili + sayfa geçiş animasyonları. Testler: 201 + 23 yeni = **224 yeşil**.
+
 **Son güncelleme:** 2026-06-12 (Faz 3+4 görev talimatları oluşturuldu: TASK-014…025) · **Faz:** 1-4 · **Faz 2 kuyruğu aktif, Faz 3-4 kuyruğa giriş**
 
 ## Modül Durumu

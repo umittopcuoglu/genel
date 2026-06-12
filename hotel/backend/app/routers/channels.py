@@ -77,6 +77,37 @@ async def list_channels(
     ]
 
 
+@router.get("/sync-logs/recent")
+async def list_sync_logs(
+    limit: int = 50,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Son kanal senkron logları — Channel Manager panosu için."""
+    if current_user.role not in ["manager", "superadmin"]:
+        raise HTTPException(status_code=403)
+    from sqlalchemy import select, desc
+    q = (
+        select(ChannelSyncLog, Channel.name)
+        .join(Channel, Channel.id == ChannelSyncLog.channel_id)
+        .order_by(desc(ChannelSyncLog.created_at))
+        .limit(min(limit, 200))
+    )
+    rows = (await db.execute(q)).all()
+    return [
+        {
+            "id": str(log.id),
+            "channel_name": name,
+            "sync_type": log.sync_type,
+            "status": log.status,
+            "rooms_updated": log.rooms_updated,
+            "response_time_ms": log.response_time_ms,
+            "created_at": log.created_at,
+        }
+        for log, name in rows
+    ]
+
+
 @router.get("/{channel_id}")
 async def get_channel(
     channel_id: UUID,

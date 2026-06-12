@@ -13,8 +13,10 @@ import {
   LayoutDashboard,
   Lightbulb,
   PartyPopper,
+  Plug,
   ScanLine,
   Settings,
+  Share2,
   ShieldCheck,
   Smartphone,
   Sparkles,
@@ -33,6 +35,8 @@ const NAV: { section: string; items: { href: string; label: string; icon: any }[
       { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
       { href: "/front-office", label: "Ön Büro", icon: BedDouble },
       { href: "/reservations", label: "Rezervasyon", icon: Calendar },
+      { href: "/channels", label: "Channel Manager", icon: Share2 },
+      { href: "/book", label: "Booking Engine", icon: Globe },
       { href: "/housekeeping", label: "Housekeeping", icon: Sparkles },
       { href: "/finance", label: "Muhasebe", icon: CreditCard },
       { href: "/maintenance", label: "Bakım", icon: Wrench },
@@ -62,7 +66,10 @@ const NAV: { section: string; items: { href: string; label: string; icon: any }[
   },
   {
     section: "Sistem",
-    items: [{ href: "/settings", label: "Ayarlar", icon: Settings }],
+    items: [
+      { href: "/settings", label: "Ayarlar", icon: Settings },
+      { href: "/settings/integrations", label: "Entegrasyonlar", icon: Plug },
+    ],
   },
 ];
 
