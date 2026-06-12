@@ -19,6 +19,16 @@ from app.routers import auth, health, front_office, reservations, rate_plans, av
 from app.routers import channels, complaints, feedback, loyalty, ai_endpoints, custom_reports
 # Faz 3 router'ları (Groups & Events, Maintenance, HR, GDS, IoT)
 from app.routers import groups, maintenance, hr, gds, iot
+# Faz 4 router'ları (Computer Vision)
+from app.routers import cv_inspections
+# Faz 4 router'ları (Voice Control)
+from app.routers import voice_webhooks
+# Faz 4 router'ları (Multi-Property)
+from app.routers import console
+# Faz 4 router'ları (Mobile Check-in)
+from app.routers import mobile_checkin
+# Faz 4 router'ları (Blockchain Identity)
+from app.routers import blockchain
 
 # Logging yapılandırması
 logging.basicConfig(level=logging.INFO)
@@ -149,6 +159,12 @@ app.include_router(maintenance.router, prefix="/api/v1", tags=["Maintenance"])
 app.include_router(hr.router)
 app.include_router(gds.router)
 app.include_router(iot.router)
+# Faz 4 router kayıtları
+app.include_router(cv_inspections.router)
+app.include_router(voice_webhooks.router)
+app.include_router(console.router)
+app.include_router(mobile_checkin.router)
+app.include_router(blockchain.router)
 
 
 @app.get("/", include_in_schema=False)

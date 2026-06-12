@@ -31,3 +31,13 @@ from app.models.hr import Employee, Shift, ShiftAssignment, Attendance, LeaveReq
 from app.models.gds import GDSChannel, GDSReservation, GDSRateMapping, GDSSyncLog
 # Faz 3 - IoT / Smart Room modelleri
 from app.models.iot import IoTDevice, IoTDeviceLog, IoTScenario, IoTEnergyReading, IoTAlert
+# Faz 4 - Computer Vision modelleri
+from app.models.cv import CVModel, RoomInspection, InspectionDefect, InventorySnapshot
+# Faz 4 - Voice Control modelleri
+from app.models.voice import VoiceIntegration, VoiceCommand, VoiceSession, VoiceInteraction, VoiceIntentsMapping
+# Faz 4 - Chain / Multi-Property modelleri
+from app.models.chain import Chain, Property, PropertySyncLog, ConsolidatedReport, PropertyUser
+# Faz 4 - Mobile Check-in modelleri
+from app.models.mobile_checkin import OCRDocumentScan, EGMSubmission, CheckinSession, FacialRecognitionScan, NFCRoomKey
+# Faz 4 - Blockchain Identity modelleri
+from app.models.blockchain_identity import BlockchainIdentity, VerifiableCredential, IdentityVerificationProof, BlockchainSyncEvent, GuestConsentLog
