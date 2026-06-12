@@ -10,8 +10,9 @@ import {
   Sparkles,
   Wrench,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
-/** Yan menü — docs/03_FRONTEND_TASARIM.md §2 IA'nın Faz 1 alt kümesi */
+/** Yan menü — docs/03_FRONTEND_TASARIM.md §2 IA'nın tam kapsamı */
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/front-office", label: "Ön Büro", icon: BedDouble },
@@ -52,7 +53,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             aria-label="Global arama"
             className="w-72 rounded-md border border-line bg-bg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary"
           />
-          <div className="text-sm text-text-2">v0.1 · Faz 1 MVP</div>
+          <div className="flex items-center gap-3">
+            <span className="hidden text-sm text-text-2 sm:inline">v1.0 · Faz 5 UI</span>
+            <ThemeToggle />
+            <Link
+              href="/login"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white"
+              title="Hesap"
+              aria-label="Hesap menüsü"
+            >
+              ÜT
+            </Link>
+          </div>
         </header>
         <main className="flex-1 p-6">{children}</main>
       </div>

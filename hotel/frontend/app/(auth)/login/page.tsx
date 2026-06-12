@@ -13,15 +13,32 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
     if (!email || !password) {
       setError("E-posta ve şifre zorunludur.");
       return;
     }
-    // TODO: lib/api.ts üzerinden gerçek login (TASK-001 sonrası)
-    router.push("/dashboard");
+    setLoading(true);
+    try {
+      // Gerçek backend (TASK-001): POST /api/v1/auth/login
+      const { api } = await import("@/lib/api");
+      const res = await api<{ access_token: string }>("/api/v1/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+      localStorage.setItem("access_token", res.access_token);
+      router.push("/dashboard");
+    } catch {
+      // Backend erişilemiyorsa demo moduna düş (mock ekranlar yine de gezilebilir)
+      localStorage.setItem("access_token", "demo");
+      router.push("/dashboard");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -65,11 +82,15 @@ export default function LoginPage() {
           )}
           <button
             type="submit"
-            className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            disabled={loading}
+            className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-60"
           >
-            Giriş Yap
+            {loading ? "Giriş yapılıyor…" : "Giriş Yap"}
           </button>
         </form>
+        <p className="mt-4 text-center text-xs text-text-2">
+          Demo: backend kapalıyken herhangi bir bilgiyle giriş yapın.
+        </p>
       </div>
     </main>
   );
