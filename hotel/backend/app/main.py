@@ -17,6 +17,8 @@ from app.core.audit import AuditMiddleware
 from app.routers import auth, health, front_office, reservations, rate_plans, availability, folios, night_audit, reports, housekeeping, lost_found, minibar
 # Faz 2 router'ları (Channel Manager, CRM, Loyalty, AI, özel raporlar)
 from app.routers import channels, complaints, feedback, loyalty, ai_endpoints, custom_reports
+# Faz 3 router'ları (Groups & Events, vs.)
+from app.routers import groups
 
 # Logging yapılandırması
 logging.basicConfig(level=logging.INFO)
@@ -141,6 +143,8 @@ app.include_router(feedback.router, prefix="/api/v1", tags=["Feedback"])
 app.include_router(loyalty.router, prefix="/api/v1", tags=["Loyalty"])
 app.include_router(ai_endpoints.router, prefix="/api/v1", tags=["AI"])
 app.include_router(custom_reports.router, prefix="/api/v1", tags=["Reports"])
+# Faz 3 router kayıtları
+app.include_router(groups.router, prefix="/api/v1", tags=["Groups"])
 
 
 @app.get("/", include_in_schema=False)
