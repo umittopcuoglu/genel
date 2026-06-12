@@ -43,6 +43,12 @@ from app.routers import whatsapp
 from app.routers import einvoice
 # Revenue Management / RevenueIQ
 from app.routers import revenue
+# F&B / POS (Outlet, Menu, Check)
+from app.routers import fnb
+# Güvenlik & KVKK (Access logs + Consent + Data Subject Requests)
+from app.routers import security as security_router
+# InsightAI (KPI özet + kanal mix + aksiyon önerileri)
+from app.routers import insights
 
 # Logging yapılandırması
 logging.basicConfig(level=logging.INFO)
@@ -186,6 +192,9 @@ app.include_router(crm.router)
 app.include_router(whatsapp.router)
 app.include_router(einvoice.router)
 app.include_router(revenue.router)
+app.include_router(fnb.router)
+app.include_router(security_router.router)
+app.include_router(insights.router)
 
 
 @app.get("/", include_in_schema=False)

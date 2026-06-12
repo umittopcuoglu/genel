@@ -49,3 +49,7 @@ from app.models.integration_setting import IntegrationSetting
 from app.models.payment_transaction import PaymentTransaction, PaymentTxnStatus, PaymentTxnKind
 # CRM (Guest 360, Segment, Campaign, Notes, Communication)
 from app.models.crm import Segment, Campaign, GuestNote, CommunicationLog, CampaignStatus, CampaignChannel
+# F&B / POS
+from app.models.fnb import Outlet, MenuItem, Check, CheckItem, CheckStatus
+# Güvenlik & KVKK
+from app.models.security import AccessLog, KVKKConsent, DataSubjectRequest

@@ -27,6 +27,9 @@ import {
   Wrench,
   Users,
   MessageCircle,
+  Receipt,
+  LineChart,
+  TrendingUp,
 } from "lucide-react";
 
 /** Yan menü — bölümlü IA (Operasyon / Faz 3 / Faz 4). "Grand Hotel" koyu lacivert tema. */
@@ -44,6 +47,9 @@ const NAV: { section: string; items: { href: string; label: string; icon: any }[
       { href: "/payments", label: "Ödeme / POS", icon: CreditCard },
       { href: "/crm", label: "CRM / Misafir 360", icon: Users },
       { href: "/whatsapp", label: "WhatsApp", icon: MessageCircle },
+      { href: "/einvoice", label: "GİB e-Fatura", icon: Receipt },
+      { href: "/revenue", label: "Revenue (Fiyat AI)", icon: TrendingUp },
+      { href: "/insights", label: "InsightAI", icon: LineChart },
       { href: "/maintenance", label: "Bakım", icon: Wrench },
       { href: "/analytics", label: "Analitik", icon: BarChart3 },
     ],
