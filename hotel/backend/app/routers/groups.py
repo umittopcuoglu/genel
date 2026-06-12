@@ -60,7 +60,14 @@ async def update_group_status(
             detail="Geçersiz durum"
         )
 
-    group = await GroupsService.update_group_status(db, group_id, new_status, current_user)
+    try:
+        group = await GroupsService.update_group_status(db, group_id, new_status, current_user)
+    except ValueError as exc:
+        # Geçersiz durum geçişi / yetersiz envanter → 422
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={"error": {"code": "INVALID_STATUS_TRANSITION", "message": str(exc), "details": {}}},
+        )
     if not group:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Grup bulunamadı")
     return group
@@ -80,7 +87,7 @@ async def create_room_block(
     return block
 
 
-@router.post("/{group_id}/room-blocks/{block_id}/release", response_model=RoomBlockResponse)
+@router.patch("/{group_id}/room-blocks/{block_id}/release", response_model=RoomBlockResponse)
 async def release_room_block(
     group_id: UUID,
     block_id: UUID,

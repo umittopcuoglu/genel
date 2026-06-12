@@ -117,7 +117,7 @@ class GroupsService:
             group_id=group_id,
             room_type_id=block_data.room_type_id,
             qty_required=block_data.qty_required,
-            qty_confirmed=0,
+            qty_confirmed=block_data.qty_confirmed,
             pickup_date=block_data.pickup_date,
             release_date=block_data.release_date,
             status="pending",
@@ -171,8 +171,10 @@ class GroupsService:
         )
         db.add(event)
         await db.commit()
-        await db.refresh(event)
-        return event
+        # resources ilişkisini eager-load ederek dön (Pydantic MissingGreenlet önle)
+        stmt = select(Event).where(Event.id == event.id)
+        result = await db.execute(stmt)
+        return result.scalar_one()
 
     @staticmethod
     async def import_rooming_list(

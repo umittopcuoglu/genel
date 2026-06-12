@@ -77,7 +77,7 @@ class Event(BaseModel):
 
     group: Mapped["Group"] = relationship("Group", back_populates="events")
     venue: Mapped["Venue"] = relationship("Venue", back_populates="events")
-    resources: Mapped[list["EventResource"]] = relationship("EventResource", back_populates="event")
+    resources: Mapped[list["EventResource"]] = relationship("EventResource", back_populates="event", lazy="selectin")
 
 
 class EventResource(BaseModel):

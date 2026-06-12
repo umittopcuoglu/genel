@@ -34,6 +34,7 @@ class RoomBlockResponse(BaseModel):
 class RoomBlockCreate(BaseModel):
     room_type_id: UUID
     qty_required: int = Field(..., gt=0)
+    qty_confirmed: int = Field(0, ge=0)
     pickup_date: date
     release_date: date
 
