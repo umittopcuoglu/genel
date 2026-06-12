@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Receipt } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -116,8 +115,7 @@ export default function EInvoicePage() {
     <div className="space-y-6">
       <PageHeader
         title="GİB e-Fatura"
-        description="Foriba/Logo/Uyumsoft/İzibiz entegratörleri ile e-fatura yönetimi"
-        icon={Receipt}
+        subtitle="Foriba/Logo/Uyumsoft/İzibiz entegratörleri ile e-fatura yönetimi"
       />
 
       <div className="flex justify-end">

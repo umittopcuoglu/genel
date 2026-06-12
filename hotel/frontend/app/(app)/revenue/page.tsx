@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TrendingUp } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -107,8 +106,7 @@ export default function RevenuePage() {
     <div className="space-y-6">
       <PageHeader
         title="Revenue Management"
-        description="Fiyat AI önerileri + doluluk tahmini + onay akışı"
-        icon={TrendingUp}
+        subtitle="Fiyat AI önerileri + doluluk tahmini + onay akışı"
       />
 
       <div className="grid gap-4 md:grid-cols-4">

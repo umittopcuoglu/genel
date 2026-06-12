@@ -1,10 +1,12 @@
 """
 Kimlik doğrulama endpoint'leri: login, refresh, logout.
 """
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from passlib.context import CryptContext
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from app.core.db import get_db
 from app.core.auth import (
@@ -14,6 +16,7 @@ from app.core.auth import (
 from app.schemas.auth import LoginRequest, TokenResponse, RefreshTokenRequest, LogoutRequest, UserResponse
 from app.models.user import User
 
+limiter = Limiter(key_func=get_remote_address)
 router = APIRouter()
 
 # Şifre hashleme context'i
@@ -29,7 +32,8 @@ def get_password_hash(password: str) -> str:
 
 
 @router.post("/login", response_model=TokenResponse, summary="Giriş yap", description="Email ve şifre ile giriş yaparak access ve refresh token alın.")
-async def login(login_data: LoginRequest, db: AsyncSession = Depends(get_db)):
+@limiter.limit("10/minute")
+async def login(request: Request, login_data: LoginRequest, db: AsyncSession = Depends(get_db)):
     # Kullanıcıyı email ile bul (soft delete kontrolü)
     stmt = select(User).where(User.email == login_data.email, User.deleted_at.is_(None))
     result = await db.execute(stmt)
@@ -83,7 +87,8 @@ async def login(login_data: LoginRequest, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/refresh", response_model=TokenResponse, summary="Token yenile", description="Refresh token kullanarak yeni access token alın.")
-async def refresh_token(refresh_data: RefreshTokenRequest, db: AsyncSession = Depends(get_db)):
+@limiter.limit("20/minute")
+async def refresh_token(request: Request, refresh_data: RefreshTokenRequest, db: AsyncSession = Depends(get_db)):
     # Refresh token'ı doğrula ve yeni access token üret
     try:
         new_access_token = await refresh_access_token(refresh_data.refresh_token)

@@ -135,8 +135,7 @@ export default function SecurityPage() {
     <div className="space-y-6">
       <PageHeader
         title="Güvenlik & KVKK"
-        description="KVKK rıza yönetimi + Veri Sahibi Talepleri (DSR) Kanban"
-        icon={ShieldCheck}
+        subtitle="KVKK rıza yönetimi + Veri Sahibi Talepleri (DSR) Kanban"
       />
 
       <div className="grid gap-4 md:grid-cols-4">

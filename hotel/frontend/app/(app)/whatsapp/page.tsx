@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MessageCircle, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 
@@ -33,8 +33,7 @@ export default function WhatsAppPage() {
     <div className="space-y-6">
       <PageHeader
         title="WhatsApp"
-        description="Meta Business Cloud API — misafirlere doğrudan mesaj gönderin (gelen mesajlar webhook'tan otomatik işlenir)"
-        icon={MessageCircle}
+        subtitle="Meta Business Cloud API — misafirlere doğrudan mesaj gönderin"
       />
 
       <Card className="max-w-2xl space-y-4 p-6">

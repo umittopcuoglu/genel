@@ -162,8 +162,7 @@ export default function CRMPage() {
     <div className="space-y-6">
       <PageHeader
         title="CRM / Guest 360"
-        description="Misafir profilleri · Segmentler · Pazarlama kampanyaları"
-        icon={Users}
+        subtitle="Misafir profilleri · Segmentler · Pazarlama kampanyaları"
       />
 
       <div className="flex gap-2 border-b">

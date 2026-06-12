@@ -4,7 +4,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -42,8 +42,7 @@ class AccessLogResponse(BaseModel):
     reason: Optional[str]
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 @router.post(
@@ -97,8 +96,7 @@ class ConsentResponse(BaseModel):
     revoked_at: Optional[datetime]
     text_version: Optional[str]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 @router.post("/kvkk/consents", response_model=ConsentResponse, status_code=status.HTTP_201_CREATED)
@@ -161,8 +159,7 @@ class DSRResponse(BaseModel):
     notes: Optional[str]
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 @router.post("/kvkk/requests", response_model=DSRResponse, status_code=status.HTTP_201_CREATED)

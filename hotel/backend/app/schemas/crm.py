@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import Optional, Literal, Any
 from uuid import UUID
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 # ── Segment ──
@@ -29,8 +29,7 @@ class SegmentResponse(BaseModel):
     is_active: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── Campaign ──
@@ -59,8 +58,7 @@ class CampaignResponse(BaseModel):
     failed_count: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── Guest 360 ──
@@ -100,8 +98,7 @@ class GuestNoteResponse(BaseModel):
     is_pinned: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── Communication ──
@@ -129,5 +126,4 @@ class CommunicationLogResponse(BaseModel):
     external_ref: Optional[str]
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

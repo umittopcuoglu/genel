@@ -5,7 +5,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -38,8 +38,7 @@ class OutletResponse(BaseModel):
     open_time: Optional[str]
     close_time: Optional[str]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class MenuItemCreate(BaseModel):
@@ -59,8 +58,7 @@ class MenuItemResponse(BaseModel):
     kdv_rate: Decimal
     is_active: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CheckCreate(BaseModel):
@@ -87,8 +85,7 @@ class CheckItemResponse(BaseModel):
     kdv_rate: Decimal
     line_total: Decimal
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CheckResponse(BaseModel):
@@ -103,8 +100,7 @@ class CheckResponse(BaseModel):
     total: Decimal
     items: List[CheckItemResponse] = []
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── Outlet ──

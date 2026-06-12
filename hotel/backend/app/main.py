@@ -11,6 +11,8 @@ from starlette.middleware.base import BaseHTTPMiddleware
 import logging
 import uuid
 
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 from app.core.config import settings
 from app.core.db import engine
 from app.core.audit import AuditMiddleware
@@ -92,6 +94,11 @@ app.add_middleware(
 
 # Audit middleware (tüm yazma işlemlerini logla)
 app.add_middleware(AuditMiddleware)
+
+# Rate limiting (auth endpoint'leri)
+from app.routers.auth import limiter
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 # Global exception handler'lar

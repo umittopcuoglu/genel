@@ -181,8 +181,7 @@ export default function FnbPage() {
     <div className="space-y-6">
       <PageHeader
         title="F&B / POS"
-        description={`${outlets.length} satış noktası · Adisyon yönetimi`}
-        icon={UtensilsCrossed}
+        subtitle={`${outlets.length} satış noktası · Adisyon yönetimi`}
       />
 
       <div className="grid gap-4 md:grid-cols-4">

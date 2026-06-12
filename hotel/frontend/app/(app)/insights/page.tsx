@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LineChart as LineIcon } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -37,8 +36,7 @@ export default function InsightsPage() {
     <div className="space-y-6">
       <PageHeader
         title="InsightAI"
-        description="Gelir, doluluk, kanal mix ve kural-tabanlı aksiyon önerileri"
-        icon={LineIcon}
+        subtitle="Gelir, doluluk, kanal mix ve kural-tabanlı aksiyon önerileri"
       />
 
       {summary && (

@@ -1,27 +1,24 @@
 import asyncio
+import os
 from logging.config import fileConfig
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
-# Alembic yapılandırması
 config = context.config
-fileConfig(config.config_file_name)
 
-# Modelleri import et (Base'leri topla)
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
+# Override sqlalchemy.url from environment if available
+db_url = os.environ.get("DATABASE_URL")
+if db_url:
+    config.set_main_option("sqlalchemy.url", db_url)
+
+# Import Base and all models via the central registry so metadata is complete
 from app.core.db import Base
-from app.models.base import BaseModel
-from app.models.user import User, RefreshToken
-from app.models.audit import AuditLog
-from app.models.front_office import RoomType, Room, Guest, Reservation, Stay, Trace
-from app.models.reservation_ext import RatePlan, Availability
-from app.models.finance import Folio, FolioItem, Payment, NightAuditRun
-from app.models.housekeeping import HousekeepingTask, LostFound, MinibarItem
-from app.models.finance import Folio, FolioItem, Payment, NightAuditRun
-from app.models.housekeeping import HousekeepingTask, LostFound, MinibarItem
-from app.models.finance import Folio, FolioItem, Payment, NightAuditRun
-from app.models.housekeeping import HousekeepingTask, LostFound, MinibarItem
+import app.models  # noqa: F401 — triggers __init__.py which imports every model
 
 target_metadata = Base.metadata
 

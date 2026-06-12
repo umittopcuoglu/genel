@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CreditCard, RefreshCcw, ShieldCheck } from "lucide-react";
+import { RefreshCcw, ShieldCheck } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -104,8 +104,7 @@ export default function PaymentsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Ödeme / POS"
-        description="Sanal POS tahsilatları — provider parametrik (iyzico / Stripe / PayTR)"
-        icon={CreditCard}
+        subtitle="Sanal POS tahsilatları — provider parametrik (iyzico / Stripe / PayTR)"
       />
 
       <div className="grid gap-6 lg:grid-cols-2">
