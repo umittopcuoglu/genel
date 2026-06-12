@@ -200,6 +200,20 @@ async def create_reservation(
     await db.commit()
     await db.refresh(reservation)
 
+    # 10. Domain event yayını — gevşek bağlı abone modüller (CRM/audit/revenue) tetiklenir
+    from app.core.events import ReservationCreated, events as _events
+    await _events.publish(
+        ReservationCreated(
+            reservation_id=reservation.id,
+            guest_id=reservation.guest_id,
+            room_type_id=reservation.room_type_id,
+            check_in=str(reservation.check_in),
+            check_out=str(reservation.check_out),
+            source=reservation.source,
+        ),
+        db=db,
+    )
+
     # Reload with relations
     stmt = select(Reservation).options(
         selectinload(Reservation.guest),

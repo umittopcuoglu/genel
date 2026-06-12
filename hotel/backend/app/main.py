@@ -49,6 +49,8 @@ from app.routers import fnb
 from app.routers import security as security_router
 # InsightAI (KPI özet + kanal mix + aksiyon önerileri)
 from app.routers import insights
+# Domain event abonelikleri (modular monolith iletişim katmanı)
+from app.core import event_handlers  # noqa: F401  — import = subscribe
 
 # Logging yapılandırması
 logging.basicConfig(level=logging.INFO)
