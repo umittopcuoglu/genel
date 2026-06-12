@@ -4,6 +4,7 @@ Pytest yapılandırması: async test client, test veritabanı, global fixture'la
 import os
 # Testlerde LLM ajanları mock moda düşsün (gerçek API anahtarı gerekmez)
 os.environ.setdefault("ENABLE_LLM_MOCK", "true")
+os.environ.setdefault("ENABLE_RATE_LIMIT", "false")
 
 import asyncio
 import pytest

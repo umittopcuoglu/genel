@@ -11,7 +11,7 @@ from app.core.security.pii_masker import PIIMasker
 class MockAgent(BaseAgent):
     agent_name = "test_agent"
 
-    async def execute(self, input_schema: BaseModel, context=None, db=None, user=None):
+    async def _run(self, input_schema: BaseModel, context=None, db=None, user=None):
         return {"result": "test"}
 
 

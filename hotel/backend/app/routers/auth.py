@@ -1,6 +1,7 @@
 """
 Kimlik doğrulama endpoint'leri: login, refresh, logout.
 """
+import os
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -16,7 +17,8 @@ from app.core.auth import (
 from app.schemas.auth import LoginRequest, TokenResponse, RefreshTokenRequest, LogoutRequest, UserResponse
 from app.models.user import User
 
-limiter = Limiter(key_func=get_remote_address)
+_enabled = os.getenv("ENABLE_RATE_LIMIT", "true").lower() != "false"
+limiter = Limiter(key_func=get_remote_address, enabled=_enabled)
 router = APIRouter()
 
 # Şifre hashleme context'i
