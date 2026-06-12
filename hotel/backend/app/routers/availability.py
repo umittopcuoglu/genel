@@ -94,8 +94,7 @@ async def get_occupancy(
     )
     room_result = await db.execute(room_stmt)
     total_rooms = room_result.scalar_one()
-    if total_rooms == 0:
-        return {"data": [], "meta": {}}
+    # Oda yokken de tarih aralığı için satır üret (occupancy %0); döngü total_rooms==0'ı yönetir
 
     data = []
     for i in range((to_date - from_date).days):
