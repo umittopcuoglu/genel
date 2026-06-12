@@ -37,6 +37,12 @@ from app.routers import booking_engine
 from app.routers import payments
 # CRM (Guest 360, Segment, Campaign, Notes, Communication)
 from app.routers import crm
+# WhatsApp Business API (Meta Cloud)
+from app.routers import whatsapp
+# GİB e-Fatura (Foriba/Logo/Uyumsoft/İzibiz)
+from app.routers import einvoice
+# Revenue Management / RevenueIQ
+from app.routers import revenue
 
 # Logging yapılandırması
 logging.basicConfig(level=logging.INFO)
@@ -177,6 +183,9 @@ app.include_router(integrations.router)
 app.include_router(booking_engine.router)
 app.include_router(payments.router)
 app.include_router(crm.router)
+app.include_router(whatsapp.router)
+app.include_router(einvoice.router)
+app.include_router(revenue.router)
 
 
 @app.get("/", include_in_schema=False)
