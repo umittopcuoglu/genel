@@ -99,7 +99,7 @@ class GDSService:
             channel_id=data.channel_id,
             action="book",
             status="success",
-            request_data=data.model_dump(),
+            request_data=data.model_dump(mode="json"),
             performed_by=current_user.get("user_id"),
             created_by=current_user.get("user_id"),
         )

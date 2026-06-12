@@ -78,7 +78,7 @@ class IoTScenarioResponse(BaseModel):
     description: Optional[str] = None
     trigger_type: str
     trigger_config: Optional[dict] = None
-    actions: dict
+    actions: list
     is_active: bool
     priority: int
     applies_to_room_types: Optional[dict] = None
@@ -92,7 +92,7 @@ class IoTScenarioCreate(BaseModel):
     description: Optional[str] = None
     trigger_type: str = Field(..., max_length=30)
     trigger_config: Optional[dict] = None
-    actions: dict
+    actions: list
     priority: int = 0
     applies_to_room_types: Optional[dict] = None
 
@@ -101,7 +101,7 @@ class IoTScenarioUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     trigger_config: Optional[dict] = None
-    actions: Optional[dict] = None
+    actions: Optional[list] = None
     is_active: Optional[bool] = None
     priority: Optional[int] = None
     applies_to_room_types: Optional[dict] = None

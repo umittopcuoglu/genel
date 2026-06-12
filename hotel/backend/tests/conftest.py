@@ -315,3 +315,11 @@ async def work_order_fixture(async_client, manager_headers):
     )
     assert response.status_code == 201, response.text
     return {"work_order_id": response.json()["id"]}
+
+
+# ── Audit middleware'i test veritabanına yönlendir ──
+# audit.py 'from app.core.db import AsyncSessionLocal' ile prod sessionmaker'ı bağlıyor;
+# testte audit_logs o bağlantıda yok. Test sessionmaker'a yönlendirerek hem gürültüyü
+# kaldırır hem audit kayıtlarını test.db'ye yazar.
+import app.core.audit as _audit_module
+_audit_module.AsyncSessionLocal = TestingSessionLocal

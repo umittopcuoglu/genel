@@ -389,7 +389,7 @@ class HRService:
         leave.status = data.status
         leave.reviewed_at = datetime.now()
         leave.review_notes = data.review_notes
-        leave.approved_by = current_user.get("user_id")
+        leave.approved_by = UUID(current_user.get("user_id"))
         leave.updated_by = current_user.get("user_id")
 
         await db.commit()

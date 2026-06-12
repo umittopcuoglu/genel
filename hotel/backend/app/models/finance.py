@@ -51,11 +51,12 @@ class PaymentStatus(str, enum.Enum):
 class Folio(BaseModel):
     __tablename__ = "folios"
 
-    reservation_id: Mapped[uuid.UUID] = mapped_column(
-        Uuid, ForeignKey("reservations.id"), nullable=False, index=True
+    # Grup master folio'su rezervasyon/misafire bağlı olmadığı için nullable (TASK-014)
+    reservation_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        Uuid, ForeignKey("reservations.id"), nullable=True, index=True
     )
-    guest_id: Mapped[uuid.UUID] = mapped_column(
-        Uuid, ForeignKey("guests.id"), nullable=False, index=True
+    guest_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        Uuid, ForeignKey("guests.id"), nullable=True, index=True
     )
     status: Mapped[str] = mapped_column(
         String(10), nullable=False, default=FolioStatus.OPEN.value, index=True

@@ -40,6 +40,7 @@ class IoTService:
             created_by=current_user.get("user_id"),
         )
         db.add(device)
+        await db.flush()  # device.id (Python-side UUID default) ata → log.device_id için
         # Log cihaz ekleme
         log = IoTDeviceLog(
             device_id=device.id,

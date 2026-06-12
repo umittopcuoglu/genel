@@ -47,12 +47,13 @@ class BlockchainService:
             created_by=current_user.get("user_id"),
         )
         db.add(identity)
+        await db.flush()  # identity.id (Python-side UUID default) ata → sync.entity_id için
 
         # Sync event
         sync = BlockchainSyncEvent(
             event_type="did_created",
             entity_type="identity",
-            entity_id=identity.id,
+            entity_id=str(identity.id),
             chain_tx_hash=f"0x{tx_hash}",
             chain_id="polygon-mumbai",
             block_number=randint(40000000, 50000000),
@@ -140,12 +141,13 @@ class BlockchainService:
             created_by=current_user.get("user_id"),
         )
         db.add(vc)
+        await db.flush()  # vc.id ata → sync.entity_id için
 
         # Sync event
         sync = BlockchainSyncEvent(
             event_type="vc_issued",
             entity_type="credential",
-            entity_id=vc.id,
+            entity_id=str(vc.id),
             chain_tx_hash=vc.chain_tx_hash,
             chain_id="polygon-mumbai",
             block_number=randint(40000000, 50000000),
@@ -202,11 +204,12 @@ class BlockchainService:
             created_by=current_user.get("user_id"),
         )
         db.add(proof)
+        await db.flush()  # proof.id ata → sync.entity_id ve chain_tx_hash için
 
         sync = BlockchainSyncEvent(
             event_type="identity_verified",
             entity_type="proof",
-            entity_id=proof.id,
+            entity_id=str(proof.id),
             chain_tx_hash=f"0x{hashlib.sha256(f'VERIFY_{proof.id}'.encode()).hexdigest()}",
             chain_id="polygon-mumbai",
             block_number=randint(40000000, 50000000),
