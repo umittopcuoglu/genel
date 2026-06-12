@@ -42,6 +42,16 @@ def create_refresh_token(data: Dict[str, Any]) -> str:
     return encoded_jwt
 
 
+def decode_access_token(token: str) -> Optional[Dict[str, Any]]:
+    """Senkron JWT decode (WebSocket auth için). Geçersiz/süresi dolmuşsa None döner."""
+    try:
+        return jwt.decode(
+            token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
+        )
+    except jwt.PyJWTError:
+        return None
+
+
 async def verify_token(token: str, token_type: str = "access") -> Dict[str, Any]:
     """Token'ı doğrular ve payload'ı döndürür. Geçersizse HTTPException fırlatır."""
     credentials_exception = HTTPException(

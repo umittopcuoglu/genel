@@ -317,12 +317,10 @@ async def work_order_fixture(async_client, manager_headers):
     return {"work_order_id": response.json()["id"]}
 
 
-# ── Audit middleware'i test veritabanına yönlendir ──
-# audit.py 'from app.core.db import AsyncSessionLocal' ile prod sessionmaker'ı bağlıyor;
-# testte audit_logs o bağlantıda yok. Test sessionmaker'a yönlendirerek hem gürültüyü
-# kaldırır hem audit kayıtlarını test.db'ye yazar.
-import app.core.audit as _audit_module
-_audit_module.AsyncSessionLocal = TestingSessionLocal
+# NOT: Audit middleware prod AsyncSessionLocal kullanmaya devam ediyor (test.db'ye
+# DOKUNMAZ). Böylece request'in paylaşılan test session'ı ile aynı SQLite dosyasına
+# ikinci eşzamanlı yazıcı olmaz → kilit/deadlock riski ortadan kalkar. Audit'in
+# "no such table: audit_logs" uyarısı zararsızdır (audit.py try/except ile yakalar).
 
 
 @pytest.fixture
@@ -355,3 +353,39 @@ async def stay_db(db: AsyncSession, reservation_db, room_db, guest_db):
     await db.commit()
     await db.refresh(stay)
     return stay
+
+
+@pytest.fixture
+async def rate_plan_db(db: AsyncSession, room_type_db):
+    """Test rate plan (reservations testleri için)."""
+    rp = RatePlan(
+        code="BAR",
+        name="Best Available Rate",
+        room_type_id=room_type_db.id,
+        base_rate=150.00,
+        is_active=True,
+    )
+    db.add(rp)
+    await db.commit()
+    await db.refresh(rp)
+    return rp
+
+
+@pytest.fixture
+async def async_client2() -> AsyncGenerator[AsyncClient, None]:
+    """İkinci bağımsız test client'ı (RBAC karşılaştırma testleri için)."""
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        yield client
+
+
+@pytest.fixture(autouse=True)
+def _shared_db_session(db):
+    """Endpoint'ler test 'db' session'ını paylaşsın: endpoint yazıları (örn. housekeeping
+    oda durumu) test sorgularında anında görünür ve test.db'ye tek session yazar.
+    Default override_get_db (ayrı session) fallback olarak geri yüklenir."""
+    async def _override():
+        yield db
+    app.dependency_overrides[get_db] = _override
+    yield
+    app.dependency_overrides[get_db] = override_get_db

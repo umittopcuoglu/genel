@@ -45,14 +45,14 @@ class ConnectionManager:
         logger.info("WS bağlandı: user=%s role=%s (toplam %d)", user_id, role, self._count())
 
     async def disconnect(self, ws: WebSocket):
+        # Aynı ws nesnesinin TÜM kayıtlarını (tüm rollerde) kaldır
         for role, conns in list(self._connections.items()):
             for c in list(conns):
                 if c["ws"] is ws:
                     conns.remove(c)
                     logger.info("WS koptu: user=%s (kalan %d)", c["user_id"], self._count())
-                    if not conns:
-                        del self._connections[role]
-                    return
+            if not conns:
+                del self._connections[role]
 
     async def broadcast(self, event: dict):
         """Tüm bağlı istemcilere yayınla."""

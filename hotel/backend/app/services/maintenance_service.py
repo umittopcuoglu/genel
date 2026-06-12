@@ -106,7 +106,7 @@ class MaintenanceService:
         if not work_order:
             return None
 
-        work_order.assigned_to = assigned_to
+        work_order.assigned_to = assigned_to if isinstance(assigned_to, UUID) else UUID(str(assigned_to))
         work_order.assigned_at = datetime.utcnow()
         work_order.status = "assigned"
         work_order.updated_by = current_user.get("user_id")
@@ -151,7 +151,7 @@ class MaintenanceService:
         log = MaintenanceLog(
             work_order_id=log_data.work_order_id,
             asset_id=log_data.asset_id,
-            performed_by=current_user.get("user_id"),
+            performed_by=UUID(current_user.get("user_id")),
             parts_used=log_data.parts_used,
             hours_spent=log_data.hours_spent,
             cost=log_data.cost,
