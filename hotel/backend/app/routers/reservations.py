@@ -213,6 +213,8 @@ async def create_reservation(
         ),
         db=db,
     )
+    # Handler'lar session'a yazdı; transaction'ı kapat (aksi halde SQLite kilit)
+    await db.commit()
 
     # Reload with relations
     stmt = select(Reservation).options(

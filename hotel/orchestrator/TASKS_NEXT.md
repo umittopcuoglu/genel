@@ -2,7 +2,7 @@
 
 **Branch:** `claude/wonderful-gates-cahvpv`
 **Son commit:** `67c23e0` — Modular Monolith refactor (EventBus + Connector pattern)
-**Test durumu:** 306 test (294 önceki + 12 architecture); arch tested lokal yeşil, tam regresyon CI'da koşacak.
+**Test durumu:** 306 test, tam regresyon yeşil (Reservation create event sonrası `db.commit()` hotfix uygulandı).
 
 > Devralan oturum: önce `git pull origin claude/wonderful-gates-cahvpv` ve
 > tam regresyon (`cd hotel/backend && rm -f test.db && pytest tests/`)
