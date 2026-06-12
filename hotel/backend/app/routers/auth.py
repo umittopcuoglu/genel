@@ -60,7 +60,7 @@ async def login(login_data: LoginRequest, db: AsyncSession = Depends(get_db)):
         )
 
     # Token payload'ları
-    access_token = create_access_token({"sub": str(user.id)})
+    access_token = create_access_token({"sub": str(user.id), "role": user.role})
     refresh_token = create_refresh_token({"sub": str(user.id)})
 
     # Refresh token'ı veritabanına kaydet (opsiyonel ama daha güvenli)

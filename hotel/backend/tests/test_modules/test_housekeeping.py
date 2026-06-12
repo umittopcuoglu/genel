@@ -146,7 +146,7 @@ async def test_create_task_dupe_409(async_client, superadmin_token, hk_room):
     assert resp.json()["error"]["code"] == "TASK_EXISTS"
 
 
-async def test_create_task_rbac(async_client, async_client2, superadmin_token, hk_room):
+async def test_create_task_rbac(async_client, async_client2, superadmin_token, hk_room, test_frontdesk):
     """frontdesk cannot create task → 403"""
     resp = await async_client.post(
         "/api/v1/auth/login",

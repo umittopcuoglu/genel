@@ -389,3 +389,28 @@ def _shared_db_session(db):
     app.dependency_overrides[get_db] = _override
     yield
     app.dependency_overrides[get_db] = override_get_db
+
+
+@pytest.fixture
+async def test_housekeeping(db: AsyncSession):
+    """Test housekeeping kullanıcısı."""
+    user = User(
+        email="housekeeping@test.com",
+        hashed_password=get_password_hash("House123!"),
+        full_name="Test Housekeeping",
+        role="housekeeping",
+        is_active=True,
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
+
+
+@pytest.fixture
+async def housekeeping_token(async_client, test_housekeeping):
+    response = await async_client.post(
+        "/api/v1/auth/login",
+        json={"email": "housekeeping@test.com", "password": "House123!"},
+    )
+    return response.json()["access_token"]
