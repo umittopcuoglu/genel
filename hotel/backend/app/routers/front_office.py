@@ -327,6 +327,17 @@ async def check_in(
     guest_name = f"{res.guest.first_name} {res.guest.last_name}" if res.guest else ""
     await emit_checkin(str(res.id), room.room_number, guest_name)
 
+    # B1: Domain event yayını — HK/CRM/IoT abonelikleri için
+    from app.core.events import CheckInCompleted, events as _events
+    await _events.publish(
+        CheckInCompleted(
+            reservation_id=res.id,
+            guest_id=res.guest_id,
+            room_id=room.id,
+        ),
+        db=service.db if hasattr(service, "db") else None,
+    )
+
     return CheckInResponse(
         stay_id=stay.id,
         reservation=res,
@@ -402,6 +413,16 @@ async def check_out(
     except Exception:
         pass
     await emit_checkout(str(stay.reservation_id), room_no, guest_name)
+
+    # B1: Domain event — Revenue recompute, CRM teşekkür mesajı
+    from app.core.events import CheckOutCompleted, events as _events
+    await _events.publish(
+        CheckOutCompleted(
+            reservation_id=stay.reservation_id,
+            folio_total=float(folio_balance) if folio_balance else 0.0,
+        ),
+        db=db,
+    )
 
     return CheckOutResponse(
         stay_id=stay.id,

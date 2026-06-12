@@ -192,10 +192,8 @@ async def create_reservation(
     # 8. Availability güncelle
     await _adjust_availability(db, data.room_type_id, data.check_in, data.check_out, 1)
 
-    # 9. Channel Manager: tüm aktif kanallara yeni envanteri push et
-    await ChannelSyncService.push_inventory_update(
-        db, data.room_type_id, data.check_in, data.check_out, trigger="reservation"
-    )
+    # 9. Channel sync artık ReservationCreated event handler'ı tarafından yapılır
+    # (B4: gevşek bağ — duplicate çağrı kaldırıldı)
 
     await db.commit()
     await db.refresh(reservation)
@@ -384,4 +382,12 @@ async def cancel_reservation(
 
     await db.commit()
     await db.refresh(res)
+
+    # Domain event: cancel — channel sync handler envantere geri puşlar
+    from app.core.events import ReservationCancelled, events as _events
+    await _events.publish(
+        ReservationCancelled(reservation_id=res.id, reason=reason),
+        db=db,
+    )
+
     return res

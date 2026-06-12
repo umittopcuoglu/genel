@@ -86,6 +86,45 @@ async def log_payment(event: PaymentSucceeded, db: AsyncSession | None = None):
     logger.info("[event] PaymentSucceeded txn=%s amount=%s", event.txn_id, event.amount)
 
 
+# ── B4: ReservationCreated → Channel Manager push ──
+
+@events.subscribe(ReservationCreated)
+async def channel_sync_on_reservation(event: ReservationCreated, db: AsyncSession | None = None):
+    """Yeni rezervasyon → tüm aktif OTA kanallarına envanter güncelleme push'la."""
+    if db is None or event.room_type_id is None:
+        return
+    from datetime import date
+    from app.services.channel_sync_service import ChannelSyncService
+    try:
+        check_in = date.fromisoformat(event.check_in) if isinstance(event.check_in, str) else event.check_in
+        check_out = date.fromisoformat(event.check_out) if isinstance(event.check_out, str) else event.check_out
+        await ChannelSyncService.push_inventory_update(
+            db, event.room_type_id, check_in, check_out, trigger="reservation", commit=True
+        )
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("[event] channel_sync_on_reservation hata: %s", exc)
+
+
+# ── B4: ReservationCancelled → Channel Manager push (envanter geri) ──
+
+@events.subscribe(ReservationCancelled)
+async def channel_sync_on_cancel(event: ReservationCancelled, db: AsyncSession | None = None):
+    """Rezervasyon iptal → OTA kanallarına stok geri-açıldı push'la."""
+    if db is None:
+        return
+    from app.services.channel_sync_service import ChannelSyncService
+    from app.models.front_office import Reservation
+    try:
+        res = await db.get(Reservation, event.reservation_id)
+        if res is None or res.room_type_id is None:
+            return
+        await ChannelSyncService.push_inventory_update(
+            db, res.room_type_id, res.check_in, res.check_out, trigger="cancel", commit=True
+        )
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("[event] channel_sync_on_cancel hata: %s", exc)
+
+
 def register_all() -> int:
     """Çağrım sayısını kolay görmek için: kaç handler register edilmiş."""
     return sum(len(v) for v in events._handlers.values())

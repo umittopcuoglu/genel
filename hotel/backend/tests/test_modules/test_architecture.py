@@ -7,8 +7,12 @@ from uuid import uuid4
 import pytest
 
 from app.core.events import (
+    CheckInCompleted,
+    CheckOutCompleted,
     DomainEvent,
     EventBus,
+    PaymentSucceeded,
+    ReservationCancelled,
     ReservationCreated,
     events as global_events,
 )
@@ -191,3 +195,76 @@ async def test_global_bus_publish_with_db_context_runs_handlers(db, guest_db):
     )
     rows = list(res.scalars().all())
     assert any("Rezervasyon" in (r.subject or "") for r in rows)
+
+
+# ── B1-B5: Yeni event tipleri ──
+
+@pytest.mark.asyncio
+async def test_check_in_event_dispatch():
+    """CheckInCompleted event'i bus üzerinden yayınlanabilir."""
+    bus = EventBus()
+    seen = []
+
+    @bus.subscribe(CheckInCompleted)
+    async def h(evt):
+        seen.append(evt.reservation_id)
+
+    evt = CheckInCompleted(reservation_id=uuid4(), guest_id=uuid4(), room_id=uuid4())
+    await bus.publish(evt)
+    assert len(seen) == 1
+
+
+@pytest.mark.asyncio
+async def test_check_out_event_dispatch():
+    bus = EventBus()
+    seen = []
+
+    @bus.subscribe(CheckOutCompleted)
+    async def h(evt):
+        seen.append(evt.folio_total)
+
+    await bus.publish(CheckOutCompleted(reservation_id=uuid4(), folio_total=1500.0))
+    assert seen == [1500.0]
+
+
+@pytest.mark.asyncio
+async def test_reservation_cancelled_event_dispatch():
+    bus = EventBus()
+    seen = []
+
+    @bus.subscribe(ReservationCancelled)
+    async def h(evt):
+        seen.append(evt.reason)
+
+    await bus.publish(ReservationCancelled(reservation_id=uuid4(), reason="customer_request"))
+    assert seen == ["customer_request"]
+
+
+@pytest.mark.asyncio
+async def test_payment_succeeded_event_dispatch():
+    bus = EventBus()
+    seen = []
+
+    @bus.subscribe(PaymentSucceeded)
+    async def h(evt):
+        seen.append(evt.amount)
+
+    await bus.publish(PaymentSucceeded(txn_id=uuid4(), folio_id=uuid4(), amount=2500.0))
+    assert seen == [2500.0]
+
+
+def test_global_bus_has_all_event_subscribers():
+    """Tüm yeni event tipleri için en az 1 subscriber kayıtlı olmalı."""
+    import app.core.event_handlers  # noqa: F401
+    assert len(global_events._handlers.get(CheckInCompleted, [])) >= 1
+    assert len(global_events._handlers.get(CheckOutCompleted, [])) >= 1
+    assert len(global_events._handlers.get(ReservationCancelled, [])) >= 1
+    assert len(global_events._handlers.get(PaymentSucceeded, [])) >= 1
+
+
+def test_global_bus_has_channel_sync_handler():
+    """B4: ReservationCreated için channel_sync_on_reservation handler'ı kayıtlı olmalı."""
+    import app.core.event_handlers  # noqa: F401
+    handlers = global_events._handlers.get(ReservationCreated, [])
+    names = [getattr(h, "__name__", "") for h in handlers]
+    assert "channel_sync_on_reservation" in names

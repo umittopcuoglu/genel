@@ -150,6 +150,19 @@ class PaymentService:
             txn.error_message = result.get("error")
         await db.commit()
         await db.refresh(txn)
+
+        # B2: PaymentSucceeded event — folio bakiye güncelle, audit log
+        if txn.status == PaymentTxnStatus.SUCCEEDED.value:
+            from app.core.events import PaymentSucceeded, events as _events
+            await _events.publish(
+                PaymentSucceeded(
+                    txn_id=txn.id,
+                    folio_id=txn.folio_id,
+                    amount=float(txn.amount),
+                ),
+                db=db,
+            )
+
         return txn, None
 
     @classmethod
