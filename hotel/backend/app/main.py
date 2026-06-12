@@ -33,6 +33,8 @@ from app.routers import blockchain
 from app.routers import integrations
 # Booking Engine (public, komisyonsuz doğrudan satış)
 from app.routers import booking_engine
+# Payment Gateway (Stripe/iyzico/PayTR — parametrik provider)
+from app.routers import payments
 
 # Logging yapılandırması
 logging.basicConfig(level=logging.INFO)
@@ -171,6 +173,7 @@ app.include_router(mobile_checkin.router)
 app.include_router(blockchain.router)
 app.include_router(integrations.router)
 app.include_router(booking_engine.router)
+app.include_router(payments.router)
 
 
 @app.get("/", include_in_schema=False)

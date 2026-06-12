@@ -39,6 +39,7 @@ const NAV: { section: string; items: { href: string; label: string; icon: any }[
       { href: "/book", label: "Booking Engine", icon: Globe },
       { href: "/housekeeping", label: "Housekeeping", icon: Sparkles },
       { href: "/finance", label: "Muhasebe", icon: CreditCard },
+      { href: "/payments", label: "Ödeme / POS", icon: CreditCard },
       { href: "/maintenance", label: "Bakım", icon: Wrench },
       { href: "/analytics", label: "Analitik", icon: BarChart3 },
     ],

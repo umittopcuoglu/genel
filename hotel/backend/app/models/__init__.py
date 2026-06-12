@@ -45,3 +45,5 @@ from app.models.mobile_checkin import OCRDocumentScan, EGMSubmission, CheckinSes
 from app.models.blockchain_identity import BlockchainIdentity, VerifiableCredential, IdentityVerificationProof, BlockchainSyncEvent, GuestConsentLog
 # Entegrasyon Ayarları (parametrik dış entegrasyonlar)
 from app.models.integration_setting import IntegrationSetting
+# Payment Gateway (Stripe/iyzico/PayTR — provider parametrik)
+from app.models.payment_transaction import PaymentTransaction, PaymentTxnStatus, PaymentTxnKind
