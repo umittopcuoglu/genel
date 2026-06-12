@@ -22,5 +22,12 @@ from app.models.chat_session import ChatSession
 from app.models.chat_message import ChatMessage
 from app.models.custom_report import CustomReport
 from app.models.ai_invocation import AIInvocation
-# Faz 3 modelleri (Groups, Events, ve diğer modüller)
+# Faz 3 modelleri (Groups, Events, Maintenance, ve diğer modüller)
 from app.models.groups import Venue, Group, RoomBlock, Event, EventResource, GroupRoomingList
+from app.models.maintenance import Asset, WorkOrder, PreventiveMaintenance, MaintenanceLog
+# Faz 3 - HR & Shift modelleri
+from app.models.hr import Employee, Shift, ShiftAssignment, Attendance, LeaveRequest
+# Faz 3 - GDS Integration modelleri
+from app.models.gds import GDSChannel, GDSReservation, GDSRateMapping, GDSSyncLog
+# Faz 3 - IoT / Smart Room modelleri
+from app.models.iot import IoTDevice, IoTDeviceLog, IoTScenario, IoTEnergyReading, IoTAlert
