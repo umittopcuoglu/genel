@@ -47,3 +47,5 @@ from app.models.blockchain_identity import BlockchainIdentity, VerifiableCredent
 from app.models.integration_setting import IntegrationSetting
 # Payment Gateway (Stripe/iyzico/PayTR — provider parametrik)
 from app.models.payment_transaction import PaymentTransaction, PaymentTxnStatus, PaymentTxnKind
+# CRM (Guest 360, Segment, Campaign, Notes, Communication)
+from app.models.crm import Segment, Campaign, GuestNote, CommunicationLog, CampaignStatus, CampaignChannel

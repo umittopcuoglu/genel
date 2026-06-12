@@ -35,6 +35,8 @@ from app.routers import integrations
 from app.routers import booking_engine
 # Payment Gateway (Stripe/iyzico/PayTR — parametrik provider)
 from app.routers import payments
+# CRM (Guest 360, Segment, Campaign, Notes, Communication)
+from app.routers import crm
 
 # Logging yapılandırması
 logging.basicConfig(level=logging.INFO)
@@ -174,6 +176,7 @@ app.include_router(blockchain.router)
 app.include_router(integrations.router)
 app.include_router(booking_engine.router)
 app.include_router(payments.router)
+app.include_router(crm.router)
 
 
 @app.get("/", include_in_schema=False)
