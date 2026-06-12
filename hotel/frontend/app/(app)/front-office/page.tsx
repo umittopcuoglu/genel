@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/ui/PageHeader";
 import { useState } from "react";
 import { ReservationTable } from "@/components/front-office/ReservationTable";
 import { RoomBoard } from "@/components/front-office/RoomBoard";
@@ -49,15 +50,7 @@ export default function FrontOfficePage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <h1 className="text-xl font-semibold">Ön Büro</h1>
-          <p className="text-sm text-text-2">{today}</p>
-        </div>
-        <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
-          Mock veri — backend TASK-002 bekleniyor
-        </span>
-      </div>
+      <PageHeader title="Ön Büro" subtitle={today} />
 
       <div className="border-b border-line" role="tablist" aria-label="Ön büro görünümleri">
         <div className="flex gap-1">

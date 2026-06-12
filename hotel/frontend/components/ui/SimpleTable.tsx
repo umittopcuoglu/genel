@@ -28,10 +28,10 @@ export function SimpleTable<T extends Record<string, any>>({
   }
   const alignCls = (a?: string) => (a === "right" ? "text-right" : a === "center" ? "text-center" : "text-left");
   return (
-    <div className="overflow-x-auto rounded-lg border border-line">
+    <div className="overflow-x-auto rounded-xl border border-line shadow-[var(--shadow-soft)]">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-line bg-bg text-xs uppercase tracking-wide text-text-2">
+          <tr className="border-b border-line bg-bg/70 text-[11px] uppercase tracking-[0.12em] text-text-2">
             {columns.map((c) => (
               <th key={c.key} className={`px-4 py-3 font-medium ${alignCls(c.align)}`}>
                 {c.header}
@@ -41,7 +41,10 @@ export function SimpleTable<T extends Record<string, any>>({
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row[rowKey]} className="border-b border-line last:border-0 hover:bg-bg/60">
+            <tr
+              key={row[rowKey]}
+              className="border-b border-line transition-colors duration-150 last:border-0 hover:bg-accent/[0.06]"
+            >
               {columns.map((c) => (
                 <td key={c.key} className={`px-4 py-3 ${alignCls(c.align)}`}>
                   {c.render ? c.render(row) : row[c.key]}

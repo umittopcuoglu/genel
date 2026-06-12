@@ -1,5 +1,6 @@
 import { StatCard } from "@/components/kpi/StatCard";
 import { AIPanel } from "@/components/ai/AIPanel";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 /**
  * Manager Dashboard — docs/03 §3. Şimdilik mock veri;
@@ -17,9 +18,13 @@ const MOCK = {
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-semibold">Dashboard</h1>
+      <PageHeader
+        title="Dashboard"
+        subtitle="Bugünün operasyon özeti ve gelir göstergeleri"
+        mock={false}
+      />
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+      <div className="stagger grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
         <StatCard label="Doluluk" value={MOCK.occupancy} hint="son 7 gün ↑" tone="success" />
         <StatCard label="ADR" value={MOCK.adr} />
         <StatCard label="RevPAR" value={MOCK.revpar} />

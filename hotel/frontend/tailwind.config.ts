@@ -11,6 +11,8 @@ const config: Config = {
     extend: {
       colors: {
         primary: "rgb(var(--color-primary) / <alpha-value>)",
+        accent: "rgb(var(--color-accent) / <alpha-value>)",
+        sidebar: "rgb(var(--sidebar-bg) / <alpha-value>)",
         success: "rgb(var(--color-success) / <alpha-value>)",
         warning: "rgb(var(--color-warning) / <alpha-value>)",
         danger: "rgb(var(--color-danger) / <alpha-value>)",
@@ -22,7 +24,8 @@ const config: Config = {
         "text-2": "rgb(var(--color-text-2) / <alpha-value>)",
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["var(--font-sans)", "Inter", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "Georgia", "serif"],
         mono: ["IBM Plex Mono", "ui-monospace", "monospace"],
       },
     },

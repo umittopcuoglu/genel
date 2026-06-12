@@ -1,4 +1,4 @@
-/** Genel kart/panel sarmalayıcısı — modül ekranlarında ortak kullanım (docs/03 §1). */
+/** Lüks kart/panel sarmalayıcısı — yumuşak gölge, hover'da zarif yükselme. */
 export function Card({
   title,
   action,
@@ -11,14 +11,16 @@ export function Card({
   className?: string;
 }) {
   return (
-    <section className={`rounded-xl border border-line bg-surface ${className}`}>
+    <section className={`card-lux ${className}`}>
       {(title || action) && (
-        <div className="flex items-center justify-between border-b border-line px-4 py-3">
-          {title && <h2 className="text-sm font-semibold">{title}</h2>}
+        <div className="flex items-center justify-between border-b border-line px-5 py-3.5">
+          {title && (
+            <h2 className="font-display text-[15px] font-semibold tracking-wide text-text-1">{title}</h2>
+          )}
           {action}
         </div>
       )}
-      <div className="p-4">{children}</div>
+      <div className="p-5">{children}</div>
     </section>
   );
 }

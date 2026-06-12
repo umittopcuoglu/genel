@@ -2,33 +2,207 @@
 @tailwind components;
 @tailwind utilities;
 
-/* HotelOps renk token'ları — docs/03_FRONTEND_TASARIM.md §1.2 */
+/* ============================================================
+   HotelOps Tasarım Dili — "Grand Hotel" teması
+   Gece laciverti + şampanya altını + fildişi zemin.
+   Lüks otelcilik yazılımı estetiği (Opera Cloud / Mews seviyesi).
+   ============================================================ */
+
 :root {
-  --color-primary: 15 76 129;    /* #0F4C81 lacivert */
-  --color-success: 22 163 74;    /* #16A34A */
-  --color-warning: 217 119 6;    /* #D97706 */
-  --color-danger: 220 38 38;     /* #DC2626 */
-  --color-info: 2 132 199;       /* #0284C7 */
-  --color-bg: 248 250 252;       /* #F8FAFC */
-  --color-surface: 255 255 255;  /* #FFFFFF */
-  --color-border: 226 232 240;   /* #E2E8F0 */
-  --color-text-1: 15 23 42;      /* #0F172A */
-  --color-text-2: 71 85 105;     /* #475569 */
+  --color-primary: 23 51 92;     /* #17335C gece laciverti */
+  --color-accent: 192 152 74;    /* #C0984A şampanya altını */
+  --color-success: 13 148 99;    /* #0D9463 zümrüt */
+  --color-warning: 202 121 8;    /* #CA7908 kehribar */
+  --color-danger: 196 53 53;     /* #C43535 bordo-kırmızı */
+  --color-info: 14 116 184;      /* #0E74B8 */
+  --color-bg: 247 245 240;       /* #F7F5F0 fildişi */
+  --color-surface: 255 255 254;  /* #FFFFFE */
+  --color-border: 230 225 214;   /* #E6E1D6 sıcak gri */
+  --color-text-1: 26 32 44;      /* #1A202C */
+  --color-text-2: 100 106 122;   /* #646A7A */
+  --sidebar-bg: 16 28 50;        /* #101C32 koyu lacivert */
+  --sidebar-text: 168 178 199;   /* #A8B2C7 */
+  --shadow-soft: 0 1px 2px rgb(23 51 92 / 0.04), 0 4px 16px rgb(23 51 92 / 0.06);
+  --shadow-lift: 0 4px 8px rgb(23 51 92 / 0.06), 0 12px 32px rgb(23 51 92 / 0.12);
 }
 
 .dark {
-  --color-primary: 90 169 230;   /* #5AA9E6 */
-  --color-success: 34 197 94;    /* #22C55E */
-  --color-warning: 245 158 11;   /* #F59E0B */
-  --color-danger: 239 68 68;     /* #EF4444 */
-  --color-info: 56 189 248;      /* #38BDF8 */
-  --color-bg: 11 18 32;          /* #0B1220 */
-  --color-surface: 17 24 39;     /* #111827 */
-  --color-border: 31 41 55;      /* #1F2937 */
-  --color-text-1: 241 245 249;   /* #F1F5F9 */
-  --color-text-2: 148 163 184;   /* #94A3B8 */
+  --color-primary: 122 162 219;  /* #7AA2DB */
+  --color-accent: 214 178 106;   /* #D6B26A */
+  --color-success: 52 199 142;
+  --color-warning: 240 169 50;
+  --color-danger: 235 96 96;
+  --color-info: 86 169 230;
+  --color-bg: 11 17 28;          /* #0B111C */
+  --color-surface: 18 26 41;     /* #121A29 */
+  --color-border: 36 46 66;      /* #242E42 */
+  --color-text-1: 235 238 245;
+  --color-text-2: 145 155 175;
+  --sidebar-bg: 9 14 24;
+  --sidebar-text: 150 160 182;
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 16px rgb(0 0 0 / 0.35);
+  --shadow-lift: 0 4px 8px rgb(0 0 0 / 0.4), 0 12px 32px rgb(0 0 0 / 0.5);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   @apply bg-bg text-text-1 antialiased;
+  font-feature-settings: "cv11", "ss01";
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+::selection {
+  background: rgb(var(--color-accent) / 0.25);
+}
+
+/* İnce, zarif scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-text-2) / 0.25);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background-color: rgb(var(--color-text-2) / 0.45); background-clip: padding-box; }
+
+/* ============ Animasyon çekirdeği ============ */
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(var(--color-accent) / 0.35); }
+  50% { box-shadow: 0 0 0 6px rgb(var(--color-accent) / 0); }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Sayfa geçişi — her route değişiminde içerik zarifçe yükselir */
+.page-enter {
+  animation: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Stagger — kartlar sırayla girer */
+.stagger > * {
+  animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.stagger > *:nth-child(1) { animation-delay: 0.03s; }
+.stagger > *:nth-child(2) { animation-delay: 0.08s; }
+.stagger > *:nth-child(3) { animation-delay: 0.13s; }
+.stagger > *:nth-child(4) { animation-delay: 0.18s; }
+.stagger > *:nth-child(5) { animation-delay: 0.23s; }
+.stagger > *:nth-child(6) { animation-delay: 0.28s; }
+.stagger > *:nth-child(7) { animation-delay: 0.33s; }
+.stagger > *:nth-child(8) { animation-delay: 0.38s; }
+
+/* ============ Bileşen katmanı ============ */
+@layer components {
+  /* Lüks kart: yumuşak gölge + hover'da zarif yükselme */
+  .card-lux {
+    @apply rounded-2xl border border-line bg-surface;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  .card-lux:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lift);
+    border-color: rgb(var(--color-accent) / 0.35);
+  }
+
+  /* Cam efektli yüzey (topbar) */
+  .glass {
+    background: rgb(var(--color-surface) / 0.78);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  }
+
+  /* Altın gradyan vurgu çizgisi */
+  .gold-line {
+    background: linear-gradient(90deg, transparent, rgb(var(--color-accent) / 0.7), transparent);
+    height: 1px;
+  }
+
+  /* Birincil buton — altın */
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white;
+    background: linear-gradient(135deg, #c8a35a, #a37e35);
+    box-shadow: 0 2px 8px rgb(163 126 53 / 0.35), inset 0 1px 0 rgb(255 255 255 / 0.25);
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, filter 0.2s ease;
+  }
+  .btn-gold:hover { transform: translateY(-1px); filter: brightness(1.06); box-shadow: 0 6px 18px rgb(163 126 53 / 0.45), inset 0 1px 0 rgb(255 255 255 / 0.25); }
+  .btn-gold:active { transform: translateY(0) scale(0.98); }
+
+  /* İkincil buton — lacivert kontur */
+  .btn-navy {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold;
+    border-color: rgb(var(--color-primary) / 0.3);
+    color: rgb(var(--color-primary));
+    transition: all 0.2s ease;
+  }
+  .btn-navy:hover { background: rgb(var(--color-primary) / 0.06); border-color: rgb(var(--color-primary) / 0.55); }
+
+  /* Yükleme iskeleti */
+  .skeleton {
+    background: linear-gradient(110deg, rgb(var(--color-border) / 0.5) 30%, rgb(var(--color-border) / 0.9) 50%, rgb(var(--color-border) / 0.5) 70%);
+    background-size: 200% 100%;
+    animation: shimmer 1.6s linear infinite;
+    @apply rounded-lg;
+  }
+
+  /* Sidebar nav öğesi */
+  .nav-item {
+    @apply relative flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium;
+    color: rgb(var(--sidebar-text));
+    transition: color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+  }
+  .nav-item:hover {
+    color: #fff;
+    background: rgb(255 255 255 / 0.06);
+    transform: translateX(2px);
+  }
+  .nav-item.active {
+    color: #fff;
+    background: linear-gradient(90deg, rgb(var(--color-accent) / 0.22), rgb(255 255 255 / 0.04));
+  }
+  .nav-item.active::before {
+    content: "";
+    @apply absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-full;
+    background: rgb(var(--color-accent));
+    box-shadow: 0 0 12px rgb(var(--color-accent) / 0.8);
+  }
+}
+
+/* Sayı geçişleri için tabular rakamlar */
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* Hareket azaltma tercihi */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
