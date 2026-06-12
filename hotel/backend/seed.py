@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 from app.models.user import User
-from app.core.auth import get_password_hash
+from app.routers.auth import get_password_hash
 
 async def seed():
     engine = create_async_engine(settings.DATABASE_URL, echo=True)

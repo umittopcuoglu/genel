@@ -1,6 +1,8 @@
 from app.models.user import User, RefreshToken
 from app.models.audit import AuditLog
 from app.models.front_office import RoomType, Room, Guest, Reservation, Stay, Trace, RoomStatus, ReservationStatus, ReservationSource, TracePriority, TraceStatus
+# Rezervasyon uzantısı: rate_plans + availability (reservations.rate_plan_id FK'si bunu gerektirir)
+from app.models.reservation_ext import RatePlan, Availability
 from app.models.finance import Folio, FolioItem, Payment, NightAuditRun, FolioStatus, FolioItemType, PaymentMethod, PaymentStatus
 from app.models.housekeeping import HousekeepingTask, LostFound, MinibarItem
 # Faz 2 modelleri (Channel Manager, Muhasebe, CRM, Loyalty, Chat, Raporlama)
