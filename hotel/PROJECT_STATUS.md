@@ -3,7 +3,7 @@
 > Bu dosya canlı durum kaydıdır. Her review/teslimat sonrası güncellenir.
 > Nightly QA workflow'u test sonuçlarını buraya işler.
 
-**Son güncelleme:** 2026-06-11 (Faz 3 görev talimatları oluşturuldu: TASK-014…020) · **Faz:** 1-3 · **Faz 2 kuyruğu aktif, Faz 3 kuyrukta**
+**Son güncelleme:** 2026-06-12 (Faz 3+4 görev talimatları oluşturuldu: TASK-014…025) · **Faz:** 1-4 · **Faz 2 kuyruğu aktif, Faz 3-4 kuyruğa giriş**
 
 ## Modül Durumu
 
@@ -47,6 +47,11 @@ Durum: ⬜ bekliyor · 🟡 devam · 🟠 review'da · ✅ kabul · ❌ düzeltm
 | TASK-018 | HR & Vardiya Modülü + ShiftAI | ⬜ Faz 3 kuyruğu | 3 | — |
 | TASK-019 | GDS Entegrasyonu (Amadeus/Sabre/Travelport) | ⬜ Faz 3 kuyruğu | 3 | — |
 | TASK-020 | IoT / Akıllı Oda Entegrasyonu (Nest, KNX, Hue) | ⬜ Faz 3 kuyruğu | 3 | — |
+| TASK-021 | Faz 4: Computer Vision — Oda Kalite Kontrol + Hasar Tespiti | ⬜ Faz 4 kuyruğu | 4 | — |
+| TASK-022 | Faz 4: Sesli Kontrol — Alexa / Google Assistant | ⬜ Faz 4 kuyruğu | 4 | — |
+| TASK-023 | Faz 4: Çok-Mülk Yönetimi — Otel Zinciri Konsolidasyonu | ⬜ Faz 4 kuyruğu | 4 | — |
+| TASK-024 | Faz 4: Mobil Check-in — Pasaport OCR & EGM Bildirimi | ⬜ Faz 4 kuyruğu | 4 | — |
+| TASK-025 | Faz 4: Blockchain Misafir Kimliği — Self-Sovereign Identity | ⬜ Faz 4 kuyruğu | 4 | — |
 
 ## Notlar
 - **Gelişmiş Analitik Dashboard** = Claude frontend görev (TASK-013 ekranlarının genişletilmesi); ayrı backend task değil
