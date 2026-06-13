@@ -4,6 +4,36 @@ Bu dosya teslim edilen sürümleri ve oturum bazlı önemli değişiklikleri kay
 
 ---
 
+## v1.0.1 — "Birleştirme sonrası tamamlama + QA" (2026-06-13)
+
+Birleştirme sonrası boşlukların kapatılması, FrontDesk AI eklenmesi ve görsel QA.
+
+### Genel durum
+- **Backend:** 356 test yeşil (350 → +6 FrontDesk AI), 0 hata
+- **Frontend:** 33 route · 30/30 sayfa görsel QA'dan geçti
+- **Migration:** tek head `022` (çoklu-head onarıldı)
+
+### Değişiklikler
+- **Alembic migration onarımı:** çoklu-head (`013`+`021`) tek zincire bağlandı
+  (`014_add_hr` → `013` relink); birleştirme kolunun migration'sız 7 tablosu için
+  **migration 022** eklendi (`payment_transactions`, `crm_*`, `guest_wifi_sessions`,
+  `integration_settings`) — upgrade+downgrade SQLite'ta doğrulandı.
+- **FrontDesk AI (temel)** ajanı: `POST /ai/frontdesk/checkin-assist` (karşılama +
+  oda/upgrade önerisi + upsell + öncelik), 6 test. Registry artık 9 ajan.
+- **TASK-006 doğrulandı:** WebSocket (`app/ws/`), E2E (`qa/e2e/`), Docker, 8 CI
+  workflow zaten mevcuttu — PROJECT_STATUS güncellendi.
+- **Görsel QA (Playwright):** `qa/e2e/tests/screenshots.spec.ts` — 30 rotanın tamamı
+  için fullPage ekran görüntüsü + sağlık testi. 30/30 sayfa render oldu.
+  - Bulgu 1: 27 app sayfasında kurtarılabilir hydration uyarısı (i18n SSR↔CSR dil farkı; kozmetik).
+  - Bulgu 2: `payments` + `insights` backend kapalıyken yakalanmamış `fetch` hatası
+    (ham fetch; operasyon kolu `useApiData` ile zarif fallback yapıyor). Sayfa yine render oluyor.
+
+### Açık (opsiyonel)
+- D2: Bounded context fiziksel taşıma (riskli/opsiyonel — diğer kol ertelemişti)
+- Hydration uyarıları ve payments/insights fetch yakalama (kozmetik iyileştirme)
+
+---
+
 ## v1.0.0 — "Birleştirme" (2026-06-13)
 
 İlk tam fonksiyonel sürüm. Proje **iki paralel Claude oturumunda** inşa edildi ve bu
