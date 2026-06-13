@@ -63,6 +63,9 @@ class FolioResponse(BaseModel):
     status: str
     total: Decimal
     balance: Decimal
+    # Denormalize edilmiş görüntüleme alanları (ön yüz için; router doldurur).
+    guest_name: Optional[str] = None
+    room_no: Optional[str] = None
     items: list[FolioItemResponse] = []
     payments: list[PaymentResponse] = []
     created_at: datetime
