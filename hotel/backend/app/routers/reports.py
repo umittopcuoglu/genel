@@ -13,7 +13,11 @@ from app.core.rbac import require_roles
 from app.models.user import User
 from app.models.front_office import Stay, Room
 from app.models.finance import Folio, FolioItem, FolioItemType
-from app.schemas.finance import OccupancyReport, ADRReport, RevPARReport
+from app.schemas.finance import (
+    OccupancyReport, ADRReport, RevPARReport,
+    TrendReport, SourceMixReport,
+)
+from app.services import analytics_service
 
 router = APIRouter()
 
@@ -188,3 +192,31 @@ async def revpar_report(
     }
 
     return RevPARReport(data=rows, meta={"summary": summary})
+
+
+# ── Analitik Dashboard endpoint'leri (TASK-013 / InsightAI) ──
+@router.get("/reports/occupancy-trend", response_model=TrendReport,
+            summary="Haftalık doluluk trendi (bu yıl vs geçen yıl)")
+async def occupancy_trend_report(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_roles(["superadmin", "manager", "accounting"])),
+):
+    return TrendReport(data=await analytics_service.occupancy_trend(db))
+
+
+@router.get("/reports/revenue-trend", response_model=TrendReport,
+            summary="Aylık gelir trendi (son 6 ay oda geliri)")
+async def revenue_trend_report(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_roles(["superadmin", "manager", "accounting"])),
+):
+    return TrendReport(data=await analytics_service.revenue_trend(db))
+
+
+@router.get("/reports/source-mix", response_model=SourceMixReport,
+            summary="Rezervasyon kaynak dağılımı (yüzde)")
+async def source_mix_report(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_roles(["superadmin", "manager", "accounting"])),
+):
+    return SourceMixReport(data=await analytics_service.source_mix(db))

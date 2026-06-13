@@ -130,3 +130,24 @@ class RevPARRow(BaseModel):
 class RevPARReport(BaseModel):
     data: list[RevPARRow]
     meta: dict[str, Any]
+
+
+# ── Analitik Dashboard (TASK-013 / InsightAI) ──
+class TrendPoint(BaseModel):
+    label: str
+    value: float
+    secondary: Optional[float] = None
+
+
+class SourceMixRow(BaseModel):
+    label: str
+    value: float
+    tone: str
+
+
+class TrendReport(BaseModel):
+    data: list[TrendPoint]
+
+
+class SourceMixReport(BaseModel):
+    data: list[SourceMixRow]
