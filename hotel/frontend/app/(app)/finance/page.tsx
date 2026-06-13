@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { StatCard } from "@/components/kpi/StatCard";
 import { MOCK_FOLIOS, MOCK_FOLIO_DETAIL, type FolioRow, type FolioLine } from "@/lib/mock-modules";
 import { CurrencyRates, CurrencyConverter } from "@/components/CurrencyRates";
+import { toast } from "@/components/ui/Toast";
 
 const fmtTRY = (n: number) => `₺${n.toLocaleString("tr-TR")}`;
 
@@ -89,7 +90,7 @@ export default function FinancePage() {
             title={`Folio — ${selected.guest_name}`}
             action={
               <button
-                onClick={() => alert("Ödeme alma — backend TASK-004 bekleniyor")}
+                onClick={() => toast.info("Ödeme alma formu yakında eklenecek")}
                 className="flex items-center gap-1.5 rounded-md bg-primary px-2.5 py-1.5 text-xs font-medium text-white hover:opacity-90"
               >
                 <CreditCard className="h-3.5 w-3.5" aria-hidden /> Ödeme Al

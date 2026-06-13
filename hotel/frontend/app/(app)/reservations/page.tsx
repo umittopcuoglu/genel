@@ -5,6 +5,7 @@ import { Plus, Search } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { MOCK_RESERVATIONS, type ReservationListItem } from "@/lib/mock-modules";
+import { ReservationCreateModal } from "@/components/ReservationCreateModal";
 
 const STATUS_TONE: Record<ReservationListItem["status"], { tone: BadgeTone; label: string }> = {
   confirmed: { tone: "info", label: "Onaylı" },
@@ -39,6 +40,7 @@ const fmtTRY = (n: number) => `₺${n.toLocaleString("tr-TR")}`;
 export default function ReservationsPage() {
   const [status, setStatus] = useState<ReservationListItem["status"] | "all">("all");
   const [q, setQ] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
 
   const rows = useMemo(() => {
     return MOCK_RESERVATIONS.filter((r) => {
@@ -58,7 +60,7 @@ export default function ReservationsPage() {
         subtitle={`${MOCK_RESERVATIONS.length} kayıt`}
         action={
           <button
-            onClick={() => alert("Yeni rezervasyon formu — backend TASK-003 bekleniyor")}
+            onClick={() => setModalOpen(true)}
             className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:opacity-90"
           >
             <Plus className="h-4 w-4" aria-hidden /> Yeni Rezervasyon
@@ -138,6 +140,15 @@ export default function ReservationsPage() {
           </tbody>
         </table>
       </div>
+
+      <ReservationCreateModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSuccess={() => {
+          // Liste yenileme - gerçek API'de window.location.reload() yerine SWR/React Query kullanılır
+          window.location.reload();
+        }}
+      />
     </div>
   );
 }

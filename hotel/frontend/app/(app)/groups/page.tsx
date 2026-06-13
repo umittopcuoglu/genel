@@ -8,6 +8,7 @@ import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { AIPanel } from "@/components/ai/AIPanel";
 import { SimpleTable } from "@/components/ui/SimpleTable";
 import { MOCK_GROUPS, MOCK_EVENTS } from "@/lib/mock-faz34";
+import { toast } from "@/components/ui/Toast";
 
 const STATUS: Record<string, { tone: BadgeTone; label: string }> = {
   inquiry: { tone: "warning", label: "Sorgu" },
@@ -26,7 +27,7 @@ export default function GroupsPage() {
         title="Gruplar & Etkinlik (MICE)"
         subtitle={`${MOCK_GROUPS.length} grup · ${MOCK_EVENTS.length} etkinlik`}
         action={
-          <button onClick={() => alert("Yeni grup — TASK-014")} className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:opacity-90">
+          <button onClick={() => toast.info("Yeni grup formu yakında eklenecek")} className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:opacity-90">
             <Plus className="h-4 w-4" /> Yeni Grup
           </button>
         }

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ReservationTable } from "@/components/front-office/ReservationTable";
 import { RoomBoard } from "@/components/front-office/RoomBoard";
 import { TapeChart } from "@/components/front-office/TapeChart";
+import { toast } from "@/components/ui/Toast";
 import {
   MOCK_ARRIVALS,
   MOCK_DEPARTURES,
@@ -38,14 +39,32 @@ export default function FrontOfficePage() {
     weekday: "long",
   });
 
-  function handleCheckIn(row: ReservationRow) {
-    // TASK-002 backend'i gelince: POST /api/v1/checkin/{reservation_id}
-    alert(`Check-in akışı backend bekleniyor — ${row.code}`);
+  async function handleCheckIn(row: ReservationRow) {
+    try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+      const response = await fetch(`/api/v1/checkin/${row.code}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token && { Authorization: `Bearer ${token}` }) },
+      });
+      if (!response.ok) throw new Error("Check-in başarısız");
+      toast.success(`Check-in tamamlandı: ${row.code}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Check-in sırasında hata oluştu");
+    }
   }
 
-  function handleCheckOut(row: ReservationRow) {
-    // TASK-002 backend'i gelince: POST /api/v1/checkout/{reservation_id}
-    alert(`Check-out akışı backend bekleniyor — ${row.code}`);
+  async function handleCheckOut(row: ReservationRow) {
+    try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+      const response = await fetch(`/api/v1/checkout/${row.code}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token && { Authorization: `Bearer ${token}` }) },
+      });
+      if (!response.ok) throw new Error("Check-out başarısız");
+      toast.success(`Check-out tamamlandı: ${row.code}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Check-out sırasında hata oluştu");
+    }
   }
 
   return (

@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { AIPanel } from "@/components/ai/AIPanel";
 import { MOCK_WORK_ORDERS, MOCK_ASSETS, type WorkOrderRow, type AssetRow } from "@/lib/mock-modules";
+import { toast } from "@/components/ui/Toast";
 
 const WO_STATUS: Record<WorkOrderRow["status"], { tone: BadgeTone; label: string }> = {
   open: { tone: "warning", label: "Açık" },
@@ -42,7 +43,7 @@ export default function MaintenancePage() {
         subtitle={`${MOCK_WORK_ORDERS.length} iş emri · ${MOCK_ASSETS.length} varlık`}
         action={
           <button
-            onClick={() => alert("Yeni iş emri — backend TASK-015 bekleniyor")}
+            onClick={() => toast.info("Yeni iş emri formu yakında eklenecek")}
             className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:opacity-90"
           >
             <Plus className="h-4 w-4" aria-hidden /> Yeni İş Emri
