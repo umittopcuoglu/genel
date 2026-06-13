@@ -10,7 +10,7 @@
 > admin parametreleri çalışma zamanında girer, şifreli saklanır, tek tıkla canlı bağlantı testi)
 > Frontend "Grand Hotel" tasarım dili + sayfa geçiş animasyonları. Testler: 201 + 23 yeni = **224 yeşil**.
 
-**Son güncelleme:** 2026-06-13 (TASK-016 F&B/POS + TASK-017 Güvenlik & KVKK tamamlandı) · **Faz:** 1-4 · **Faz 2 kuyruğu aktif, Faz 3-4 kuyruğa giriş** · **Test Suite:** 272 yeşil
+**Son güncelleme:** 2026-06-13 (TASK-016 F&B/POS + TASK-017 Güvenlik & KVKK backend + frontend canlı API bağlandı) · **Faz:** 1-4 · **Test Suite:** 272 yeşil · **Frontend build:** 29 route ✓
 
 ## Modül Durumu
 
@@ -24,9 +24,9 @@
 | — | FrontDesk AI (temel) | ⬜ | ⬜ | — | 1 |
 | 3 | Groups & Events | ✅ KABUL | 🟡 ekranlar yapılacak | REVIEW-2026-06-13-TASK-014 | 3 |
 | 6 | Bakım & Teknik | ✅ KABUL | 🟡 ekranlar yapılacak | REVIEW-2026-06-13-TASK-015 | 3 |
-| 7 | F&B (dış entegrasyon) | ✅ KABUL | 🟡 ekranlar yapılacak | REVIEW-2026-06-13-TASK-016 | 3 |
+| 7 | F&B (dış entegrasyon) | ✅ KABUL | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-016 | 3 |
 | 8 | CRM & GuestAI | ⬜ | ⬜ | — | 2 |
-| 9 | Güvenlik & KVKK | ✅ KABUL | 🟡 ekranlar yapılacak | REVIEW-2026-06-13-TASK-017 | 3 |
+| 9 | Güvenlik & KVKK | ✅ KABUL | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-017 | 3 |
 | 10 | Raporlama & InsightAI | ⬜ | ⬜ | — | 2 |
 
 Durum: ⬜ bekliyor · 🟡 devam · 🟠 review'da · ✅ kabul · ❌ düzeltmede
