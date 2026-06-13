@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { StatCard } from "@/components/kpi/StatCard";
 import { MOCK_FOLIOS, MOCK_FOLIO_DETAIL, type FolioRow, type FolioLine } from "@/lib/mock-modules";
+import { CurrencyRates, CurrencyConverter } from "@/components/CurrencyRates";
 
 const fmtTRY = (n: number) => `₺${n.toLocaleString("tr-TR")}`;
 
@@ -114,6 +115,16 @@ export default function FinancePage() {
             </div>
           </Card>
         </div>
+      </div>
+
+      {/* Döviz Kurları — Dış misafirler için */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Card title="Güncel Döviz Kurları">
+          <CurrencyRates baseCurrency="TRY" />
+        </Card>
+        <Card title="Para Birimi Dönüştürücü">
+          <CurrencyConverter />
+        </Card>
       </div>
     </div>
   );
