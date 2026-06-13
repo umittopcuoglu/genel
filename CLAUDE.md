@@ -1,5 +1,11 @@
 # Genel Project - Claude Code Configuration
 
+> ⚠️ **ÖNCE OKU — Çalışma alanı kuralı:** Aktif proje `genel/hotel/` (HotelOps PMS).
+> Aktif ve **tek** geliştirme branch'i: **`claude/ecstatic-gates-paa35d`** (birleştirilmiş).
+> Eski `claude/wonderful-gates-cahvpv` kullanılmaz; yeni paralel branch açma.
+> Her oturuma başlarken `git pull`, bitince `git push`. Tüm detay: **`WORKSPACE.md`**.
+> VS Code: `genel.code-workspace` aç · Antigravity: `genel/` klasörünü aç.
+
 ## Project Structure
 
 ```

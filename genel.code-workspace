@@ -1,8 +1,20 @@
 {
   "folders": [
     {
+      "path": "hotel",
+      "name": "★ hotel (AKTİF PROJE — HotelOps PMS)"
+    },
+    {
+      "path": "hotel/backend",
+      "name": "hotel · backend (FastAPI)"
+    },
+    {
+      "path": "hotel/frontend",
+      "name": "hotel · frontend (Next.js)"
+    },
+    {
       "path": ".",
-      "name": "genel-main"
+      "name": "genel-main (kök)"
     },
     {
       "path": "openclaw",
@@ -26,7 +38,7 @@
     }
   ],
   "settings": {
-    "python.defaultInterpreterPath": "${workspaceFolder}\\venv\\Scripts\\python.exe",
+    "python.defaultInterpreterPath": "${workspaceFolder:hotel · backend (FastAPI)}/venv/bin/python",
     "python.linting.enabled": true,
     "python.formatting.provider": "black",
     "editor.formatOnSave": true,
@@ -41,14 +53,22 @@
     "files.exclude": {
       "**/__pycache__": true,
       "**/*.pyc": true,
-      "**/node_modules": true
+      "**/node_modules": true,
+      "**/.next": true,
+      "**/test.db": true,
+      "**/dev.db": true
     },
     "search.exclude": {
       "**/.git": true,
       "**/.venv": true,
       "**/venv": true,
-      "**/node_modules": true
-    }
+      "**/node_modules": true,
+      "**/.next": true,
+      "**/qa/e2e/screenshots": true
+    },
+    "git.branchProtection": ["main"],
+    "git.detectSubmodules": false,
+    "notes": "Aktif geliştirme branch'i: claude/ecstatic-gates-paa35d (birleştirilmiş). Detay: WORKSPACE.md"
   },
   "extensions": {
     "recommendations": [
@@ -56,7 +76,8 @@
       "ms-python.vscode-pylance",
       "esbenp.prettier-vscode",
       "ms-vscode.makefile-tools",
-      "gitpod.workspace-full",
+      "dbaeumer.vscode-eslint",
+      "bradlc.vscode-tailwindcss",
       "GitHub.copilot"
     ]
   }
