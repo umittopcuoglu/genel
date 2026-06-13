@@ -70,8 +70,13 @@ async def init_test_db():
 
 @pytest.fixture(scope="function", autouse=True)
 async def setup_test_db(_init_test_db):
-    """Depend on session-scoped DB init to ensure tables exist."""
+    """Clean tables between tests."""
     yield
+    # Clean all tables after each test (truncate all data)
+    async with engine.begin() as conn:
+        # Get all table names
+        for table in reversed(Base.metadata.sorted_tables):
+            await conn.execute(table.delete())
 
 
 @pytest.fixture
