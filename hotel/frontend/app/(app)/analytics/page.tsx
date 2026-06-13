@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/lib/i18n";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/kpi/StatCard";
@@ -15,48 +16,46 @@ const TONE_BG: Record<string, string> = {
   neutral: "bg-zinc-400",
 };
 
-/**
- * Gelişmiş Analitik Dashboard — docs/03 §3. KPI + trend grafikleri + InsightAI.
- * Backend: GET /api/v1/dashboard/manager + /reports (TASK-010/13) bağlanınca canlanır.
- */
 export default function AnalyticsPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6">
-      <PageHeader title="Analitik" subtitle="Doluluk, gelir ve kanal performansı" />
+      <PageHeader title={t('analytics.title')} subtitle={t('analytics.subtitle')} />
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatCard label="Aylık Gelir" value="₺3.2M" hint="geçen aya göre ↑ %11" tone="success" />
-        <StatCard label="Ort. Doluluk" value="%84" hint="son 7 gün" tone="success" />
-        <StatCard label="ADR" value="₺2.450" hint="ortalama oda fiyatı" />
-        <StatCard label="RevPAR" value="₺2.058" hint="doluluk × ADR" />
+        <StatCard label="Monthly Revenue" value="₺3.2M" hint="vs last month ↑ 11%" tone="success" />
+        <StatCard label={t('analytics.occupancyTrend')} value="84%" hint="last 7 days" tone="success" />
+        <StatCard label={t('dashboard.adr')} value="₺2.450" hint="average room rate" />
+        <StatCard label={t('dashboard.revpar')} value="₺2.058" hint="occupancy × ADR" />
       </div>
 
       <AIPanel
         agent="InsightAI"
-        suggestion="Hafta sonu doluluk %95'e ulaşıyor ancak OTA payı %34. Cumartesi için direkt kanal kampanyası ile komisyon maliyetini ₺18.000 azaltabilirsiniz."
-        rationale="90 günlük tahmin · kanal karması analizi · komisyon oranları"
+        suggestion="Weekend occupancy reaches 95% but OTA share is 34%. Direct channel campaign on Saturday could reduce commission costs by ₺18,000."
+        rationale="90-day forecast · channel mix analysis · commission rates"
       />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Card title="Haftalık Doluluk (%) — Bu yıl vs Geçen yıl">
+        <Card title="Weekly Occupancy (%) — This year vs Last year">
           <BarChart
             data={MOCK_OCCUPANCY_TREND}
             format={(v) => `%${v}`}
-            primaryLabel="Bu yıl"
-            secondaryLabel="Geçen yıl"
+            primaryLabel="This year"
+            secondaryLabel="Last year"
           />
         </Card>
 
-        <Card title="Aylık Gelir Trendi (₺)">
+        <Card title="Monthly Revenue Trend (₺)">
           <BarChart
             data={MOCK_REVENUE_TREND}
             format={(v) => `₺${(v / 1_000_000).toFixed(1)}M`}
-            primaryLabel="Gelir"
+            primaryLabel="Revenue"
           />
         </Card>
       </div>
 
-      <Card title="Rezervasyon Kaynak Dağılımı">
+      <Card title="Reservation Source Distribution">
         <div className="space-y-3">
           {MOCK_SOURCE_MIX.map((s) => (
             <div key={s.label} className="flex items-center gap-3">
