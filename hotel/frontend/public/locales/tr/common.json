@@ -381,5 +381,35 @@
     "volume": "Ses Seviyesi",
     "brightness": "Parlaklık",
     "temperature": "Sıcaklık"
+  },
+  "channels": {
+    "title": "Kanallar",
+    "subtitle": "OTA & Channel Manager — gerçek zamanlı senkronizasyon",
+    "linkedChannels": "Bağlı Kanallar",
+    "activeChannel": "Senkron aktif",
+    "inactive": "Pasif",
+    "syncFlow": "Senkron Akışı",
+    "recent": "son 50",
+    "roomsUpdated": "Odalar Güncellendi",
+    "responseTime": "Yanıt Süresi",
+    "testConnection": "Bağlantı Testi",
+    "addChannel": "Kanal Ekle",
+    "status": "Durum",
+    "syncStatus": "Senkron Durumu",
+    "error": "Hata",
+    "unauthorized": "Bu sayfa için yetki gereklidir",
+    "backendUnavailable": "Backend'e ulaşılamadı"
+  },
+  "frontOffice": {
+    "title": "Ön Büro",
+    "subtitle": "Konaklama yönetimi ve misafir hizmetleri",
+    "occupancy": "Doluluk",
+    "arrivals": "Gelenler",
+    "departures": "Gidenler",
+    "checkInOut": "Check-in/Out",
+    "rooms": "Odalar",
+    "stayover": "Konaklayan",
+    "arrivedToday": "Bugün Gelen",
+    "departingToday": "Bugün Giden"
   }
 }

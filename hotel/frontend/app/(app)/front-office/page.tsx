@@ -2,6 +2,7 @@
 
 import { PageHeader } from "@/components/ui/PageHeader";
 import { useState } from "react";
+import { useTranslation } from "@/lib/i18n";
 import { ReservationTable } from "@/components/front-office/ReservationTable";
 import { RoomBoard } from "@/components/front-office/RoomBoard";
 import { TapeChart } from "@/components/front-office/TapeChart";
@@ -17,22 +18,19 @@ import type { ReservationRow } from "@/lib/types";
 
 type Tab = "arrivals" | "departures" | "in-house" | "rooms" | "tape-chart";
 
-const TABS: { id: Tab; label: string; count?: number }[] = [
-  { id: "arrivals", label: "Gelenler", count: MOCK_ARRIVALS.length },
-  { id: "departures", label: "Gidenler", count: MOCK_DEPARTURES.length },
-  { id: "in-house", label: "Konaklayanlar", count: MOCK_IN_HOUSE.length },
-  { id: "rooms", label: "Oda Panosu" },
-  { id: "tape-chart", label: "Tape Chart" },
-];
-
-/**
- * Ön Büro ana ekranı — docs/03 §4.
- * Şimdilik mock veri; TASK-002 backend'i KABUL olunca lib/api.ts üzerinden
- * GET /api/v1/arrivals|departures|in-house|rooms endpoint'lerine bağlanır.
- */
 export default function FrontOfficePage() {
+  const { t } = useTranslation();
   const [tab, setTab] = useState<Tab>("arrivals");
-  const today = new Date().toLocaleDateString("tr-TR", {
+
+  const TABS: { id: Tab; label: string; count?: number }[] = [
+    { id: "arrivals", label: t('frontOffice.arrivals'), count: MOCK_ARRIVALS.length },
+    { id: "departures", label: t('frontOffice.departures'), count: MOCK_DEPARTURES.length },
+    { id: "in-house", label: "In House", count: MOCK_IN_HOUSE.length },
+    { id: "rooms", label: "Room Board" },
+    { id: "tape-chart", label: "Tape Chart" },
+  ];
+
+  const today = new Date().toLocaleDateString(undefined, {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -46,10 +44,10 @@ export default function FrontOfficePage() {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(token && { Authorization: `Bearer ${token}` }) },
       });
-      if (!response.ok) throw new Error("Check-in başarısız");
-      toast.success(`Check-in tamamlandı: ${row.code}`);
+      if (!response.ok) throw new Error("Check-in failed");
+      toast.success(`Check-in completed: ${row.code}`);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Check-in sırasında hata oluştu");
+      toast.error(err instanceof Error ? err.message : "Error during check-in");
     }
   }
 
@@ -60,16 +58,16 @@ export default function FrontOfficePage() {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(token && { Authorization: `Bearer ${token}` }) },
       });
-      if (!response.ok) throw new Error("Check-out başarısız");
-      toast.success(`Check-out tamamlandı: ${row.code}`);
+      if (!response.ok) throw new Error("Check-out failed");
+      toast.success(`Check-out completed: ${row.code}`);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Check-out sırasında hata oluştu");
+      toast.error(err instanceof Error ? err.message : "Error during check-out");
     }
   }
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Ön Büro" subtitle={today} />
+      <PageHeader title={t('frontOffice.title')} subtitle={today} />
 
       <div className="border-b border-line" role="tablist" aria-label="Ön büro görünümleri">
         <div className="flex gap-1">

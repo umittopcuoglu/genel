@@ -381,5 +381,35 @@
     "volume": "Volume",
     "brightness": "Brightness",
     "temperature": "Temperature"
+  },
+  "channels": {
+    "title": "Channels",
+    "subtitle": "OTA & Channel Manager — real-time synchronization",
+    "linkedChannels": "Linked Channels",
+    "activeChannel": "Sync Active",
+    "inactive": "Inactive",
+    "syncFlow": "Sync Flow",
+    "recent": "last 50",
+    "roomsUpdated": "Rooms Updated",
+    "responseTime": "Response Time",
+    "testConnection": "Test Connection",
+    "addChannel": "Add Channel",
+    "status": "Status",
+    "syncStatus": "Sync Status",
+    "error": "Error",
+    "unauthorized": "Manager/SuperAdmin access required",
+    "backendUnavailable": "Backend unavailable — ensure server is running"
+  },
+  "frontOffice": {
+    "title": "Front Office",
+    "subtitle": "Stay management and guest services",
+    "occupancy": "Occupancy",
+    "arrivals": "Arrivals",
+    "departures": "Departures",
+    "checkInOut": "Check-in/Out",
+    "rooms": "Rooms",
+    "stayover": "Stayover",
+    "arrivedToday": "Arrived Today",
+    "departingToday": "Departing Today"
   }
 }
