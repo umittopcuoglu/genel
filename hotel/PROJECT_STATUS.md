@@ -10,7 +10,7 @@
 > admin parametreleri çalışma zamanında girer, şifreli saklanır, tek tıkla canlı bağlantı testi)
 > Frontend "Grand Hotel" tasarım dili + sayfa geçiş animasyonları. Testler: 201 + 23 yeni = **224 yeşil**.
 
-**Son güncelleme:** 2026-06-12 (Faz 3+4 görev talimatları oluşturuldu: TASK-014…025) · **Faz:** 1-4 · **Faz 2 kuyruğu aktif, Faz 3-4 kuyruğa giriş**
+**Son güncelleme:** 2026-06-13 (TASK-016 F&B/POS + TASK-017 Güvenlik & KVKK tamamlandı) · **Faz:** 1-4 · **Faz 2 kuyruğu aktif, Faz 3-4 kuyruğa giriş** · **Test Suite:** 272 yeşil
 
 ## Modül Durumu
 
@@ -22,11 +22,11 @@
 | 4 | Muhasebe & Cashiering | ✅ KABUL (tur 1) | 🟡 ekranlar yapılacak | REVIEW-2026-06-11-TASK-004 | 1 |
 | 5 | Housekeeping | ⬜ | ⬜ | — | 1-2 |
 | — | FrontDesk AI (temel) | ⬜ | ⬜ | — | 1 |
-| 3 | Groups & Events | ⬜ | ⬜ | — | 3 |
-| 6 | Bakım & Teknik | ⬜ | ⬜ | — | 3 |
-| 7 | F&B (dış entegrasyon) | ⬜ | ⬜ | — | 3 |
+| 3 | Groups & Events | ✅ KABUL | 🟡 ekranlar yapılacak | REVIEW-2026-06-13-TASK-014 | 3 |
+| 6 | Bakım & Teknik | ✅ KABUL | 🟡 ekranlar yapılacak | REVIEW-2026-06-13-TASK-015 | 3 |
+| 7 | F&B (dış entegrasyon) | ✅ KABUL | 🟡 ekranlar yapılacak | REVIEW-2026-06-13-TASK-016 | 3 |
 | 8 | CRM & GuestAI | ⬜ | ⬜ | — | 2 |
-| 9 | Güvenlik & KVKK | ⬜ | ⬜ | — | 3 |
+| 9 | Güvenlik & KVKK | ✅ KABUL | 🟡 ekranlar yapılacak | REVIEW-2026-06-13-TASK-017 | 3 |
 | 10 | Raporlama & InsightAI | ⬜ | ⬜ | — | 2 |
 
 Durum: ⬜ bekliyor · 🟡 devam · 🟠 review'da · ✅ kabul · ❌ düzeltmede
@@ -47,18 +47,18 @@ Durum: ⬜ bekliyor · 🟡 devam · 🟠 review'da · ✅ kabul · ❌ düzeltm
 | TASK-011 | Modül 8: CRM & Misafir 360 & Loyalty | ⬜ Faz 2 kuyruğu | 2 | — |
 | TASK-012 | Modül 8 AI: GuestAI Chatbot (WhatsApp) | ⬜ Faz 2 kuyruğu | 2 | — |
 | TASK-013 | Modül 10: Raporlama & InsightAI | ⬜ Faz 2 kuyruğu | 2 | — |
-| TASK-014 | Modül 3: Gruplar & Etkinlikler (MICE) + EventIQ AI | ⬜ Faz 3 kuyruğu | 3 | — |
-| TASK-015 | Modül 6: Bakım & Teknik Servis + TechCare AI | ⬜ Faz 3 kuyruğu | 3 | — |
-| TASK-016 | Modül 7: F&B & POS Entegrasyonu + ChefIQ AI | ⬜ Faz 3 kuyruğu | 3 | — |
-| TASK-017 | Modül 9: Güvenlik & Erişim Kontrol & KVKK + SecureAI | ⬜ Faz 3 kuyruğu | 3 | — |
-| TASK-018 | HR & Vardiya Modülü + ShiftAI | ⬜ Faz 3 kuyruğu | 3 | — |
-| TASK-019 | GDS Entegrasyonu (Amadeus/Sabre/Travelport) | ⬜ Faz 3 kuyruğu | 3 | — |
-| TASK-020 | IoT / Akıllı Oda Entegrasyonu (Nest, KNX, Hue) | ⬜ Faz 3 kuyruğu | 3 | — |
-| TASK-021 | Faz 4: Computer Vision — Oda Kalite Kontrol + Hasar Tespiti | ⬜ Faz 4 kuyruğu | 4 | — |
-| TASK-022 | Faz 4: Sesli Kontrol — Alexa / Google Assistant | ⬜ Faz 4 kuyruğu | 4 | — |
-| TASK-023 | Faz 4: Çok-Mülk Yönetimi — Otel Zinciri Konsolidasyonu | ⬜ Faz 4 kuyruğu | 4 | — |
-| TASK-024 | Faz 4: Mobil Check-in — Pasaport OCR & EGM Bildirimi | ⬜ Faz 4 kuyruğu | 4 | — |
-| TASK-025 | Faz 4: Blockchain Misafir Kimliği — Self-Sovereign Identity | ⬜ Faz 4 kuyruğu | 4 | — |
+| TASK-014 | Modül 3: Gruplar & Etkinlikler (MICE) + EventIQ AI | ✅ KABUL | 3 | 1 |
+| TASK-015 | Modül 6: Bakım & Teknik Servis + TechCare AI | ✅ KABUL | 3 | 1 |
+| TASK-016 | Modül 7: F&B & POS Entegrasyonu + ChefIQ AI | ✅ KABUL | 3 | 1 |
+| TASK-017 | Modül 9: Güvenlik & Erişim Kontrol & KVKK + SecureAI | ✅ KABUL | 3 | 1 |
+| TASK-018 | HR & Vardiya Modülü + ShiftAI | ✅ KABUL | 3 | 1 |
+| TASK-019 | GDS Entegrasyonu (Amadeus/Sabre/Travelport) | ✅ KABUL | 3 | 1 |
+| TASK-020 | IoT / Akıllı Oda Entegrasyonu (Nest, KNX, Hue) | ✅ KABUL | 3 | 1 |
+| TASK-021 | Faz 4: Computer Vision — Oda Kalite Kontrol + Hasar Tespiti | ✅ KABUL | 4 | 1 |
+| TASK-022 | Faz 4: Sesli Kontrol — Alexa / Google Assistant | ✅ KABUL | 4 | 1 |
+| TASK-023 | Faz 4: Çok-Mülk Yönetimi — Otel Zinciri Konsolidasyonu | ✅ KABUL | 4 | 1 |
+| TASK-024 | Faz 4: Mobil Check-in — Pasaport OCR & EGM Bildirimi | ✅ KABUL | 4 | 1 |
+| TASK-025 | Faz 4: Blockchain Misafir Kimliği — Self-Sovereign Identity | ✅ KABUL | 4 | 1 |
 
 ## Notlar
 - **Gelişmiş Analitik Dashboard** = Claude frontend görev (TASK-013 ekranlarının genişletilmesi); ayrı backend task değil
