@@ -7,14 +7,57 @@ import { StatCard } from "@/components/kpi/StatCard";
 import { Badge } from "@/components/ui/Badge";
 import { AIPanel } from "@/components/ai/AIPanel";
 import { SimpleTable } from "@/components/ui/SimpleTable";
+import { useApiData } from "@/lib/useApiData";
+import { MockBanner } from "@/components/ui/DataStates";
 import { MOCK_OUTLETS, MOCK_CHECKS, MOCK_MENU } from "@/lib/mock-faz34";
 
 const tl = (n: number) => `₺${n.toLocaleString("tr-TR")}`;
 
+// Backend (TASK-016) → ekran satır şekli normalizasyonu.
+type OutletRow = { id: string; name: string; type: string; open: boolean; todaySales: number };
+type MenuRow = { id: string; name: string; category: string; price: number; cost: number; popular: boolean };
+
+function normalizeOutlets(raw: any[]): OutletRow[] {
+  return raw.map((o) => ({
+    id: String(o.id),
+    name: o.name,
+    type: o.outlet_type ?? o.type ?? "—",
+    open: o.is_open ?? o.open ?? false,
+    todaySales: o.todaySales ?? 0,
+  }));
+}
+
+function normalizeMenu(raw: any[]): MenuRow[] {
+  return raw.map((m) => ({
+    id: String(m.id),
+    name: m.name,
+    category: m.category,
+    price: Number(m.price ?? 0),
+    cost: Number(m.cost ?? 0),
+    popular: m.popular ?? false,
+  }));
+}
+
 export default function FnbPage() {
   const { t } = useTranslation();
   const [tab, setTab] = useState<"outlets" | "checks" | "menu">("outlets");
-  const todayTotal = MOCK_OUTLETS.reduce((s, o) => s + o.todaySales, 0);
+
+  const { data: outletsRaw, usingFallback: outletsFallback } = useApiData<any[]>({
+    path: "/api/v1/fnb/outlets",
+    fallback: MOCK_OUTLETS,
+  });
+  const { data: menuRaw, usingFallback: menuFallback } = useApiData<any[]>({
+    path: "/api/v1/fnb/menu-items",
+    fallback: MOCK_MENU,
+  });
+
+  const outlets = outletsFallback ? MOCK_OUTLETS : normalizeOutlets(outletsRaw);
+  const menu = menuFallback ? MOCK_MENU : normalizeMenu(menuRaw);
+  // Adisyon listesi için backend toplu uç sağlamıyor (yalnızca GET /checks/{id}) → mock kalır.
+  const checks = MOCK_CHECKS;
+  const usingFallback = outletsFallback || menuFallback;
+
+  const todayTotal = outlets.reduce((s, o) => s + (o.todaySales ?? 0), 0);
 
   const tabs = [
     { id: "outlets", label: t('fnb.outlets') },
@@ -24,12 +67,15 @@ export default function FnbPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t('fnb.title')} subtitle={`${MOCK_OUTLETS.length} satış noktası · dış POS entegrasyonu (mock)`} />
+      <PageHeader title={t('fnb.title')} subtitle={`${outlets.length} satış noktası · dış POS entegrasyonu (mock)${usingFallback ? " · demo veri" : ""}`} />
+
+      {usingFallback && <MockBanner />}
+
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <StatCard label="Bugünkü F&B Geliri" value={tl(todayTotal)} tone="success" />
-        <StatCard label="Açık Adisyon" value={String(MOCK_CHECKS.filter((c) => c.status === "open").length)} />
-        <StatCard label={t('fnb.outlets')} value={String(MOCK_OUTLETS.length)} />
-        <StatCard label="Menü Kalemi" value={String(MOCK_MENU.length)} />
+        <StatCard label="Açık Adisyon" value={String(checks.filter((c) => c.status === "open").length)} />
+        <StatCard label={t('fnb.outlets')} value={String(outlets.length)} />
+        <StatCard label="Menü Kalemi" value={String(menu.length)} />
       </div>
 
       <AIPanel
@@ -50,15 +96,15 @@ export default function FnbPage() {
       </div>
 
       {tab === "outlets" && (
-        <SimpleTable rows={MOCK_OUTLETS} columns={[
+        <SimpleTable rows={outlets} columns={[
           { key: "name", header: t('fnb.outletName') },
           { key: "type", header: t('fnb.category') },
           { key: "open", header: t('common.status'), render: (o) => (o.open ? <Badge tone="success">Açık</Badge> : <Badge>Kapalı</Badge>) },
-          { key: "todaySales", header: "Bugünkü Satış", align: "right", render: (o) => tl(o.todaySales) },
+          { key: "todaySales", header: "Bugünkü Satış", align: "right", render: (o) => tl(o.todaySales ?? 0) },
         ]} />
       )}
       {tab === "checks" && (
-        <SimpleTable rows={MOCK_CHECKS} columns={[
+        <SimpleTable rows={checks} columns={[
           { key: "outlet", header: t('fnb.outlets') },
           { key: "table", header: "Masa" },
           { key: "room", header: "Oda", render: (c) => c.room ?? "—" },
@@ -68,11 +114,11 @@ export default function FnbPage() {
         ]} />
       )}
       {tab === "menu" && (
-        <SimpleTable rows={MOCK_MENU} columns={[
+        <SimpleTable rows={menu} columns={[
           { key: "name", header: t('fnb.itemName') },
           { key: "category", header: t('fnb.category') },
           { key: "price", header: t('fnb.price'), align: "right", render: (m) => tl(m.price) },
-          { key: "margin", header: "Marj", align: "right", render: (m) => `%${Math.round(((m.price - m.cost) / m.price) * 100)}` },
+          { key: "margin", header: "Marj", align: "right", render: (m) => (m.price > 0 ? `%${Math.round(((m.price - m.cost) / m.price) * 100)}` : "—") },
           { key: "popular", header: "Popüler", render: (m) => (m.popular ? <Badge tone="success">★</Badge> : "—") },
         ]} />
       )}
