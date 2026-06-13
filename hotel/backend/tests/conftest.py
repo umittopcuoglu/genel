@@ -72,12 +72,22 @@ async def init_test_db():
 @pytest.fixture(scope="function", autouse=True)
 async def setup_test_db(_init_test_db):
     """Clean tables between tests."""
-    yield
-    # Clean all tables after each test (truncate all data)
+    # Clean all tables BEFORE each test (truncate all data)
     async with engine.begin() as conn:
-        # Get all table names
         for table in reversed(Base.metadata.sorted_tables):
-            await conn.execute(table.delete())
+            try:
+                await conn.execute(table.delete())
+            except Exception:
+                # Ignore errors during cleanup (e.g., if table is already empty)
+                pass
+    yield
+    # Also clean AFTER each test for good measure
+    async with engine.begin() as conn:
+        for table in reversed(Base.metadata.sorted_tables):
+            try:
+                await conn.execute(table.delete())
+            except Exception:
+                pass
 
 
 @pytest.fixture
