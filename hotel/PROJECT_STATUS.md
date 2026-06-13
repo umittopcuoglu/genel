@@ -21,6 +21,14 @@
 > Çakışan F&B/Güvenlik modüllerinde daha kapsamlı operasyon-kolu implementasyonu korundu; AI ajanları yeni
 > `BaseAgent._run` sözleşmesine uyarlandı. Birleşik test: **350 yeşil**, frontend **33 route** derleniyor.
 
+> **2026-06-13 — Birleştirme sonrası tamamlama:**
+> (1) **Alembic migration onarımı** — çoklu-head (`013`+`021`) tek zincire bağlandı (014→013 relink);
+> birleştirme kolunun migration'sız 7 tablosu (`payment_transactions`, `crm_*`, `guest_wifi_sessions`,
+> `integration_settings`) için **migration 022** eklendi (upgrade+downgrade SQLite'ta doğrulandı). Tek head: `022`.
+> (2) **FrontDesk AI (temel)** ajanı eklendi — `POST /ai/frontdesk/checkin-assist` (karşılama + oda/upgrade
+> önerisi + upsell + öncelik), 6 test. (3) **TASK-006** doğrulandı (WebSocket/E2E/Docker/CI zaten mevcuttu).
+> Toplam test: **356 yeşil**.
+
 ## Modül Durumu
 
 | # | Modül | Backend (DeepSeek) | Frontend (Claude) | Review | Faz |
@@ -30,7 +38,7 @@
 | 2 | Rezervasyon | ✅ KABUL (tur 1) | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-11-TASK-003 | 1 |
 | 4 | Muhasebe & Cashiering | ✅ KABUL (tur 1) | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-11-TASK-004 | 1 |
 | 5 | Housekeeping | ✅ KABUL | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-005 | 1-2 |
-| — | FrontDesk AI (temel) | ⬜ | ⬜ | — | 1 |
+| — | FrontDesk AI (temel) | ✅ KABUL (ajan + `/ai/frontdesk/checkin-assist` + 6 test) | — (AIPanel) | REVIEW-2026-06-13 | 1 |
 | 3 | Groups & Events | ✅ KABUL | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-014 | 3 |
 | 6 | Bakım & Teknik | ✅ KABUL | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-015 | 3 |
 | 7 | F&B (dış entegrasyon) | ✅ KABUL | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-016 | 3 |
@@ -52,7 +60,7 @@ Durum: ⬜ bekliyor · 🟡 devam · 🟠 review'da · ✅ kabul · ❌ düzeltm
 | TASK-003 | Modül 2: Rezervasyon & Müsaitlik | ✅ KABUL | 1 | 1 |
 | TASK-004 | Modül 4: Muhasebe & Cashiering | ✅ KABUL | 1 | 1 |
 | TASK-005 | Modül 5: Housekeeping | ✅ KABUL | 1 | 1 |
-| TASK-006 | Altyapı: WebSocket + E2E + Docker + CI/CD | ⬜ sıraya girecek | 1 | 1 |
+| TASK-006 | Altyapı: WebSocket + E2E + Docker + CI/CD | ✅ KABUL (ws/ + qa/e2e + Dockerfile + 8 workflow) | 1 | 1 |
 | TASK-007 | Altyapı: Ortak AI Çekirdeği (BaseAgent + LLM + PII maskeleme) | ✅ KABUL | 2 | 1 |
 | TASK-008 | Modül 2 AI Genişleme: Channel Manager & OTA | ✅ KABUL | 2 | 1 |
 | TASK-009 | Modül 2 AI Genişleme: RevenueIQ Advisor | ✅ KABUL | 2 | 1 |

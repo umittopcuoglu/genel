@@ -143,6 +143,7 @@ from app.core.agents.event_qi import EventIQAgent, EventIQInput
 from app.core.agents.tech_care import TechCareAgent, TechCareInput
 from app.core.agents.chef_iq import ChefIQAgent, ChefIQInput
 from app.core.agents.secure_ai import SecureAIAgent, SecureAIInput
+from app.core.agents.frontdesk_ai import FrontDeskAIAgent, FrontDeskInput
 
 
 def _get_agent(name: str, fallback_cls):
@@ -208,3 +209,17 @@ async def secureai_anomaly_scan(
     agent = _get_agent("secure_ai", SecureAIAgent)
     output = await agent.execute(req, db=db, user=current_user)
     return {"data": output.model_dump(), "meta": {"agent": "secure_ai"}}
+
+
+@router.post("/frontdesk/checkin-assist")
+async def frontdesk_checkin_assist(
+    req: FrontDeskInput,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """FrontDesk AI: misafir profili → karşılama + oda/upgrade önerisi + upsell + öncelik."""
+    if current_user.role not in ["superadmin", "manager", "frontdesk"]:
+        raise HTTPException(status_code=403)
+    agent = _get_agent("frontdesk_ai", FrontDeskAIAgent)
+    output = await agent.execute(req, db=db, user=current_user)
+    return {"data": output.model_dump(), "meta": {"agent": "frontdesk_ai"}}

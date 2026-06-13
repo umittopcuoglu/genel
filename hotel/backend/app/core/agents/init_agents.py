@@ -7,6 +7,7 @@ from app.core.agents.event_qi import EventIQAgent
 from app.core.agents.tech_care import TechCareAgent
 from app.core.agents.chef_iq import ChefIQAgent
 from app.core.agents.secure_ai import SecureAIAgent
+from app.core.agents.frontdesk_ai import FrontDeskAIAgent
 
 
 def initialize_agents():
@@ -14,6 +15,8 @@ def initialize_agents():
     registry.register(RevenueQAAgent())
     registry.register(GuestAIAgent())
     registry.register(InsightAIAgent())
+    # FrontDesk AI (temel — check-in asistanı)
+    registry.register(FrontDeskAIAgent())
     # Faz 3 ajanları (EventIQ, TechCare, ChefIQ, SecureAI, ShiftAI)
     registry.register(ShiftAIAgent())
     registry.register(EventIQAgent())
