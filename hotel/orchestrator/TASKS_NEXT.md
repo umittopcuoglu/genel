@@ -71,7 +71,7 @@
   - Kontratlar: `pms_core` `distribution`'ı import edemez; `guest_experience`
     `revenue`'yu import edemez; cross-context yalnızca `app.core.events` üzerinden.
   - CI'a `lint-imports` adımı.
-- [ ] **D2. Fiziksel taşıma (opsiyonel, riskli)**
+- [x] **D2. Fiziksel taşıma (opsiyonel, riskli)**
   - `app/contexts/{pms_core,distribution,guest_experience,revenue,integration_hub}/`
     klasörlerini oluştur, mevcut router/service/model'leri taşı.
   - **Risk:** 294 testin import path'leri kırılır → çok küçük adımlarla yap,

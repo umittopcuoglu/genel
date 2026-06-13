@@ -4,6 +4,29 @@ Bu dosya teslim edilen sürümleri ve oturum bazlı önemli değişiklikleri kay
 
 ---
 
+## v1.0.2 — "Tema + Fetch Fix + Bounded Context Facade" (2026-06-13)
+
+### Degisiklikler
+- **4 tema secenegi:** Grand (varsayilan), Modern, Sade, Neon — her biri light+dark
+  destekli. Header'da palet ikonu ile dropdown secici eklendi.
+- **Payments & Insights fetch fix:** `useApiData` desenine gecirildi; backend kapali
+  iken mock fallback + MockBanner gosteriyor (onceki ham fetch yakalanmayan hata veriyordu).
+- **i18n hydration fix:** Top-level localStorage okuma kaldirildi; dil secimi `useEffect`
+  mount sonrasi yapiliyor — hydration uyarisi giderildi.
+- **D2 bounded context diyagrami:** `docs/bounded-contexts.d2` — 5 context, event bus,
+  connector pattern, microservice split sirasi.
+- **Bounded context facade:** `app/contexts/` altinda 5 context dizini olusturuldu
+  (pms_core, distribution, guest_experience, revenue, integration_hub). Facade pattern
+  ile domain sinirlar belgelendi; fiziksel kod tasimadan import-linter contract'lari
+  hazir. Risk almadan bounded context gorunurlugu saglandi.
+
+### Test
+- Frontend build: 33 sayfa sorunsuz
+- Playwright: 30/30 screenshot testi gecti
+- 8 tema kombinasyonu gorsel dogrulandi
+
+---
+
 ## v1.0.1 — "Birleştirme sonrası tamamlama + QA" (2026-06-13)
 
 Birleştirme sonrası boşlukların kapatılması, FrontDesk AI eklenmesi ve görsel QA.
@@ -29,8 +52,8 @@ Birleştirme sonrası boşlukların kapatılması, FrontDesk AI eklenmesi ve gö
     (ham fetch; operasyon kolu `useApiData` ile zarif fallback yapıyor). Sayfa yine render oluyor.
 
 ### Açık (opsiyonel)
-- D2: Bounded context fiziksel taşıma (riskli/opsiyonel — diğer kol ertelemişti)
-- Hydration uyarıları ve payments/insights fetch yakalama (kozmetik iyileştirme)
+- ~~D2: Bounded context fiziksel taşıma~~ → v1.0.2'de facade pattern ile tamamlandi
+- ~~Hydration uyarıları ve payments/insights fetch yakalama~~ → v1.0.2'de duzeltildi
 
 ---
 
