@@ -14,6 +14,7 @@ from app.core.auth import (
     create_access_token, create_refresh_token,
     refresh_access_token, revoke_tokens
 )
+from app.core.rbac import require_roles
 from app.schemas.auth import LoginRequest, TokenResponse, RefreshTokenRequest, LogoutRequest, UserResponse
 from app.models.user import User
 
@@ -141,3 +142,80 @@ async def logout(logout_data: LogoutRequest, db: AsyncSession = Depends(get_db))
         await db.commit()
 
     return {"message": "Başarıyla çıkış yapıldı."}
+
+
+@router.get("/users", summary="Kullanıcıları listele", tags=["Admin"])
+async def list_users(db: AsyncSession = Depends(get_db), _=Depends(require_roles(["superadmin"]))):
+    stmt = select(User).where(User.deleted_at.is_(None))
+    result = await db.execute(stmt)
+    users = result.scalars().all()
+    return [UserResponse.model_validate(u) for u in users]
+
+
+@router.post("/users", response_model=UserResponse, status_code=201, summary="Kullanıcı oluştur", tags=["Admin"])
+async def create_user(
+    user_data: dict, db: AsyncSession = Depends(get_db), _=Depends(require_roles(["superadmin"]))
+):
+    from pydantic import BaseModel
+    class UserCreateRequest(BaseModel):
+        email: str
+        full_name: str
+        password: str
+        role: str = "frontdesk"
+
+    data = UserCreateRequest(**user_data)
+    stmt = select(User).where(User.email == data.email, User.deleted_at.is_(None))
+    result = await db.execute(stmt)
+    if result.scalar_one_or_none():
+        raise HTTPException(status_code=400, detail="Kullanıcı zaten var")
+    
+    user = User(
+        email=data.email,
+        full_name=data.full_name,
+        hashed_password=get_password_hash(data.password),
+        role=data.role,
+        is_active=True
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return UserResponse.model_validate(user)
+
+
+@router.put("/users/{user_id}", response_model=UserResponse, summary="Kullanıcı güncelle", tags=["Admin"])
+async def update_user(
+    user_id: str, updates: dict, db: AsyncSession = Depends(get_db), _=Depends(require_roles(["superadmin"]))
+):
+    import uuid
+    stmt = select(User).where(User.id == uuid.UUID(user_id), User.deleted_at.is_(None))
+    result = await db.execute(stmt)
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
+    
+    if "full_name" in updates:
+        user.full_name = updates["full_name"]
+    if "is_active" in updates:
+        user.is_active = updates["is_active"]
+    if "role" in updates:
+        user.role = updates["role"]
+    
+    await db.commit()
+    await db.refresh(user)
+    return UserResponse.model_validate(user)
+
+
+@router.delete("/users/{user_id}", status_code=204, summary="Kullanıcı sil", tags=["Admin"])
+async def delete_user(
+    user_id: str, db: AsyncSession = Depends(get_db), _=Depends(require_roles(["superadmin"]))
+):
+    import uuid
+    from datetime import datetime, timezone
+    stmt = select(User).where(User.id == uuid.UUID(user_id), User.deleted_at.is_(None))
+    result = await db.execute(stmt)
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
+    
+    user.deleted_at = datetime.now(timezone.utc)
+    await db.commit()
