@@ -1,4 +1,3 @@
-// i18n language management - client-side
 type Language = 'en' | 'tr';
 type TranslationKey = string;
 
@@ -6,19 +5,17 @@ interface Translations {
   [key: string]: string | Translations;
 }
 
-// Embedded translations (preloaded to avoid async loading flicker)
-// These get hydrated synchronously
 const EMBEDDED_TRANSLATIONS: Record<Language, Translations> = {
   en: {},
   tr: {},
 };
 
-let currentLanguage: Language = 'tr'; // Default Turkish
+let currentLanguage: Language = 'tr';
+let languageResolved = false;
 let translations: Record<Language, Translations> = EMBEDDED_TRANSLATIONS;
 let translationsLoaded = false;
 const listeners: Set<() => void> = new Set();
 
-// Load translations dynamically
 export const loadTranslations = async (): Promise<void> => {
   if (translationsLoaded) return;
   try {
@@ -34,28 +31,29 @@ export const loadTranslations = async (): Promise<void> => {
   }
 };
 
-// Initialize on first load
-if (typeof window !== 'undefined') {
-  // Check localStorage for saved language preference
-  const saved = localStorage.getItem('language') as Language;
-  if (saved && ['en', 'tr'].includes(saved)) {
-    currentLanguage = saved;
-  } else {
-    // Default to browser language if available
-    const browserLang = navigator.language.split('-')[0];
-    if (browserLang === 'en') {
-      currentLanguage = 'en';
+function resolveLanguage(): Language {
+  if (languageResolved) return currentLanguage;
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('language') as Language;
+    if (saved && ['en', 'tr'].includes(saved)) {
+      currentLanguage = saved;
+    } else {
+      const browserLang = navigator.language.split('-')[0];
+      if (browserLang === 'en') {
+        currentLanguage = 'en';
+      }
     }
+    languageResolved = true;
   }
-  // Load translations immediately
-  loadTranslations();
+  return currentLanguage;
 }
 
-export const getLanguage = (): Language => currentLanguage;
+export const getLanguage = (): Language => resolveLanguage();
 
 export const setLanguage = (lang: Language) => {
   if (['en', 'tr'].includes(lang)) {
     currentLanguage = lang;
+    languageResolved = true;
     if (typeof window !== 'undefined') {
       localStorage.setItem('language', lang);
     }
@@ -70,20 +68,17 @@ export const subscribe = (listener: () => void): (() => void) => {
   };
 };
 
-// Nested key access: "nav.reservations" -> translations[lang]["nav"]["reservations"]
 const getNestedValue = (obj: any, path: string): any => {
   return path.split('.').reduce((current, prop) => current?.[prop], obj);
 };
 
-// Translate with parameter interpolation: t("hello", { name: "John" }) → "Hello, John"
 export const translate = (key: TranslationKey, params?: Record<string, string | number>): string => {
   const trans = translations[currentLanguage] || translations.en;
   const value = getNestedValue(trans, key);
   if (typeof value !== 'string') {
-    // Fallback to English
     const fallback = getNestedValue(translations.en, key);
     if (typeof fallback === 'string') return interpolate(fallback, params);
-    return key; // Return key if no translation found
+    return key;
   }
   return interpolate(value, params);
 };
@@ -93,13 +88,16 @@ const interpolate = (template: string, params?: Record<string, string | number>)
   return template.replace(/\{(\w+)\}/g, (_, key) => String(params[key] ?? `{${key}}`));
 };
 
-// React hook
 import { useState, useEffect, useCallback } from 'react';
 
 export const useTranslation = () => {
+  const [mounted, setMounted] = useState(false);
   const [, forceUpdate] = useState(0);
 
   useEffect(() => {
+    resolveLanguage();
+    loadTranslations();
+    setMounted(true);
     const unsubscribe = subscribe(() => forceUpdate(v => v + 1));
     return unsubscribe;
   }, []);
@@ -108,10 +106,13 @@ export const useTranslation = () => {
     return translate(key, params);
   }, []);
 
-  return { t, language: currentLanguage, setLanguage };
+  return {
+    t,
+    language: mounted ? currentLanguage : ('tr' as Language),
+    setLanguage,
+  };
 };
 
-// Server-side helper
 export const getTranslation = (lang: Language, key: TranslationKey): string => {
   const trans = translations[lang] || translations.en;
   const value = getNestedValue(trans, key);

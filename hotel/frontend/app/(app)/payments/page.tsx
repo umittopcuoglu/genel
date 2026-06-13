@@ -1,26 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { RefreshCcw, ShieldCheck } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-
-type Txn = {
-  id: string;
-  provider: string;
-  kind: string;
-  status: string;
-  amount: string;
-  currency: string;
-  provider_ref?: string | null;
-  card_last4?: string | null;
-  card_brand?: string | null;
-  error_message?: string | null;
-  created_at: string;
-};
-
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+import { LoadingState, MockBanner } from "@/components/ui/DataStates";
+import { useApiData } from "@/lib/useApiData";
+import { api } from "@/lib/api";
+import { MOCK_PAYMENTS, type PaymentTxn } from "@/lib/mock-modules";
 
 const STATUS_TONE: Record<string, string> = {
   succeeded: "bg-emerald-100 text-emerald-700",
@@ -30,8 +18,16 @@ const STATUS_TONE: Record<string, string> = {
 };
 
 export default function PaymentsPage() {
-  const [txns, setTxns] = useState<Txn[]>([]);
-  const [loading, setLoading] = useState(false);
+  const {
+    data: txns,
+    loading,
+    usingFallback,
+    refetch,
+  } = useApiData<PaymentTxn[]>({
+    path: "/api/v1/payments",
+    fallback: MOCK_PAYMENTS,
+  });
+
   const [form, setForm] = useState({
     amount: "100.00",
     currency: "TRY",
@@ -44,68 +40,51 @@ export default function PaymentsPage() {
   });
   const [msg, setMsg] = useState<string>("");
 
-  async function load() {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-    setLoading(true);
-    try {
-      const r = await fetch(`${API}/api/v1/payments`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (r.ok) setTxns(await r.json());
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    load();
-  }, []);
-
   async function charge() {
     setMsg("");
-    const token = localStorage.getItem("token");
-    const r = await fetch(`${API}/api/v1/payments/charge`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({
-        amount: form.amount,
-        currency: form.currency,
-        use_3d_secure: form.use_3d_secure,
-        card: {
-          holder_name: form.holder_name,
-          number: form.number.replace(/\s/g, ""),
-          exp_month: Number(form.exp_month),
-          exp_year: Number(form.exp_year),
-          cvc: form.cvc,
-        },
-      }),
-    });
-    const body = await r.json();
-    if (r.ok) {
-      setMsg(body.success ? "✓ Tahsilat başarılı" : `✕ ${body.txn.error_message || "Reddedildi"}`);
-      await load();
-    } else {
-      setMsg(body.error?.message || body.detail || "Hata");
+    try {
+      const body = await api<{ success: boolean; txn: PaymentTxn }>("/api/v1/payments/charge", {
+        method: "POST",
+        body: JSON.stringify({
+          amount: form.amount,
+          currency: form.currency,
+          use_3d_secure: form.use_3d_secure,
+          card: {
+            holder_name: form.holder_name,
+            number: form.number.replace(/\s/g, ""),
+            exp_month: Number(form.exp_month),
+            exp_year: Number(form.exp_year),
+            cvc: form.cvc,
+          },
+        }),
+      });
+      setMsg(body.success ? "Tahsilat basarili" : `${body.txn?.error_message || "Reddedildi"}`);
+      refetch();
+    } catch {
+      setMsg("Backend baglantisi kurulamadi");
     }
   }
 
-  async function refund(id: string) {
-    const token = localStorage.getItem("token");
-    const r = await fetch(`${API}/api/v1/payments/refund`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ txn_id: id }),
-    });
-    if (r.ok) await load();
+  async function doRefund(id: string) {
+    try {
+      await api("/api/v1/payments/refund", {
+        method: "POST",
+        body: JSON.stringify({ txn_id: id }),
+      });
+      refetch();
+    } catch {
+      setMsg("Iade islemi basarisiz");
+    }
   }
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Ödeme / POS"
-        subtitle="Sanal POS tahsilatları — provider parametrik (iyzico / Stripe / PayTR)"
+        title="Odeme / POS"
+        subtitle="Sanal POS tahsilatlari — provider parametrik (iyzico / Stripe / PayTR)"
       />
+
+      {usingFallback && <MockBanner />}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="space-y-4 p-6">
@@ -132,7 +111,7 @@ export default function PaymentsPage() {
               </select>
             </label>
             <label className="col-span-2 text-sm">
-              Kart Üzerindeki İsim
+              Kart Uzerindeki Isim
               <input
                 value={form.holder_name}
                 onChange={(e) => setForm({ ...form, holder_name: e.target.value })}
@@ -140,7 +119,7 @@ export default function PaymentsPage() {
               />
             </label>
             <label className="col-span-2 text-sm">
-              Kart Numarası
+              Kart Numarasi
               <input
                 value={form.number}
                 onChange={(e) => setForm({ ...form, number: e.target.value })}
@@ -158,7 +137,7 @@ export default function PaymentsPage() {
               />
             </label>
             <label className="text-sm">
-              Yıl
+              Yil
               <input
                 type="number"
                 value={form.exp_year}
@@ -194,12 +173,12 @@ export default function PaymentsPage() {
 
         <Card className="space-y-3 p-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Son İşlemler</h3>
-            <button onClick={load} className="flex items-center gap-1 text-sm text-slate-500">
+            <h3 className="text-lg font-semibold">Son Islemler</h3>
+            <button onClick={refetch} className="flex items-center gap-1 text-sm text-slate-500">
               <RefreshCcw className="h-3 w-3" /> Yenile
             </button>
           </div>
-          {loading && <p className="text-sm text-slate-500">Yükleniyor...</p>}
+          {loading && <LoadingState message="Islemler yukleniyor..." />}
           <div className="max-h-[500px] space-y-2 overflow-auto">
             {txns.map((t) => (
               <div key={t.id} className="rounded-lg border p-3 text-sm">
@@ -219,10 +198,10 @@ export default function PaymentsPage() {
                   </span>
                   {t.kind === "charge" && t.status === "succeeded" && (
                     <button
-                      onClick={() => refund(t.id)}
+                      onClick={() => doRefund(t.id)}
                       className="text-xs text-rose-600 hover:underline"
                     >
-                      İade
+                      Iade
                     </button>
                   )}
                 </div>
@@ -232,7 +211,7 @@ export default function PaymentsPage() {
               </div>
             ))}
             {!loading && txns.length === 0 && (
-              <p className="text-sm text-slate-500">Henüz işlem yok.</p>
+              <p className="text-sm text-slate-500">Henuz islem yok.</p>
             )}
           </div>
         </Card>

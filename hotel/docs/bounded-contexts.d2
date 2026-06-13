@@ -1,0 +1,120 @@
+direction: right
+
+title: |md
+  # HotelOps — Bounded Context Map
+  Modular Monolith · Event Bus · Connector Pattern
+|
+
+pms_core: PMS Core {
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+
+  front_office: Front Office\n(Room, Reservation, Guest, Stay)
+  reservation_ext: Reservation Ext\n(RatePlan, Availability)
+  housekeeping: Housekeeping
+  finance: Finance\n(Folio, Payment)
+  groups: Groups
+  maintenance: Maintenance
+
+  front_office -> reservation_ext
+  front_office -> finance
+  front_office -> housekeeping
+}
+
+distribution: Distribution Layer {
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+
+  channel_manager: Channel Manager
+  connectors: OTA Connectors {
+    booking: Booking.com
+    expedia: Expedia
+    agoda: Agoda
+  }
+  channel_manager -> connectors
+}
+
+guest_exp: Guest Experience {
+  style.fill: "#d1fae5"
+  style.stroke: "#059669"
+
+  crm: CRM\n(Segment, Campaign, GuestNote)
+  loyalty: Loyalty\n(Account, Transaction)
+  messaging: Messaging\n(WhatsApp, Chat)
+  complaints: Complaints & Feedback
+}
+
+revenue: Revenue & Pricing {
+  style.fill: "#ede9fe"
+  style.stroke: "#7c3aed"
+
+  ai_engine: AI Engine
+  rate_rec: Rate Recommendation
+  forecast: Occupancy Forecast
+  ai_engine -> rate_rec
+  ai_engine -> forecast
+}
+
+integration_hub: Integration Hub {
+  style.fill: "#fce7f3"
+  style.stroke: "#db2777"
+
+  payments: Payment Gateway\n(iyzico / Stripe / PayTR)
+  einvoice: e-Invoice\n(GIB / Foriba / Logo)
+  gds: GDS\n(Amadeus, Sabre)
+  iot: IoT\n(MQTT Broker)
+  voice: Voice\n(SIP / Webhook)
+  blockchain: Blockchain Identity
+}
+
+event_bus: Event Bus {
+  style.fill: "#f1f5f9"
+  style.stroke: "#475569"
+  style.border-radius: 12
+  style.font-size: 14
+
+  ReservationCreated
+  CheckInCompleted
+  CheckOutCompleted
+  RoomStatusChanged
+  PaymentSucceeded
+}
+
+# Event flows
+pms_core -> event_bus: publishes {
+  style.stroke-dash: 5
+  style.stroke: "#2563eb"
+}
+
+event_bus -> distribution: ReservationCreated\n→ push to OTAs {
+  style.stroke-dash: 5
+  style.stroke: "#d97706"
+}
+
+event_bus -> guest_exp: ReservationCreated → welcome\nCheckOut → feedback {
+  style.stroke-dash: 5
+  style.stroke: "#059669"
+}
+
+event_bus -> revenue: occupancy data {
+  style.stroke-dash: 5
+  style.stroke: "#7c3aed"
+}
+
+event_bus -> integration_hub: PaymentSucceeded {
+  style.stroke-dash: 5
+  style.stroke: "#db2777"
+}
+
+# Microservice split order
+pms_core -> distribution: "1st split candidate" {
+  style.stroke: "#ef4444"
+  style.stroke-dash: 3
+  style.font-size: 10
+}
+
+distribution -> revenue: "3rd split" {
+  style.stroke: "#ef4444"
+  style.stroke-dash: 3
+  style.font-size: 10
+}

@@ -191,4 +191,67 @@ export const ROLES = [
   { key: "guest", label: "Misafir", desc: "Kendi rezervasyon/folio/KVKK görünümü" },
 ];
 
+/* ----------------------------- Payments ----------------------------- */
+export interface PaymentTxn {
+  id: string;
+  provider: string;
+  kind: string;
+  status: string;
+  amount: string;
+  currency: string;
+  provider_ref?: string | null;
+  card_last4?: string | null;
+  card_brand?: string | null;
+  error_message?: string | null;
+  created_at: string;
+}
+
+export const MOCK_PAYMENTS: PaymentTxn[] = [
+  { id: "txn-001", provider: "iyzico", kind: "charge", status: "succeeded", amount: "2500.00", currency: "TRY", provider_ref: "IYZ-98712", card_last4: "4242", card_brand: "Visa", error_message: null, created_at: `${TODAY}T10:30:00Z` },
+  { id: "txn-002", provider: "iyzico", kind: "charge", status: "succeeded", amount: "1200.00", currency: "TRY", provider_ref: "IYZ-98713", card_last4: "5555", card_brand: "Mastercard", error_message: null, created_at: `${TODAY}T09:15:00Z` },
+  { id: "txn-003", provider: "stripe", kind: "charge", status: "failed", amount: "800.00", currency: "EUR", provider_ref: null, card_last4: "1234", card_brand: "Visa", error_message: "Yetersiz bakiye", created_at: `${TODAY}T08:00:00Z` },
+  { id: "txn-004", provider: "iyzico", kind: "refund", status: "refunded", amount: "500.00", currency: "TRY", provider_ref: "IYZ-98700", card_last4: "4242", card_brand: "Visa", error_message: null, created_at: addDays(TODAY, -1) + "T14:00:00Z" },
+];
+
+/* ----------------------------- Insights ----------------------------- */
+export interface InsightSummary {
+  total_revenue: number;
+  adr: number;
+  revpar: number;
+  occupancy_percent: number;
+}
+
+export interface ChannelMix {
+  channel: string;
+  count: number;
+  share_percent: number;
+}
+
+export interface InsightAction {
+  title: string;
+  severity: string;
+  message: string;
+  action: string;
+}
+
+export const MOCK_INSIGHT_SUMMARY: InsightSummary = {
+  total_revenue: 245_800,
+  adr: 1850,
+  revpar: 1295,
+  occupancy_percent: 70,
+};
+
+export const MOCK_CHANNEL_MIX: ChannelMix[] = [
+  { channel: "Booking.com", count: 42, share_percent: 35 },
+  { channel: "Direkt", count: 30, share_percent: 25 },
+  { channel: "Expedia", count: 24, share_percent: 20 },
+  { channel: "Agoda", count: 12, share_percent: 10 },
+  { channel: "Telefon", count: 12, share_percent: 10 },
+];
+
+export const MOCK_INSIGHT_ACTIONS: InsightAction[] = [
+  { title: "Düşük doluluk uyarısı", severity: "warning", message: "Gelecek hafta doluluk %45'e düşebilir. Dinamik fiyat ayarı önerilir.", action: "Revenue Manager'a bildir" },
+  { title: "Kanal optimizasyonu", severity: "opportunity", message: "Direkt rezervasyon oranı artırılabilir — web sitesi kampanya önerisi.", action: "Pazarlama ekibine aktar" },
+];
+
 export { TODAY, addDays };
