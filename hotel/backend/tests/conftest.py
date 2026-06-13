@@ -4,6 +4,7 @@ Pytest yapılandırması: async test client, test veritabanı, global fixture'la
 import os
 # Testlerde LLM ajanları mock moda düşsün (gerçek API anahtarı gerekmez)
 os.environ.setdefault("ENABLE_LLM_MOCK", "true")
+os.environ.setdefault("ENABLE_RATE_LIMIT", "false")
 
 import asyncio
 import pytest
@@ -14,8 +15,15 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 from app.main import app
 from app.core.db import get_db, Base
 from app.core.config import settings
+# Import all models to ensure tables are created during test setup
+from app.models import user, audit, front_office, reservation_ext, housekeeping, finance
+from app.models import channel, channel_mapping, channel_sync_log, groups, maintenance, iot
+from app.models import voice, mobile_checkin, cv, blockchain_identity, gds, hr, ai_invocation
+from app.models import integration_setting, chat_session, chat_message, guest_wifi_session
+from app.models import loyalty_account, loyalty_transaction, complaint, feedback, occupancy_forecast
+from app.models import rate_recommendation, overbooking_rule, budget, ledger_entry, chart_of_accounts, einvoice, custom_report
+# Specific model imports for fixtures
 from app.models.user import User
-from app.models.audit import AuditLog
 from app.models.front_office import RoomType, Room, Guest, Reservation, Stay, Trace
 from app.models.reservation_ext import RatePlan, Availability
 from datetime import date, timedelta

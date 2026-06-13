@@ -1,0 +1,31 @@
+{
+  "nav": {
+    "reservations": "Rezervasyonlar",
+    "dashboard": "Pano",
+    "guests": "Misafirler",
+    "rooms": "Odalar",
+    "fnb": "F&B / POS",
+    "finance": "Muhasebe",
+    "settings": "Ayarlar",
+    "logout": "Çıkış"
+  },
+  "auth": {
+    "login": "Giriş Yap",
+    "email": "E-posta",
+    "password": "Şifre",
+    "signin": "Giriş Yap",
+    "logout": "Çıkış",
+    "invalidCredentials": "Geçersiz e-posta veya şifre"
+  },
+  "common": {
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "add": "Ekle",
+    "search": "Ara",
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "success": "Başarılı"
+  }
+}
