@@ -6,21 +6,64 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { StatCard } from "@/components/kpi/StatCard";
 import { Badge } from "@/components/ui/Badge";
 import { SimpleTable } from "@/components/ui/SimpleTable";
+import { useApiData } from "@/lib/useApiData";
+import { MockBanner } from "@/components/ui/DataStates";
 import { MOCK_IOT_DEVICES, MOCK_IOT_SCENES } from "@/lib/mock-faz34";
+
+// Backend → ekran satır şekli normalizasyonu.
+function normalizeDevices(raw: any[]) {
+  return raw.map((d) => ({
+    id: String(d.id),
+    room: String(d.room_id ?? d.room ?? "—"),
+    type: d.device_type ?? d.type ?? "—",
+    vendor: d.vendor ?? "—",
+    online: (d.status ?? d.online) === "online" || d.online === true,
+    state: typeof d.state === "object" && d.state !== null
+      ? (Object.keys(d.state).length ? Object.entries(d.state).map(([k, v]) => `${k}: ${v}`).join(", ").slice(0, 40) : "—")
+      : (d.state ?? "—"),
+  }));
+}
+
+function normalizeScenes(raw: any[]) {
+  return raw.map((s) => ({
+    id: String(s.id),
+    name: s.name,
+    trigger: s.trigger_type ?? s.trigger ?? "—",
+    actions: Array.isArray(s.actions) ? s.actions.length : Number(s.actions ?? 0),
+    active: s.is_active ?? s.active ?? false,
+  }));
+}
 
 export default function IotPage() {
   const { t } = useTranslation();
   const [tab, setTab] = useState<"devices" | "scenes">("devices");
-  const online = MOCK_IOT_DEVICES.filter((d) => d.online).length;
+
+  const { data: devicesRaw, usingFallback: devicesFallback } = useApiData<any[]>({
+    path: "/api/v1/iot/devices",
+    fallback: MOCK_IOT_DEVICES,
+  });
+  const { data: scenesRaw, usingFallback: scenesFallback } = useApiData<any[]>({
+    path: "/api/v1/iot/scenarios",
+    fallback: MOCK_IOT_SCENES,
+  });
+
+  const devices = devicesFallback ? MOCK_IOT_DEVICES : normalizeDevices(devicesRaw);
+  const scenes = scenesFallback ? MOCK_IOT_SCENES : normalizeScenes(scenesRaw);
+  const usingFallback = devicesFallback || scenesFallback;
+
+  const online = devices.filter((d) => d.online).length;
 
   return (
     <div className="space-y-6">
       <PageHeader title={t('iot.title')} subtitle={t('iot.subtitle')} />
+
+      {usingFallback && <MockBanner />}
+
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatCard label={t('iot.devices')} value={String(MOCK_IOT_DEVICES.length)} />
-        <StatCard label={t('iot.online')} value={`${online}/${MOCK_IOT_DEVICES.length}`} tone="success" />
-        <StatCard label={t('iot.offline')} value={String(MOCK_IOT_DEVICES.length - online)} tone={online < MOCK_IOT_DEVICES.length ? "warning" : "default"} />
-        <StatCard label="Active Scenes" value={String(MOCK_IOT_SCENES.filter((s) => s.active).length)} />
+        <StatCard label={t('iot.devices')} value={String(devices.length)} />
+        <StatCard label={t('iot.online')} value={`${online}/${devices.length}`} tone="success" />
+        <StatCard label={t('iot.offline')} value={String(devices.length - online)} tone={online < devices.length ? "warning" : "default"} />
+        <StatCard label="Active Scenes" value={String(scenes.filter((s) => s.active).length)} />
       </div>
 
       <div className="border-b border-line" role="tablist">
@@ -35,7 +78,7 @@ export default function IotPage() {
       </div>
 
       {tab === "devices" ? (
-        <SimpleTable rows={MOCK_IOT_DEVICES} columns={[
+        <SimpleTable rows={devices} columns={[
           { key: "room", header: t('iot.rooms') },
           { key: "type", header: t('common.status') },
           { key: "vendor", header: "Vendor" },
@@ -43,7 +86,7 @@ export default function IotPage() {
           { key: "online", header: "Connection", render: (d) => <Badge tone={d.online ? "success" : "danger"}>{d.online ? t('iot.online') : t('iot.offline')}</Badge> },
         ]} />
       ) : (
-        <SimpleTable rows={MOCK_IOT_SCENES} columns={[
+        <SimpleTable rows={scenes} columns={[
           { key: "name", header: t('iot.scenes') },
           { key: "trigger", header: "Trigger" },
           { key: "actions", header: "Actions", align: "right", render: (s) => `${s.actions} devices` },

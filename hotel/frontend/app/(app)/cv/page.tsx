@@ -7,22 +7,49 @@ import { StatCard } from "@/components/kpi/StatCard";
 import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { AIPanel } from "@/components/ai/AIPanel";
 import { SimpleTable } from "@/components/ui/SimpleTable";
+import { useApiData } from "@/lib/useApiData";
+import { MockBanner } from "@/components/ui/DataStates";
 import { MOCK_CV_INSPECTIONS, MOCK_CV_DEFECTS } from "@/lib/mock-faz34";
 
 const INSP_TONE: Record<string, BadgeTone> = { completed: "info", review: "warning", passed: "success" };
+
+// Backend → ekran satır şekli normalizasyonu.
+function normalizeInspections(raw: any[]) {
+  return raw.map((i) => ({
+    id: String(i.id),
+    room: String(i.room_id ?? i.room ?? "—"),
+    model: i.model ?? "—",
+    score: Number(i.score ?? 0),
+    defects: i.defects_count ?? i.defects ?? 0,
+    status: i.status,
+  }));
+}
 
 export default function CvPage() {
   const { t } = useTranslation();
   const [tab, setTab] = useState<"inspections" | "defects">("inspections");
 
+  const { data: inspectionsRaw, usingFallback: inspectionsFallback } = useApiData<any[]>({
+    path: "/api/v1/cv/inspections",
+    fallback: MOCK_CV_INSPECTIONS,
+  });
+
+  const inspections = inspectionsFallback ? MOCK_CV_INSPECTIONS : normalizeInspections(inspectionsRaw);
+  // Kusurlar denetim başına döner (toplu uç yok) → mock kalır.
+  const defects = MOCK_CV_DEFECTS;
+  const usingFallback = inspectionsFallback;
+
   return (
     <div className="space-y-6">
       <PageHeader title={t('cv.title')} subtitle={t('cv.subtitle')} />
+
+      {usingFallback && <MockBanner />}
+
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatCard label={t('cv.inspection')} value={String(MOCK_CV_INSPECTIONS.length)} />
-        <StatCard label="Avg Score" value={`${Math.round(MOCK_CV_INSPECTIONS.reduce((s, i) => s + i.score, 0) / MOCK_CV_INSPECTIONS.length)}`} tone="success" />
-        <StatCard label={t('cv.issues')} value={String(MOCK_CV_DEFECTS.length)} tone="warning" />
-        <StatCard label="Verified" value={String(MOCK_CV_DEFECTS.filter((d) => d.verified).length)} />
+        <StatCard label={t('cv.inspection')} value={String(inspections.length)} />
+        <StatCard label="Avg Score" value={`${inspections.length ? Math.round(inspections.reduce((s, i) => s + i.score, 0) / inspections.length) : 0}`} tone="success" />
+        <StatCard label={t('cv.issues')} value={String(defects.length)} tone="warning" />
+        <StatCard label="Verified" value={String(defects.filter((d) => d.verified).length)} />
       </div>
 
       <AIPanel
@@ -43,7 +70,7 @@ export default function CvPage() {
       </div>
 
       {tab === "inspections" ? (
-        <SimpleTable rows={MOCK_CV_INSPECTIONS} columns={[
+        <SimpleTable rows={inspections} columns={[
           { key: "room", header: t('cv.room') },
           { key: "model", header: "Model" },
           { key: "score", header: "Score", align: "right", render: (i) => <span className={i.score >= 90 ? "text-success" : i.score >= 80 ? "" : "text-warning"}>{i.score}</span> },
@@ -51,7 +78,7 @@ export default function CvPage() {
           { key: "status", header: t('common.status'), render: (i) => <Badge tone={INSP_TONE[i.status]}>{i.status === "completed" ? "Completed" : i.status === "review" ? "Review" : "Passed"}</Badge> },
         ]} />
       ) : (
-        <SimpleTable rows={MOCK_CV_DEFECTS} columns={[
+        <SimpleTable rows={defects} columns={[
           { key: "room", header: t('cv.room') },
           { key: "type", header: "Defect" },
           { key: "confidence", header: "Confidence", align: "right", render: (d) => `%${Math.round(d.confidence * 100)}` },

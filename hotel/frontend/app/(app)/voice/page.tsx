@@ -6,20 +6,60 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { StatCard } from "@/components/kpi/StatCard";
 import { Badge } from "@/components/ui/Badge";
 import { SimpleTable } from "@/components/ui/SimpleTable";
+import { useApiData } from "@/lib/useApiData";
+import { MockBanner } from "@/components/ui/DataStates";
 import { MOCK_VOICE_INTEGRATIONS, MOCK_VOICE_COMMANDS } from "@/lib/mock-faz34";
+
+// Backend → ekran satır şekli normalizasyonu.
+function normalizeIntegrations(raw: any[]) {
+  return raw.map((v) => ({
+    id: String(v.id),
+    name: v.device_name ?? v.name ?? "—",
+    provider: v.provider,
+    rooms: v.rooms ?? (v.is_active ? 1 : 0),
+    active: v.is_active ?? v.active ?? false,
+  }));
+}
+
+function normalizeCommands(raw: any[]) {
+  return raw.map((c) => ({
+    id: String(c.id),
+    room: c.room ?? "—",
+    intent: c.intent,
+    phrase: c.raw_text ?? c.phrase ?? "—",
+    result: c.result ?? "—",
+    time: c.time ?? (c.executed_at ? String(c.executed_at).slice(0, 16).replace("T", " ") : ""),
+  }));
+}
 
 export default function VoicePage() {
   const { t } = useTranslation();
   const [tab, setTab] = useState<"integrations" | "commands">("integrations");
 
+  const { data: integrationsRaw, usingFallback: integrationsFallback } = useApiData<any[]>({
+    path: "/api/v1/voice/integrations",
+    fallback: MOCK_VOICE_INTEGRATIONS,
+  });
+  const { data: commandsRaw, usingFallback: commandsFallback } = useApiData<any[]>({
+    path: "/api/v1/voice/commands",
+    fallback: MOCK_VOICE_COMMANDS,
+  });
+
+  const integrations = integrationsFallback ? MOCK_VOICE_INTEGRATIONS : normalizeIntegrations(integrationsRaw);
+  const commands = commandsFallback ? MOCK_VOICE_COMMANDS : normalizeCommands(commandsRaw);
+  const usingFallback = integrationsFallback || commandsFallback;
+
   return (
     <div className="space-y-6">
       <PageHeader title={t('voice.title')} subtitle={t('voice.subtitle')} />
+
+      {usingFallback && <MockBanner />}
+
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatCard label="Integrations" value={String(MOCK_VOICE_INTEGRATIONS.length)} />
-        <StatCard label="Equipped Rooms" value={String(MOCK_VOICE_INTEGRATIONS.reduce((s, v) => s + v.rooms, 0))} tone="success" />
-        <StatCard label="Today's Commands" value={String(MOCK_VOICE_COMMANDS.length)} />
-        <StatCard label="Successful" value={String(MOCK_VOICE_COMMANDS.filter((c) => c.result === "success").length)} tone="success" />
+        <StatCard label="Integrations" value={String(integrations.length)} />
+        <StatCard label="Equipped Rooms" value={String(integrations.reduce((s, v) => s + v.rooms, 0))} tone="success" />
+        <StatCard label="Today's Commands" value={String(commands.length)} />
+        <StatCard label="Successful" value={String(commands.filter((c) => c.result === "success").length)} tone="success" />
       </div>
 
       <div className="border-b border-line" role="tablist">
@@ -34,14 +74,14 @@ export default function VoicePage() {
       </div>
 
       {tab === "integrations" ? (
-        <SimpleTable rows={MOCK_VOICE_INTEGRATIONS} columns={[
+        <SimpleTable rows={integrations} columns={[
           { key: "name", header: "Name" },
           { key: "provider", header: t('gds.provider'), render: (v) => <Badge tone="primary">{v.provider}</Badge> },
           { key: "rooms", header: t('properties.rooms'), align: "right" },
           { key: "active", header: t('common.status'), render: (v) => <Badge tone={v.active ? "success" : "neutral"}>{v.active ? "Active" : "Inactive"}</Badge> },
         ]} />
       ) : (
-        <SimpleTable rows={MOCK_VOICE_COMMANDS} columns={[
+        <SimpleTable rows={commands} columns={[
           { key: "room", header: t('cv.room') },
           { key: "intent", header: "Intent" },
           { key: "phrase", header: "Phrase" },

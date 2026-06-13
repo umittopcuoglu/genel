@@ -8,6 +8,8 @@ import { StatCard } from "@/components/kpi/StatCard";
 import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { AIPanel } from "@/components/ai/AIPanel";
 import { SimpleTable } from "@/components/ui/SimpleTable";
+import { useApiData } from "@/lib/useApiData";
+import { MockBanner } from "@/components/ui/DataStates";
 import { MOCK_GROUPS, MOCK_EVENTS } from "@/lib/mock-faz34";
 import { toast } from "@/components/ui/Toast";
 
@@ -18,26 +20,53 @@ const STATUS: Record<string, { tone: BadgeTone; label: string }> = {
   cancelled: { tone: "danger", label: "İptal" },
 };
 
+// Backend (GroupResponse) → ekran satır şekli normalizasyonu.
+function normalizeGroups(raw: any[]) {
+  return raw.map((g) => ({
+    id: String(g.id),
+    name: g.name,
+    start: g.block_start_date,
+    end: g.block_end_date,
+    pax: g.pax_count,
+    blocks: 0, // backend has no block count → 0
+    discount: Number(g.discount_rate ?? 0),
+    status: g.status,
+  }));
+}
+
 export default function GroupsPage() {
   const { t } = useTranslation();
   const [tab, setTab] = useState<"groups" | "events">("groups");
-  const totalPax = MOCK_GROUPS.reduce((s, g) => s + g.pax, 0);
+
+  const { data: groupsRaw, usingFallback: groupsFallback } = useApiData<any[]>({
+    path: "/api/v1/groups",
+    fallback: MOCK_GROUPS,
+  });
+
+  const groups = groupsFallback ? MOCK_GROUPS : normalizeGroups(groupsRaw);
+  // Etkinlikler için backend toplu uç sağlamıyor → mock kalır.
+  const usingFallback = groupsFallback;
+
+  const totalPax = groups.reduce((s, g) => s + g.pax, 0);
 
   return (
     <div className="space-y-6">
       <PageHeader
         title={t('groups.title')}
-        subtitle={`${MOCK_GROUPS.length} grup · ${MOCK_EVENTS.length} etkinlik`}
+        subtitle={`${groups.length} grup · ${MOCK_EVENTS.length} etkinlik`}
         action={
           <button onClick={() => toast.info("Coming soon")} className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:opacity-90">
             <Plus className="h-4 w-4" /> {t('groups.newGroup')}
           </button>
         }
       />
+
+      {usingFallback && <MockBanner />}
+
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatCard label="Aktif Grup" value={String(MOCK_GROUPS.filter((g) => g.status === "confirmed").length)} tone="success" />
+        <StatCard label="Aktif Grup" value={String(groups.filter((g) => g.status === "confirmed").length)} tone="success" />
         <StatCard label={t('groups.pax')} value={String(totalPax)} />
-        <StatCard label="Bloklu Oda" value={String(MOCK_GROUPS.reduce((s, g) => s + g.blocks, 0))} />
+        <StatCard label="Bloklu Oda" value={String(groups.reduce((s, g) => s + g.blocks, 0))} />
         <StatCard label={t('groups.events')} value={String(MOCK_EVENTS.length)} />
       </div>
 
@@ -60,14 +89,14 @@ export default function GroupsPage() {
 
       {tab === "groups" ? (
         <SimpleTable
-          rows={MOCK_GROUPS}
+          rows={groups}
           columns={[
             { key: "name", header: t('groups.groupName') },
             { key: "dates", header: t('common.date'), render: (g) => `${g.start} → ${g.end}` },
             { key: "pax", header: t('groups.pax'), align: "right" },
             { key: "blocks", header: "Blok", align: "right" },
             { key: "discount", header: "İndirim", align: "right", render: (g) => `%${g.discount}` },
-            { key: "status", header: t('common.status'), render: (g) => <Badge tone={STATUS[g.status].tone}>{STATUS[g.status].label}</Badge> },
+            { key: "status", header: t('common.status'), render: (g) => { const s = STATUS[g.status] ?? { tone: "neutral" as BadgeTone, label: g.status }; return <Badge tone={s.tone}>{s.label}</Badge>; } },
           ]}
         />
       ) : (

@@ -6,21 +6,48 @@ import { StatCard } from "@/components/kpi/StatCard";
 import { Card } from "@/components/ui/Card";
 import { AIPanel } from "@/components/ai/AIPanel";
 import { SimpleTable } from "@/components/ui/SimpleTable";
+import { useApiData } from "@/lib/useApiData";
+import { MockBanner } from "@/components/ui/DataStates";
 import { MOCK_CHAIN, MOCK_PROPERTIES } from "@/lib/mock-faz34";
 
 const tl = (n: number) => `₺${(n / 1_000_000).toFixed(1)}M`;
 
+// Backend (console.PropertyResponse) → ekran satır şekli normalizasyonu.
+type PropertyRow = { id: string; name: string; city: string; rooms: number; occupancy: number; revenue: number };
+
+function normalizeProperties(raw: any[]): PropertyRow[] {
+  return raw.map((p) => ({
+    id: String(p.id),
+    name: p.name,
+    city: p.city ?? "—",
+    rooms: Number(p.total_rooms ?? 0),
+    occupancy: 0, // doluluk PropertyResponse'ta yok
+    revenue: 0, // gelir PropertyResponse'ta yok
+  }));
+}
+
 export default function PropertiesPage() {
   const { t } = useTranslation();
-  const totalRooms = MOCK_PROPERTIES.reduce((s, p) => s + p.rooms, 0);
-  const totalRev = MOCK_PROPERTIES.reduce((s, p) => s + p.revenue, 0);
-  const avgOcc = Math.round(MOCK_PROPERTIES.reduce((s, p) => s + p.occupancy, 0) / MOCK_PROPERTIES.length);
+
+  const { data: propsRaw, usingFallback: propsFallback } = useApiData<any[]>({
+    path: "/api/v1/console/properties",
+    fallback: MOCK_PROPERTIES,
+  });
+
+  const properties = propsFallback ? MOCK_PROPERTIES : normalizeProperties(propsRaw);
+  const usingFallback = propsFallback;
+
+  const totalRooms = properties.reduce((s, p) => s + p.rooms, 0);
+  const totalRev = properties.reduce((s, p) => s + p.revenue, 0);
+  const avgOcc = properties.length ? Math.round(properties.reduce((s, p) => s + p.occupancy, 0) / properties.length) : 0;
 
   return (
     <div className="space-y-6">
       <PageHeader title={`${t('properties.title')} — ${MOCK_CHAIN.name}`} subtitle={`${MOCK_CHAIN.properties} properties · consolidated reporting`} />
+
+      {usingFallback && <MockBanner />}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatCard label={t('properties.properties')} value={String(MOCK_PROPERTIES.length)} />
+        <StatCard label={t('properties.properties')} value={String(properties.length)} />
         <StatCard label={t('properties.rooms')} value={String(totalRooms)} />
         <StatCard label={t('properties.occupancy')} value={`%${avgOcc}`} tone="success" />
         <StatCard label="Chain Revenue" value={tl(totalRev)} tone="success" />
@@ -33,7 +60,7 @@ export default function PropertiesPage() {
       />
 
       <Card title={t('properties.properties')}>
-        <SimpleTable rows={MOCK_PROPERTIES} columns={[
+        <SimpleTable rows={properties} columns={[
           { key: "name", header: t('properties.propertyName') },
           { key: "city", header: t('properties.location') },
           { key: "rooms", header: t('properties.rooms'), align: "right" },
