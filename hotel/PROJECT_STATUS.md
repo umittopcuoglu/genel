@@ -10,7 +10,7 @@
 > admin parametreleri çalışma zamanında girer, şifreli saklanır, tek tıkla canlı bağlantı testi)
 > Frontend "Grand Hotel" tasarım dili + sayfa geçiş animasyonları. Testler: 201 + 23 yeni = **224 yeşil**.
 
-**Son güncelleme:** 2026-06-13 (Tüm modül ekranları (12) canlı backend API'sine bağlandı: Rezervasyon, Muhasebe/Finance, F&B, Güvenlik, Groups, HR, GDS, IoT, CV, Voice, Properties, Mobile, Blockchain; FolioResponse guest_name+room_no ile zenginleştirildi) · **Faz:** 1-4 · **Test Suite:** 272 yeşil · **Frontend build:** 29 route ✓
+**Son güncelleme:** 2026-06-13 (TÜM ekranlar canlı backend'e bağlı — analytics dahil; Analitik Dashboard için gerçek raporlama uçları eklendi: occupancy-trend/revenue-trend/source-mix) · **Faz:** 1-4 · **Test Suite:** 278 yeşil · **Frontend build:** 29 route ✓
 
 ## Modül Durumu
 
@@ -27,7 +27,7 @@
 | 7 | F&B (dış entegrasyon) | ✅ KABUL | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-016 | 3 |
 | 8 | CRM & GuestAI | ⬜ | ⬜ | — | 2 |
 | 9 | Güvenlik & KVKK | ✅ KABUL | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-017 | 3 |
-| 10 | Raporlama & InsightAI | ⬜ | ⬜ | — | 2 |
+| 10 | Raporlama & InsightAI | 🟡 kısmi (analitik uçları + dashboard) | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-013 | 2 |
 
 Durum: ⬜ bekliyor · 🟡 devam · 🟠 review'da · ✅ kabul · ❌ düzeltmede
 
@@ -65,10 +65,10 @@ Durum: ⬜ bekliyor · 🟡 devam · 🟠 review'da · ✅ kabul · ❌ düzeltm
 - **Faz 3-4 modül ekranları (2026-06-13):** HR, GDS, IoT, CV, Voice, Multi-Property, Mobile Check-in,
   Blockchain ekranları `useApiData` deseniyle canlı `/api/v1/*` uçlarına bağlandı (mock fallback + MockBanner).
   Toplu liste ucu olmayan alt-sekmeler (groups→events, cv→defects) mock'ta bırakıldı.
-- **Analytics (Gelişmiş Analitik Dashboard):** Bilinçli olarak mock'ta bırakıldı. Grafikler haftalık/aylık
-  trend serisi + yıl-yıl karşılaştırma + rezervasyon kaynak dağılımı bekliyor; mevcut rapor uçları
-  (`/reports/occupancy|adr|revpar`) günlük seri döndürüyor, kaynak-dağılım ucu yok. Bu ekran TASK-013
-  (Raporlama & InsightAI) backend'i tamamlanınca canlanacak — ayrı backend görevi.
+- **Analytics (Gelişmiş Analitik Dashboard) — ✅ canlandı (2026-06-13):** Gerçek raporlama uçları eklendi
+  (`/reports/occupancy-trend` haftalık YoY, `/reports/revenue-trend` aylık oda geliri, `/reports/source-mix`
+  rezervasyon kaynak dağılımı — `analytics_service` ile DB'den hesap). Ekran bu uçlara bağlı; veri boşsa
+  mock'a düşer. Kalan TASK-013 kapsamı: InsightAI günlük brief/öneri üretimi (ai_endpoints'te mock mevcut).
 
 ## Açık Geri Bildirimler (orchestrator/feedback/)
 _Yok. (FB-001 kapatıldı — düzeltmeler ağ engeli nedeniyle denetçi/Claude tarafından uygulandı.)_
