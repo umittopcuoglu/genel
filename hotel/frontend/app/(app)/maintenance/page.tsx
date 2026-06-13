@@ -7,6 +7,8 @@ import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { AIPanel } from "@/components/ai/AIPanel";
 import { MOCK_WORK_ORDERS, MOCK_ASSETS, type WorkOrderRow, type AssetRow } from "@/lib/mock-modules";
 import { toast } from "@/components/ui/Toast";
+import { useApiData } from "@/lib/useApiData";
+import { LoadingState, MockBanner } from "@/components/ui/DataStates";
 
 const WO_STATUS: Record<WorkOrderRow["status"], { tone: BadgeTone; label: string }> = {
   open: { tone: "warning", label: "Açık" },
@@ -35,12 +37,24 @@ const ASSET_STATUS: Record<AssetRow["status"], { tone: BadgeTone; label: string 
  */
 export default function MaintenancePage() {
   const [tab, setTab] = useState<"work-orders" | "assets">("work-orders");
+  const { data: workOrders, loading: woLoading, usingFallback: woFallback } = useApiData<WorkOrderRow[]>({
+    path: "/api/v1/maintenance/work-orders",
+    fallback: MOCK_WORK_ORDERS,
+    responseKey: "data",
+  });
+  const { data: assets, loading: assetsLoading, usingFallback: assetsFallback } = useApiData<AssetRow[]>({
+    path: "/api/v1/maintenance/assets",
+    fallback: MOCK_ASSETS,
+    responseKey: "data",
+  });
+  const usingFallback = woFallback || assetsFallback;
+  const loading = woLoading || assetsLoading;
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Bakım & Teknik Servis"
-        subtitle={`${MOCK_WORK_ORDERS.length} iş emri · ${MOCK_ASSETS.length} varlık`}
+        subtitle={`${workOrders.length} iş emri · ${assets.length} varlık${usingFallback ? " (mock)" : ""}`}
         action={
           <button
             onClick={() => toast.info("Yeni iş emri formu yakında eklenecek")}
@@ -50,6 +64,8 @@ export default function MaintenancePage() {
           </button>
         }
       />
+
+      {usingFallback && <MockBanner />}
 
       <AIPanel
         agent="TechCare AI"
@@ -93,7 +109,7 @@ export default function MaintenancePage() {
               </tr>
             </thead>
             <tbody>
-              {MOCK_WORK_ORDERS.map((w) => (
+              {workOrders.map((w) => (
                 <tr key={w.id} className="border-b border-line last:border-0 hover:bg-bg/60">
                   <td className="px-4 py-3 font-mono">{w.room_no}</td>
                   <td className="px-4 py-3">{w.category}</td>
@@ -122,7 +138,7 @@ export default function MaintenancePage() {
               </tr>
             </thead>
             <tbody>
-              {MOCK_ASSETS.map((a) => (
+              {assets.map((a) => (
                 <tr key={a.id} className="border-b border-line last:border-0 hover:bg-bg/60">
                   <td className="px-4 py-3 font-medium">{a.name}</td>
                   <td className="px-4 py-3">{a.category}</td>

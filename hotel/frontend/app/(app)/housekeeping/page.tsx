@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { User, Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { MOCK_HK_TASKS, type HousekeepingTask } from "@/lib/mock-modules";
+import { useApiData } from "@/lib/useApiData";
+import { LoadingState, MockBanner } from "@/components/ui/DataStates";
 
 const TYPE_LABEL: Record<HousekeepingTask["type"], string> = {
   checkout_clean: "Çıkış Temizliği",
@@ -30,12 +33,27 @@ const COLUMNS: { status: HousekeepingTask["status"]; label: string; accent: stri
  * Backend: GET /api/v1/housekeeping/tasks (TASK-005) bağlanınca canlanır.
  */
 export default function HousekeepingPage() {
-  const [tasks] = useState(MOCK_HK_TASKS);
+  const { data: tasks, loading, usingFallback } = useApiData<HousekeepingTask[]>({
+    path: "/api/v1/housekeeping/tasks",
+    fallback: MOCK_HK_TASKS,
+    responseKey: "data",
+  });
+
   const counts = COLUMNS.map((c) => tasks.filter((t) => t.status === c.status).length);
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="Housekeeping" subtitle="Yükleniyor..." />
+        <LoadingState message="Housekeeping görevleri yükleniyor..." />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Housekeeping" subtitle={`${tasks.length} aktif görev`} />
+      <PageHeader title="Housekeeping" subtitle={`${tasks.length} aktif görev${usingFallback ? " (mock)" : ""}`} />
+      {usingFallback && <MockBanner />}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         {COLUMNS.map((col, i) => {
@@ -54,14 +72,22 @@ export default function HousekeepingPage() {
                       <Badge tone={PRIORITY_TONE[t.priority]}>{t.priority === "high" ? "Yüksek" : t.priority === "normal" ? "Normal" : "Düşük"}</Badge>
                     </div>
                     <div className="mt-1 text-xs text-text-2">{TYPE_LABEL[t.type]}</div>
-                    <div className="mt-2 text-xs">
+                    <div className="mt-2 flex items-center gap-1.5 text-xs">
                       {t.assigned_to ? (
-                        <span className="text-text-1">👤 {t.assigned_to}</span>
+                        <>
+                          <User className="h-3 w-3 text-text-2" aria-hidden />
+                          <span className="text-text-1">{t.assigned_to}</span>
+                        </>
                       ) : (
                         <span className="text-amber-600 dark:text-amber-400">Atanmadı</span>
                       )}
                     </div>
-                    {t.note && <div className="mt-1 text-xs text-text-2">📝 {t.note}</div>}
+                    {t.note && (
+                      <div className="mt-1 flex items-start gap-1.5 text-xs text-text-2">
+                        <Sparkles className="h-3 w-3 mt-0.5 flex-shrink-0" aria-hidden />
+                        <span>{t.note}</span>
+                      </div>
+                    )}
                   </div>
                 ))}
                 {colTasks.length === 0 && (
