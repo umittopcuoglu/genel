@@ -132,8 +132,8 @@ export default function ReservationsPage() {
           <span className="ml-3 text-text-2">{t("reservations.loading")}</span>
         </div>
       ) : (
-      <div className="overflow-x-auto rounded-lg border border-line">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-lg border border-line sm:border">
+        <table className="responsive-table w-full text-sm">
           <thead>
             <tr className="border-b border-line bg-bg text-left text-xs uppercase tracking-wide text-text-2">
               <th className="px-4 py-3 font-medium">{t("reservations.code")}</th>
@@ -153,17 +153,19 @@ export default function ReservationsPage() {
                                 r.status === "no_show" ? "noShow" : r.status;
               return (
                 <tr key={r.id} className="border-b border-line last:border-0 hover:bg-bg/60">
-                  <td className="px-4 py-3 font-mono text-xs">{r.code}</td>
-                  <td className="px-4 py-3">
-                    <div className="font-medium">{r.guest_name}</div>
-                    <div className="text-xs text-text-2">{r.nationality}</div>
+                  <td className="px-4 py-3 font-mono text-xs" data-label={t("reservations.code")}>{r.code}</td>
+                  <td className="px-4 py-3" data-label={t("reservations.guestName")}>
+                    <div>
+                      <div className="font-medium">{r.guest_name}</div>
+                      <div className="text-xs text-text-2">{r.nationality}</div>
+                    </div>
                   </td>
-                  <td className="px-4 py-3">{r.room_type}</td>
-                  <td className="whitespace-nowrap px-4 py-3">{r.check_in} → {r.check_out}</td>
-                  <td className="px-4 py-3">{r.nights}</td>
-                  <td className="px-4 py-3 text-text-2">{t(`reservations.source.${r.source}`)}</td>
-                  <td className="px-4 py-3"><Badge tone={STATUS_TONES[r.status]}>{t(`reservations.status.${statusKey}`)}</Badge></td>
-                  <td className="px-4 py-3 text-right font-mono">{fmtTRY(r.total)}</td>
+                  <td className="px-4 py-3" data-label={t("reservations.roomType")}>{r.room_type}</td>
+                  <td className="whitespace-nowrap px-4 py-3" data-label={t("reservations.checkInDate")}>{r.check_in} → {r.check_out}</td>
+                  <td className="px-4 py-3" data-label={t("reservations.nights")}>{r.nights}</td>
+                  <td className="px-4 py-3 text-text-2" data-label={t("reservations.source")}>{t(`reservations.source.${r.source}`)}</td>
+                  <td className="px-4 py-3" data-label={t("common.status")}><Badge tone={STATUS_TONES[r.status]}>{t(`reservations.status.${statusKey}`)}</Badge></td>
+                  <td className="px-4 py-3 text-right font-mono" data-label={t("reservations.amount")}>{fmtTRY(r.total)}</td>
                 </tr>
               );
             })}

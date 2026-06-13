@@ -96,7 +96,7 @@ export default function MaintenancePage() {
 
       {tab === "work-orders" && (
         <div className="overflow-x-auto rounded-lg border border-line">
-          <table className="w-full text-sm">
+          <table className="responsive-table w-full text-sm">
             <thead>
               <tr className="border-b border-line bg-bg text-left text-xs uppercase tracking-wide text-text-2">
                 <th className="px-4 py-3 font-medium">Lokasyon</th>
@@ -111,13 +111,13 @@ export default function MaintenancePage() {
             <tbody>
               {workOrders.map((w) => (
                 <tr key={w.id} className="border-b border-line last:border-0 hover:bg-bg/60">
-                  <td className="px-4 py-3 font-mono">{w.room_no}</td>
-                  <td className="px-4 py-3">{w.category}</td>
-                  <td className="max-w-[260px] px-4 py-3 text-text-2">{w.description}</td>
-                  <td className="px-4 py-3"><Badge tone={PRIORITY[w.priority].tone}>{PRIORITY[w.priority].label}</Badge></td>
-                  <td className="px-4 py-3">{w.assigned_to ?? <span className="text-amber-600 dark:text-amber-400">Atanmadı</span>}</td>
-                  <td className="px-4 py-3"><Badge tone={WO_STATUS[w.status].tone}>{WO_STATUS[w.status].label}</Badge></td>
-                  <td className="px-4 py-3 text-text-2">{w.opened_at}</td>
+                  <td className="px-4 py-3 font-mono" data-label="Lokasyon">{w.room_no}</td>
+                  <td className="px-4 py-3" data-label="Kategori">{w.category}</td>
+                  <td className="max-w-xs px-4 py-3 text-text-2" data-label="Açıklama">{w.description}</td>
+                  <td className="px-4 py-3" data-label="Öncelik"><Badge tone={PRIORITY[w.priority].tone}>{PRIORITY[w.priority].label}</Badge></td>
+                  <td className="px-4 py-3" data-label="Atanan">{w.assigned_to ?? <span className="text-amber-600 dark:text-amber-400">Atanmadı</span>}</td>
+                  <td className="px-4 py-3" data-label="Durum"><Badge tone={WO_STATUS[w.status].tone}>{WO_STATUS[w.status].label}</Badge></td>
+                  <td className="px-4 py-3 text-text-2" data-label="Açılış">{w.opened_at}</td>
                 </tr>
               ))}
             </tbody>
@@ -127,7 +127,7 @@ export default function MaintenancePage() {
 
       {tab === "assets" && (
         <div className="overflow-x-auto rounded-lg border border-line">
-          <table className="w-full text-sm">
+          <table className="responsive-table w-full text-sm">
             <thead>
               <tr className="border-b border-line bg-bg text-left text-xs uppercase tracking-wide text-text-2">
                 <th className="px-4 py-3 font-medium">Varlık</th>
@@ -140,11 +140,11 @@ export default function MaintenancePage() {
             <tbody>
               {assets.map((a) => (
                 <tr key={a.id} className="border-b border-line last:border-0 hover:bg-bg/60">
-                  <td className="px-4 py-3 font-medium">{a.name}</td>
-                  <td className="px-4 py-3">{a.category}</td>
-                  <td className="px-4 py-3 text-text-2">{a.location}</td>
-                  <td className="px-4 py-3 font-mono text-text-2">{a.warranty_end}</td>
-                  <td className="px-4 py-3"><Badge tone={ASSET_STATUS[a.status].tone}>{ASSET_STATUS[a.status].label}</Badge></td>
+                  <td className="px-4 py-3 font-medium" data-label="Varlık">{a.name}</td>
+                  <td className="px-4 py-3" data-label="Kategori">{a.category}</td>
+                  <td className="px-4 py-3 text-text-2" data-label="Lokasyon">{a.location}</td>
+                  <td className="px-4 py-3 font-mono text-text-2" data-label="Garanti Bitiş">{a.warranty_end}</td>
+                  <td className="px-4 py-3" data-label="Durum"><Badge tone={ASSET_STATUS[a.status].tone}>{ASSET_STATUS[a.status].label}</Badge></td>
                 </tr>
               ))}
             </tbody>

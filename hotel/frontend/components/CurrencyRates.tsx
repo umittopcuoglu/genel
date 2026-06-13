@@ -54,8 +54,8 @@ export function CurrencyRates({ baseCurrency = 'TRY' }: { baseCurrency?: string 
 
   if (error || !rates) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-        <p className="text-sm text-red-700">Kurlar yüklenemedi: {error}</p>
+      <div className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 p-4">
+        <p className="text-sm text-red-700 dark:text-red-300">Kurlar yüklenemedi: {error}</p>
       </div>
     );
   }

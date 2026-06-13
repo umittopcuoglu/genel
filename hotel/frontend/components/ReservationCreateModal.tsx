@@ -197,7 +197,7 @@ export function ReservationCreateModal({ open, onClose, onSuccess }: Reservation
           </div>
 
           {error && (
-            <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+            <div className="rounded-md bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 p-3 text-sm text-red-700 dark:text-red-300">
               {error}
             </div>
           )}
