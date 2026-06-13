@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { Modal } from '@/components/ui/Modal';
+import { toast } from '@/components/ui/Toast';
 
 interface ReservationCreateModalProps {
   open: boolean;
@@ -24,8 +25,6 @@ export function ReservationCreateModal({ open, onClose, onSuccess }: Reservation
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  if (!open) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,29 +52,20 @@ export function ReservationCreateModal({ open, onClose, onSuccess }: Reservation
         throw new Error(data.error?.message || data.detail || 'Rezervasyon oluşturulamadı');
       }
 
+      toast.success('Rezervasyon başarıyla oluşturuldu');
       onSuccess?.();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
+      const msg = err instanceof Error ? err.message : 'Bilinmeyen hata';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
-      <div className="w-full max-w-2xl rounded-lg bg-surface border border-line shadow-xl my-8">
-        <div className="flex items-center justify-between border-b border-line p-4">
-          <h2 className="text-lg font-semibold">Yeni Rezervasyon</h2>
-          <button
-            onClick={onClose}
-            className="rounded-md p-1 text-text-2 hover:bg-bg hover:text-text-1"
-            aria-label="Kapat"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
+    <Modal open={open} onClose={onClose} title="Yeni Rezervasyon" size="xl">
         <form onSubmit={handleSubmit} className="space-y-4 p-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
@@ -219,7 +209,6 @@ export function ReservationCreateModal({ open, onClose, onSuccess }: Reservation
             </button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }
