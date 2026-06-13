@@ -9,6 +9,7 @@ import { StatCard } from "@/components/kpi/StatCard";
 import { MOCK_FOLIOS, MOCK_FOLIO_DETAIL, type FolioRow, type FolioLine } from "@/lib/mock-modules";
 import { CurrencyRates, CurrencyConverter } from "@/components/CurrencyRates";
 import { toast } from "@/components/ui/Toast";
+import { useTranslation } from "@/lib/i18n";
 
 const fmtTRY = (n: number) => `₺${n.toLocaleString("tr-TR")}`;
 
@@ -26,6 +27,7 @@ const LINE_TONE: Record<FolioLine["type"], string> = {
  * Backend: GET /api/v1/folios (TASK-004) bağlanınca canlanır.
  */
 export default function FinancePage() {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState<FolioRow>(MOCK_FOLIOS[1]);
 
   const totalCharges = MOCK_FOLIOS.reduce((s, f) => s + f.charges, 0);
@@ -34,13 +36,13 @@ export default function FinancePage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Muhasebe & Cashiering" subtitle="Açık folio'lar ve bakiyeler" />
+      <PageHeader title={t("finance.title")} subtitle={t("finance.subtitle")} />
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatCard label="Toplam Masraf" value={fmtTRY(totalCharges)} />
-        <StatCard label="Toplam Tahsilat" value={fmtTRY(totalPayments)} tone="success" />
-        <StatCard label="Açık Bakiye" value={fmtTRY(openBalance)} tone={openBalance > 0 ? "warning" : "default"} />
-        <StatCard label="Açık Folio" value={String(MOCK_FOLIOS.filter((f) => f.status === "open").length)} />
+        <StatCard label={t("finance.totalCharges")} value={fmtTRY(totalCharges)} />
+        <StatCard label={t("finance.totalPayments")} value={fmtTRY(totalPayments)} tone="success" />
+        <StatCard label={t("finance.openBalance")} value={fmtTRY(openBalance)} tone={openBalance > 0 ? "warning" : "default"} />
+        <StatCard label={t("finance.openFolios")} value={String(MOCK_FOLIOS.filter((f) => f.status === "open").length)} />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
@@ -93,7 +95,7 @@ export default function FinancePage() {
                 onClick={() => toast.info("Ödeme alma formu yakında eklenecek")}
                 className="flex items-center gap-1.5 rounded-md bg-primary px-2.5 py-1.5 text-xs font-medium text-white hover:opacity-90"
               >
-                <CreditCard className="h-3.5 w-3.5" aria-hidden /> Ödeme Al
+                <CreditCard className="h-3.5 w-3.5" aria-hidden /> {t("finance.takePayment")}
               </button>
             }
           >
@@ -110,7 +112,7 @@ export default function FinancePage() {
                 </div>
               ))}
               <div className="flex items-center justify-between pt-2 text-sm font-semibold">
-                <span>Bakiye</span>
+                <span>{t("finance.balance")}</span>
                 <span className={`font-mono ${selected.balance > 0 ? "text-danger" : ""}`}>{fmtTRY(selected.balance)}</span>
               </div>
             </div>
@@ -120,10 +122,10 @@ export default function FinancePage() {
 
       {/* Döviz Kurları — Dış misafirler için */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Card title="Güncel Döviz Kurları">
+        <Card title={t("finance.exchangeRates")}>
           <CurrencyRates baseCurrency="TRY" />
         </Card>
-        <Card title="Para Birimi Dönüştürücü">
+        <Card title={t("finance.currencyConverter")}>
           <CurrencyConverter />
         </Card>
       </div>

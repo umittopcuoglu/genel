@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { MOCK_USERS, ROLES } from "@/lib/mock-modules";
 import { UserCreateModal } from "@/components/UserCreateModal";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useTranslation } from "@/lib/i18n";
 
 /**
  * Ayarlar — kullanıcılar + roller (RBAC) + genel yapılandırma (docs/03 §6).
@@ -23,6 +24,7 @@ interface ApiUser {
 }
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const [tab, setTab] = useState<"users" | "roles" | "general">("users");
   const [users, setUsers] = useState<ApiUser[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
@@ -54,23 +56,23 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Ayarlar" subtitle="Kullanıcılar, roller ve sistem yapılandırması" mock={false} />
+      <PageHeader title={t("settings.title")} subtitle={t("settings.subtitle")} mock={false} />
 
       <div className="border-b border-line" role="tablist">
         <div className="flex gap-1">
           {[
-            { id: "users", label: "Kullanıcılar" },
-            { id: "roles", label: "Roller (RBAC)" },
-            { id: "general", label: "Genel" },
-          ].map((t) => (
+            { id: "users", labelKey: "settings.users" },
+            { id: "roles", labelKey: "settings.roles" },
+            { id: "general", labelKey: "settings.general" },
+          ].map((item) => (
             <button
-              key={t.id}
+              key={item.id}
               role="tab"
-              aria-selected={tab === t.id}
-              onClick={() => setTab(t.id as typeof tab)}
-              className={`rounded-t-md px-4 py-2 text-sm font-medium ${tab === t.id ? "border-b-2 border-primary text-primary" : "text-text-2 hover:text-text-1"}`}
+              aria-selected={tab === item.id}
+              onClick={() => setTab(item.id as typeof tab)}
+              className={`rounded-t-md px-4 py-2 text-sm font-medium ${tab === item.id ? "border-b-2 border-primary text-primary" : "text-text-2 hover:text-text-1"}`}
             >
-              {t.label}
+              {t(item.labelKey)}
             </button>
           ))}
         </div>
@@ -78,29 +80,29 @@ export default function SettingsPage() {
 
       {tab === "users" && (
         <Card
-          title="Kullanıcılar"
+          title={t("settings.users")}
           action={
             <button
               onClick={() => setModalOpen(true)}
               className="flex items-center gap-1.5 rounded-md bg-primary px-2.5 py-1.5 text-xs font-medium text-white hover:opacity-90"
             >
-              <Plus className="h-3.5 w-3.5" aria-hidden /> Yeni Kullanıcı
+              <Plus className="h-3.5 w-3.5" aria-hidden /> {t("settings.newUser")}
             </button>
           }
         >
           <div className="overflow-x-auto">
             {loadingUsers ? (
-              <div className="py-8 text-center text-text-2 text-sm">Yükleniyor...</div>
+              <div className="py-8 text-center text-text-2 text-sm">{t("settings.loadingUsers")}</div>
             ) : users.length === 0 ? (
               <div className="py-8 text-center">
-                <p className="text-text-2 text-sm mb-3">Henüz kullanıcı yok (mock veri gösteriliyor)</p>
+                <p className="text-text-2 text-sm mb-3">{t("settings.noUsersYet")}</p>
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-text-2">
-                      <th className="px-2 py-2 font-medium">Ad</th>
-                      <th className="px-2 py-2 font-medium">E-posta</th>
-                      <th className="px-2 py-2 font-medium">Rol</th>
-                      <th className="px-2 py-2 font-medium">Durum</th>
+                      <th className="px-2 py-2 font-medium">{t("common.name")}</th>
+                      <th className="px-2 py-2 font-medium">{t("settings.userEmail")}</th>
+                      <th className="px-2 py-2 font-medium">{t("settings.userRole")}</th>
+                      <th className="px-2 py-2 font-medium">{t("common.status")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -109,7 +111,7 @@ export default function SettingsPage() {
                         <td className="px-2 py-2.5 font-medium">{u.name}</td>
                         <td className="px-2 py-2.5 text-text-2">{u.email}</td>
                         <td className="px-2 py-2.5"><Badge tone="primary">{u.role}</Badge></td>
-                        <td className="px-2 py-2.5"><Badge tone={u.active ? "success" : "neutral"}>{u.active ? "Aktif" : "Pasif"}</Badge></td>
+                        <td className="px-2 py-2.5"><Badge tone={u.active ? "success" : "neutral"}>{u.active ? t("settings.userActive") : t("settings.userInactive")}</Badge></td>
                       </tr>
                     ))}
                   </tbody>
@@ -119,11 +121,11 @@ export default function SettingsPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-text-2">
-                    <th className="px-2 py-2 font-medium">Ad</th>
-                    <th className="px-2 py-2 font-medium">E-posta</th>
-                    <th className="px-2 py-2 font-medium">Rol</th>
-                    <th className="px-2 py-2 font-medium">Durum</th>
-                    <th className="px-2 py-2 font-medium">Oluşturulma</th>
+                    <th className="px-2 py-2 font-medium">{t("common.name")}</th>
+                    <th className="px-2 py-2 font-medium">{t("settings.userEmail")}</th>
+                    <th className="px-2 py-2 font-medium">{t("settings.userRole")}</th>
+                    <th className="px-2 py-2 font-medium">{t("common.status")}</th>
+                    <th className="px-2 py-2 font-medium">{t("settings.userCreated")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -132,7 +134,7 @@ export default function SettingsPage() {
                       <td className="px-2 py-2.5 font-medium">{u.full_name}</td>
                       <td className="px-2 py-2.5 text-text-2">{u.email}</td>
                       <td className="px-2 py-2.5"><Badge tone="primary">{u.role}</Badge></td>
-                      <td className="px-2 py-2.5"><Badge tone={u.is_active ? "success" : "neutral"}>{u.is_active ? "Aktif" : "Pasif"}</Badge></td>
+                      <td className="px-2 py-2.5"><Badge tone={u.is_active ? "success" : "neutral"}>{u.is_active ? t("settings.userActive") : t("settings.userInactive")}</Badge></td>
                       <td className="px-2 py-2.5 font-mono text-text-2">{u.created_at?.split("T")[0] || "—"}</td>
                     </tr>
                   ))}
@@ -161,26 +163,26 @@ export default function SettingsPage() {
 
       {tab === "general" && (
         <div className="space-y-4">
-          <Card title="Arayüz Dili">
+          <Card title={t("settings.uiLanguage")}>
             <div className="flex items-center justify-between py-2">
               <div>
-                <p className="text-sm font-medium">Uygulama Dili</p>
-                <p className="text-xs text-text-2">Arayüz dilini değiştirin (Türkçe / English)</p>
+                <p className="text-sm font-medium">{t("settings.uiLanguage")}</p>
+                <p className="text-xs text-text-2">{t("settings.uiLanguageDesc")}</p>
               </div>
               <LanguageSwitcher />
             </div>
           </Card>
 
-          <Card title="Genel Yapılandırma">
+          <Card title={t("settings.general")}>
             <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {[
-                { k: "Tesis Adı", v: "HotelOps Demo Resort" },
-                { k: "Para Birimi", v: "TRY (₺)" },
-                { k: "Saat Dilimi", v: "Europe/Istanbul (UTC+3)" },
-                { k: "Check-in Saati", v: "14:00" },
-                { k: "Check-out Saati", v: "12:00" },
-                { k: "KDV Oranı", v: "%10 (konaklama)" },
-                { k: "API Sürümü", v: "v1.0.0" },
+                { k: t("settings.facilityName"), v: "HotelOps Demo Resort" },
+                { k: t("settings.currency"), v: "TRY (₺)" },
+                { k: t("settings.timezone"), v: "Europe/Istanbul (UTC+3)" },
+                { k: t("settings.checkinTime"), v: "14:00" },
+                { k: t("settings.checkoutTime"), v: "12:00" },
+                { k: t("settings.vatRate"), v: "%10" },
+                { k: t("settings.apiVersion"), v: "v1.0.0" },
               ].map((row) => (
                 <div key={row.k} className="flex items-center justify-between border-b border-line py-2 last:border-0">
                   <dt className="text-sm text-text-2">{row.k}</dt>

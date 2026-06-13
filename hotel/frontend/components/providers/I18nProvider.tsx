@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getLanguage, setLanguage } from '@/lib/i18n';
+import { getLanguage, setLanguage as setLangLib, subscribe, loadTranslations } from '@/lib/i18n';
 
 type Language = 'en' | 'tr';
 
@@ -13,19 +13,27 @@ interface I18nContextType {
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLang] = useState<Language>('en');
+  const [language, setLang] = useState<Language>('tr');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Get language from lib (which checks localStorage)
-    const savedLang = getLanguage();
-    setLang(savedLang);
+    // Ensure translations are loaded
+    loadTranslations();
+
+    // Get current language from lib (which checks localStorage)
+    setLang(getLanguage());
     setMounted(true);
+
+    // Subscribe to language changes for re-renders
+    const unsubscribe = subscribe(() => {
+      setLang(getLanguage());
+    });
+    return unsubscribe;
   }, []);
 
   const handleSetLanguage = (lang: Language) => {
+    setLangLib(lang);
     setLang(lang);
-    setLanguage(lang);
   };
 
   if (!mounted) {
@@ -42,7 +50,8 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useI18n = () => {
   const context = useContext(I18nContext);
   if (context === undefined) {
-    throw new Error('useI18n must be used within I18nProvider');
+    // Allow usage outside provider for non-critical UI
+    return { language: 'tr' as Language, setLanguage: () => {} };
   }
   return context;
 };
