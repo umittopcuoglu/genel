@@ -10,7 +10,7 @@
 > admin parametreleri çalışma zamanında girer, şifreli saklanır, tek tıkla canlı bağlantı testi)
 > Frontend "Grand Hotel" tasarım dili + sayfa geçiş animasyonları. Testler: 201 + 23 yeni = **224 yeşil**.
 
-**Son güncelleme:** 2026-06-13 (TASK-016 F&B/POS + TASK-017 Güvenlik & KVKK backend + frontend canlı API bağlandı) · **Faz:** 1-4 · **Test Suite:** 272 yeşil · **Frontend build:** 29 route ✓
+**Son güncelleme:** 2026-06-13 (Faz 3-4 modül ekranları (11 ekran) canlı backend API'sine bağlandı: F&B, Güvenlik, Groups, HR, GDS, IoT, CV, Voice, Properties, Mobile Check-in, Blockchain) · **Faz:** 1-4 · **Test Suite:** 272 yeşil · **Frontend build:** 29 route ✓
 
 ## Modül Durumu
 
@@ -22,8 +22,8 @@
 | 4 | Muhasebe & Cashiering | ✅ KABUL (tur 1) | 🟡 ekranlar yapılacak | REVIEW-2026-06-11-TASK-004 | 1 |
 | 5 | Housekeeping | ⬜ | ⬜ | — | 1-2 |
 | — | FrontDesk AI (temel) | ⬜ | ⬜ | — | 1 |
-| 3 | Groups & Events | ✅ KABUL | 🟡 ekranlar yapılacak | REVIEW-2026-06-13-TASK-014 | 3 |
-| 6 | Bakım & Teknik | ✅ KABUL | 🟡 ekranlar yapılacak | REVIEW-2026-06-13-TASK-015 | 3 |
+| 3 | Groups & Events | ✅ KABUL | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-014 | 3 |
+| 6 | Bakım & Teknik | ✅ KABUL | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-015 | 3 |
 | 7 | F&B (dış entegrasyon) | ✅ KABUL | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-016 | 3 |
 | 8 | CRM & GuestAI | ⬜ | ⬜ | — | 2 |
 | 9 | Güvenlik & KVKK | ✅ KABUL | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-017 | 3 |
@@ -62,6 +62,9 @@ Durum: ⬜ bekliyor · 🟡 devam · 🟠 review'da · ✅ kabul · ❌ düzeltm
 
 ## Notlar
 - **Gelişmiş Analitik Dashboard** = Claude frontend görev (TASK-013 ekranlarının genişletilmesi); ayrı backend task değil
+- **Faz 3-4 modül ekranları (2026-06-13):** HR, GDS, IoT, CV, Voice, Multi-Property, Mobile Check-in,
+  Blockchain ekranları `useApiData` deseniyle canlı `/api/v1/*` uçlarına bağlandı (mock fallback + MockBanner).
+  Toplu liste ucu olmayan alt-sekmeler (groups→events, cv→defects) mock'ta bırakıldı.
 
 ## Açık Geri Bildirimler (orchestrator/feedback/)
 _Yok. (FB-001 kapatıldı — düzeltmeler ağ engeli nedeniyle denetçi/Claude tarafından uygulandı.)_
