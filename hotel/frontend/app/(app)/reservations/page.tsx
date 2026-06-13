@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Plus, Search } from "lucide-react";
+import { useMemo, useState, useEffect } from "react";
+import { Plus, Search, Loader2 } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { MOCK_RESERVATIONS, type ReservationListItem } from "@/lib/mock-modules";
 import { ReservationCreateModal } from "@/components/ReservationCreateModal";
+import { api, ApiRequestError } from "@/lib/api";
 
 const STATUS_TONE: Record<ReservationListItem["status"], { tone: BadgeTone; label: string }> = {
   confirmed: { tone: "info", label: "Onaylı" },
@@ -41,9 +42,37 @@ export default function ReservationsPage() {
   const [status, setStatus] = useState<ReservationListItem["status"] | "all">("all");
   const [q, setQ] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [data, setData] = useState<ReservationListItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [usingMock, setUsingMock] = useState(false);
+
+  const fetchReservations = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api<{ data: ReservationListItem[]; meta?: any }>("/api/v1/reservations");
+      setData(Array.isArray(response.data) ? response.data : []);
+      setUsingMock(false);
+    } catch (err) {
+      // API başarısız → mock veriye düş, kullanıcıya bildir
+      console.warn("API yanıt vermedi, mock veri gösteriliyor:", err);
+      setData(MOCK_RESERVATIONS);
+      setUsingMock(true);
+      if (err instanceof ApiRequestError && err.status !== 0) {
+        setError(`API hatası (${err.status})`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReservations();
+  }, []);
 
   const rows = useMemo(() => {
-    return MOCK_RESERVATIONS.filter((r) => {
+    return data.filter((r) => {
       const matchStatus = status === "all" || r.status === status;
       const matchQ =
         q === "" ||
@@ -51,13 +80,13 @@ export default function ReservationsPage() {
         r.code.toLowerCase().includes(q.toLowerCase());
       return matchStatus && matchQ;
     });
-  }, [status, q]);
+  }, [status, q, data]);
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Rezervasyonlar"
-        subtitle={`${MOCK_RESERVATIONS.length} kayıt`}
+        subtitle={`${data.length} kayıt${usingMock ? " (mock veri)" : ""}`}
         action={
           <button
             onClick={() => setModalOpen(true)}
@@ -97,6 +126,18 @@ export default function ReservationsPage() {
         </div>
       </div>
 
+      {error && (
+        <div className="rounded-md bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-3 text-sm text-amber-800 dark:text-amber-200">
+          ⚠️ {error} — Mock veri gösteriliyor
+        </div>
+      )}
+
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-accent" />
+          <span className="ml-3 text-text-2">Rezervasyonlar yükleniyor...</span>
+        </div>
+      ) : (
       <div className="overflow-x-auto rounded-lg border border-line">
         <table className="w-full text-sm">
           <thead>
@@ -140,13 +181,13 @@ export default function ReservationsPage() {
           </tbody>
         </table>
       </div>
+      )}
 
       <ReservationCreateModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onSuccess={() => {
-          // Liste yenileme - gerçek API'de window.location.reload() yerine SWR/React Query kullanılır
-          window.location.reload();
+          fetchReservations();
         }}
       />
     </div>
