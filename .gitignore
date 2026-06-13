@@ -14,4 +14,6 @@ node_modules/
 .vscode/
 *.log
 *.db-journal
+*.db
 test.db
+dev.db
