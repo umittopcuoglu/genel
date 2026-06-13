@@ -10,7 +10,16 @@
 > admin parametreleri çalışma zamanında girer, şifreli saklanır, tek tıkla canlı bağlantı testi)
 > Frontend "Grand Hotel" tasarım dili + sayfa geçiş animasyonları. Testler: 201 + 23 yeni = **224 yeşil**.
 
-**Son güncelleme:** 2026-06-13 (TÜM ekranlar canlı backend'e bağlı — analytics dahil; Analitik Dashboard için gerçek raporlama uçları eklendi: occupancy-trend/revenue-trend/source-mix) · **Faz:** 1-4 · **Test Suite:** 278 yeşil · **Frontend build:** 29 route ✓
+**Son güncelleme:** 2026-06-13 (İKİ GELİŞTİRME KOLU BİRLEŞTİRİLDİ — `ecstatic-gates` operasyon kolu + `wonderful-gates` iş/finans kolu tek projede; çakışmalar çözüldü, tüm testler yeşil) · **Faz:** 1-4 · **Test Suite:** 350 yeşil · **Frontend build:** 33 route ✓
+
+> **2026-06-13 — Çok-kollu birleştirme (merge):** Proje iki paralel Claude oturumunda inşa edildi ve bu tarihte
+> tek koda birleştirildi. **Operasyon kolu** (bu branch): F&B/POS, Güvenlik & KVKK, HR & Vardiya, GDS, IoT,
+> Computer Vision, Sesli Kontrol, Multi-Property, Mobil Check-in, Blockchain, Analitik + tüm frontend i18n/wiring.
+> **İş/Finans kolu** (devralınan): Payment Gateway (iyzico/PayTR/Stripe/Craftgate), GİB e-Fatura
+> (Foriba/İzibiz/Logo/Uyumsoft), CRM & Misafir 360 & Segment & Kampanya, Revenue Management, WhatsApp Business,
+> InsightAI, OTA Connector'lar (Booking/Expedia/Agoda) + **EventBus / Modular Monolith** mimarisi (bounded context).
+> Çakışan F&B/Güvenlik modüllerinde daha kapsamlı operasyon-kolu implementasyonu korundu; AI ajanları yeni
+> `BaseAgent._run` sözleşmesine uyarlandı. Birleşik test: **350 yeşil**, frontend **33 route** derleniyor.
 
 ## Modül Durumu
 
@@ -20,14 +29,18 @@
 | 1 | Ön Büro | ✅ KABUL (tur 1) | ✅ ekranlar live (backend API entegre) | REVIEW-2026-06-11-TASK-002 | 1 |
 | 2 | Rezervasyon | ✅ KABUL (tur 1) | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-11-TASK-003 | 1 |
 | 4 | Muhasebe & Cashiering | ✅ KABUL (tur 1) | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-11-TASK-004 | 1 |
-| 5 | Housekeeping | ⬜ | ⬜ | — | 1-2 |
+| 5 | Housekeeping | ✅ KABUL | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-005 | 1-2 |
 | — | FrontDesk AI (temel) | ⬜ | ⬜ | — | 1 |
 | 3 | Groups & Events | ✅ KABUL | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-014 | 3 |
 | 6 | Bakım & Teknik | ✅ KABUL | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-015 | 3 |
 | 7 | F&B (dış entegrasyon) | ✅ KABUL | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-016 | 3 |
-| 8 | CRM & GuestAI | ⬜ | ⬜ | — | 2 |
+| 8 | CRM & Misafir 360 & GuestAI | ✅ KABUL (birleştirme kolu) | ✅ ekran live (`/crm`) | REVIEW-2026-06-13-TASK-011/012 | 2 |
 | 9 | Güvenlik & KVKK | ✅ KABUL | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-017 | 3 |
-| 10 | Raporlama & InsightAI | 🟡 kısmi (analitik uçları + dashboard) | ✅ ekran live (canlı API + mock fallback) | REVIEW-2026-06-13-TASK-013 | 2 |
+| 10 | Raporlama & InsightAI | ✅ KABUL (analitik uçları + InsightAI servis/ekran) | ✅ ekran live (`/analytics`, `/insights`) | REVIEW-2026-06-13-TASK-013 | 2 |
+| 11 | Payment Gateway (iyzico/PayTR/Stripe) | ✅ KABUL (birleştirme kolu) | ✅ ekran live (`/payments`) | REVIEW-2026-06-13 | 2 |
+| 12 | GİB e-Fatura (Foriba/İzibiz/Logo/Uyumsoft) | ✅ KABUL (birleştirme kolu) | ✅ ekran live (`/einvoice`) | REVIEW-2026-06-13 | 2 |
+| 13 | Revenue Management / RevenueIQ | ✅ KABUL (birleştirme kolu) | ✅ ekran live (`/revenue`) | REVIEW-2026-06-13 | 2 |
+| 14 | WhatsApp Business API | ✅ KABUL (birleştirme kolu) | ✅ ekran live (`/whatsapp`) | REVIEW-2026-06-13 | 2 |
 
 Durum: ⬜ bekliyor · 🟡 devam · 🟠 review'da · ✅ kabul · ❌ düzeltmede
 
@@ -38,15 +51,15 @@ Durum: ⬜ bekliyor · 🟡 devam · 🟠 review'da · ✅ kabul · ❌ düzeltm
 | TASK-002 | Modül 1: Ön Büro | ✅ KABUL | 1 | 1 |
 | TASK-003 | Modül 2: Rezervasyon & Müsaitlik | ✅ KABUL | 1 | 1 |
 | TASK-004 | Modül 4: Muhasebe & Cashiering | ✅ KABUL | 1 | 1 |
-| TASK-005 | Modül 5: Housekeeping | 🟡 DeepSeek'e gönderilmesi bekleniyor | 1 | 1 |
+| TASK-005 | Modül 5: Housekeeping | ✅ KABUL | 1 | 1 |
 | TASK-006 | Altyapı: WebSocket + E2E + Docker + CI/CD | ⬜ sıraya girecek | 1 | 1 |
-| TASK-007 | Altyapı: Ortak AI Çekirdeği (BaseAgent + LLM + PII maskeleme) | ⬜ Faz 2 kuyruğu | 2 | — |
-| TASK-008 | Modül 2 AI Genişleme: Channel Manager & OTA | ⬜ Faz 2 kuyruğu | 2 | — |
-| TASK-009 | Modül 2 AI Genişleme: RevenueIQ Advisor | ⬜ Faz 2 kuyruğu | 2 | — |
-| TASK-010 | Modül 4 Genişleme: Tam Muhasebe & GİB e-Fatura | ⬜ Faz 2 kuyruğu | 2 | — |
-| TASK-011 | Modül 8: CRM & Misafir 360 & Loyalty | ⬜ Faz 2 kuyruğu | 2 | — |
-| TASK-012 | Modül 8 AI: GuestAI Chatbot (WhatsApp) | ⬜ Faz 2 kuyruğu | 2 | — |
-| TASK-013 | Modül 10: Raporlama & InsightAI | ⬜ Faz 2 kuyruğu | 2 | — |
+| TASK-007 | Altyapı: Ortak AI Çekirdeği (BaseAgent + LLM + PII maskeleme) | ✅ KABUL | 2 | 1 |
+| TASK-008 | Modül 2 AI Genişleme: Channel Manager & OTA | ✅ KABUL | 2 | 1 |
+| TASK-009 | Modül 2 AI Genişleme: RevenueIQ Advisor | ✅ KABUL | 2 | 1 |
+| TASK-010 | Modül 4 Genişleme: Tam Muhasebe & GİB e-Fatura | ✅ KABUL | 2 | 1 |
+| TASK-011 | Modül 8: CRM & Misafir 360 & Loyalty | ✅ KABUL | 2 | 1 |
+| TASK-012 | Modül 8 AI: GuestAI Chatbot (WhatsApp) | ✅ KABUL | 2 | 1 |
+| TASK-013 | Modül 10: Raporlama & InsightAI | ✅ KABUL | 2 | 1 |
 | TASK-014 | Modül 3: Gruplar & Etkinlikler (MICE) + EventIQ AI | ✅ KABUL | 3 | 1 |
 | TASK-015 | Modül 6: Bakım & Teknik Servis + TechCare AI | ✅ KABUL | 3 | 1 |
 | TASK-016 | Modül 7: F&B & POS Entegrasyonu + ChefIQ AI | ✅ KABUL | 3 | 1 |

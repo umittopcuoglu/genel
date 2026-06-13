@@ -33,7 +33,7 @@ class TechCareAgent(BaseAgent):
     model_provider = "deepseek"
     prompt_version = "1.0.0"
 
-    async def execute(
+    async def _run(
         self, input_schema: TechCareInput, context=None, db=None, user=None
     ) -> TechCareOutput:
         text = input_schema.description.lower()

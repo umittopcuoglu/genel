@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import date, datetime, time
 from decimal import Decimal
 from typing import Optional
@@ -25,8 +25,7 @@ class EmployeeResponse(BaseModel):
     emergency_contact: Optional[dict] = None
     notes: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EmployeeCreate(BaseModel):
@@ -67,8 +66,7 @@ class ShiftResponse(BaseModel):
     is_active: bool
     description: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ShiftCreate(BaseModel):
@@ -105,8 +103,7 @@ class ShiftAssignmentResponse(BaseModel):
     checked_out_at: Optional[datetime] = None
     notes: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ShiftAssignmentCreate(BaseModel):
@@ -138,8 +135,7 @@ class AttendanceResponse(BaseModel):
     status: str
     notes: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AttendanceCreate(BaseModel):
@@ -179,8 +175,7 @@ class LeaveRequestResponse(BaseModel):
     reviewed_at: Optional[datetime] = None
     review_notes: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class LeaveRequestCreate(BaseModel):

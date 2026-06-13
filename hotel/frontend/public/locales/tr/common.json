@@ -23,7 +23,13 @@
     "blockchain": "Blockchain Kimlik",
     "properties": "Tesisler",
     "security": "Güvenlik & KVKK",
-    "guestWifi": "Misafir Wi-Fi"
+    "guestWifi": "Misafir Wi-Fi",
+    "payments": "Ödeme / POS",
+    "crm": "CRM / Misafir 360",
+    "whatsapp": "WhatsApp",
+    "einvoice": "GİB e-Fatura",
+    "revenue": "Gelir Yönetimi",
+    "insights": "InsightAI"
   },
   "auth": {
     "login": "Giriş Yap",
@@ -110,7 +116,13 @@
     "adults": "Yetişkin",
     "children": "Çocuk",
     "roomType": "Oda Tipi",
-    "source": "Kaynak",
+    "source": {
+      "direct": "Direkt",
+      "ota": "OTA",
+      "walkin": "Walk-in",
+      "phone": "Telefon",
+      "corporate": "Kurumsal"
+    },
     "notes": "Notlar",
     "code": "Kod",
     "nights": "Gece",
@@ -121,13 +133,6 @@
       "checkedOut": "Ayrıldı",
       "cancelled": "İptal",
       "noShow": "Gelmedi"
-    },
-    "source": {
-      "direct": "Direkt",
-      "ota": "OTA",
-      "walkin": "Walk-in",
-      "phone": "Telefon",
-      "corporate": "Kurumsal"
     },
     "noResults": "Bu filtreye uyan rezervasyon yok.",
     "loading": "Rezervasyonlar yükleniyor...",

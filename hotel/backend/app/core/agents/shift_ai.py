@@ -61,7 +61,7 @@ class ShiftAIAgent(BaseAgent):
     model_provider = "deepseek"
     prompt_version = "1.0.0"
 
-    async def execute(
+    async def _run(
         self,
         input_schema: ShiftAIInput,
         context: Optional[dict] = None,

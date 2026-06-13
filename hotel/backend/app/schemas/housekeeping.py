@@ -5,7 +5,7 @@ from datetime import datetime, date, date as DateType
 from decimal import Decimal
 from typing import Optional, Any
 from uuid import UUID
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 # ──── Board ────
@@ -59,8 +59,7 @@ class HousekeepingTaskResponse(BaseModel):
     notes: Optional[str] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ──── Auto-generate ────
@@ -96,8 +95,7 @@ class LostFoundResponse(BaseModel):
     returned_at: Optional[datetime] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ──── Minibar ────

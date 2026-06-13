@@ -37,7 +37,7 @@ class EventIQAgent(BaseAgent):
     model_provider = "deepseek"
     prompt_version = "1.0.0"
 
-    async def execute(
+    async def _run(
         self, input_schema: EventIQInput, context=None, db=None, user=None
     ) -> EventIQOutput:
         setup, catering = _SETUP_MAP.get(input_schema.event_type, _SETUP_MAP["other"])

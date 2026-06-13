@@ -5,7 +5,7 @@ from datetime import date, datetime, date as DateType
 from decimal import Decimal
 from typing import Optional, Any
 from uuid import UUID
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class FolioItemCreate(BaseModel):
@@ -38,8 +38,7 @@ class FolioItemResponse(BaseModel):
     posted_at: Optional[datetime] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaymentResponse(BaseModel):
@@ -52,8 +51,7 @@ class PaymentResponse(BaseModel):
     status: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FolioResponse(BaseModel):
@@ -71,8 +69,7 @@ class FolioResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FolioListResponse(BaseModel):
@@ -92,8 +89,7 @@ class NightAuditRunResponse(BaseModel):
     stats: Optional[dict] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OccupancyRow(BaseModel):

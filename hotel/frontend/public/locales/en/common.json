@@ -23,7 +23,13 @@
     "blockchain": "Blockchain ID",
     "properties": "Properties",
     "security": "Security & KVKK",
-    "guestWifi": "Guest Wi-Fi"
+    "guestWifi": "Guest Wi-Fi",
+    "payments": "Payments / POS",
+    "crm": "CRM / Guest 360",
+    "whatsapp": "WhatsApp",
+    "einvoice": "e-Invoice",
+    "revenue": "Revenue Mgmt",
+    "insights": "InsightAI"
   },
   "auth": {
     "login": "Login",
@@ -110,7 +116,13 @@
     "adults": "Adults",
     "children": "Children",
     "roomType": "Room Type",
-    "source": "Source",
+    "source": {
+      "direct": "Direct",
+      "ota": "OTA",
+      "walkin": "Walk-in",
+      "phone": "Phone",
+      "corporate": "Corporate"
+    },
     "notes": "Notes",
     "code": "Code",
     "nights": "Nights",
@@ -121,13 +133,6 @@
       "checkedOut": "Checked Out",
       "cancelled": "Cancelled",
       "noShow": "No Show"
-    },
-    "source": {
-      "direct": "Direct",
-      "ota": "OTA",
-      "walkin": "Walk-in",
-      "phone": "Phone",
-      "corporate": "Corporate"
     },
     "noResults": "No reservations match this filter.",
     "loading": "Loading reservations...",

@@ -25,6 +25,11 @@ import {
   Mic,
   Globe,
   Wrench,
+  Users,
+  MessageCircle,
+  Receipt,
+  LineChart,
+  TrendingUp,
 } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 
@@ -41,6 +46,12 @@ const NAV: { section: string; sectionKey: string; items: { href: string; labelKe
       { href: "/book", labelKey: "nav.guestWifi", icon: Globe },
       { href: "/housekeeping", labelKey: "nav.housekeeping", icon: Sparkles },
       { href: "/finance", labelKey: "nav.finance", icon: CreditCard },
+      { href: "/payments", labelKey: "nav.payments", icon: CreditCard },
+      { href: "/crm", labelKey: "nav.crm", icon: Users },
+      { href: "/whatsapp", labelKey: "nav.whatsapp", icon: MessageCircle },
+      { href: "/einvoice", labelKey: "nav.einvoice", icon: Receipt },
+      { href: "/revenue", labelKey: "nav.revenue", icon: TrendingUp },
+      { href: "/insights", labelKey: "nav.insights", icon: LineChart },
       { href: "/maintenance", labelKey: "nav.maintenance", icon: Wrench },
       { href: "/analytics", labelKey: "nav.analytics", icon: BarChart3 },
     ],

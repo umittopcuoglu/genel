@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional
@@ -15,8 +15,7 @@ class AssetResponse(BaseModel):
     status: str
     notes: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AssetCreate(BaseModel):
@@ -43,8 +42,7 @@ class WorkOrderResponse(BaseModel):
     completed_at: Optional[datetime] = None
     notes: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class WorkOrderCreate(BaseModel):
@@ -69,8 +67,7 @@ class PreventiveMaintenanceResponse(BaseModel):
     next_maintenance_date: date
     status: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PreventiveMaintenanceCreate(BaseModel):
@@ -90,8 +87,7 @@ class MaintenanceLogResponse(BaseModel):
     notes: Optional[str] = None
     completed_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class MaintenanceLogCreate(BaseModel):

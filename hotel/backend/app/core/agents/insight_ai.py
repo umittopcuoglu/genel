@@ -21,7 +21,7 @@ class InsightAIAgent(BaseAgent):
     model_provider = "deepseek"
     prompt_version = "1.0.0"
 
-    async def execute(
+    async def _run(
         self, input_schema: InsightAIInput, context=None, db=None, user=None
     ) -> InsightAIOutput:
         prompt = f"""

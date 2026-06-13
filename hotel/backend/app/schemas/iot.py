@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional
@@ -23,8 +23,7 @@ class IoTDeviceResponse(BaseModel):
     last_seen_at: Optional[datetime] = None
     notes: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class IoTDeviceCreate(BaseModel):
@@ -66,8 +65,7 @@ class IoTDeviceLogResponse(BaseModel):
     performed_by: Optional[str] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── IoTScenario ──
@@ -83,8 +81,7 @@ class IoTScenarioResponse(BaseModel):
     priority: int
     applies_to_room_types: Optional[dict] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class IoTScenarioCreate(BaseModel):
@@ -118,8 +115,7 @@ class IoTEnergyReadingResponse(BaseModel):
     unit: str
     recorded_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class IoTEnergyReadingCreate(BaseModel):
@@ -144,8 +140,7 @@ class IoTAlertResponse(BaseModel):
     resolved_at: Optional[datetime] = None
     resolved_by: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class IoTAlertResolve(BaseModel):

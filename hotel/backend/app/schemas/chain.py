@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional
@@ -19,8 +19,7 @@ class ChainResponse(BaseModel):
     is_active: bool
     config: Optional[dict] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ChainCreate(BaseModel):
@@ -64,8 +63,7 @@ class PropertyResponse(BaseModel):
     config: Optional[dict] = None
     notes: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PropertyCreate(BaseModel):
@@ -114,8 +112,7 @@ class PropertySyncLogResponse(BaseModel):
     error_message: Optional[str] = None
     details: Optional[dict] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── ConsolidatedReport ──
@@ -136,8 +133,7 @@ class ConsolidatedReportResponse(BaseModel):
     data: Optional[dict] = None
     generated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ConsolidatedReportGenerate(BaseModel):
@@ -157,8 +153,7 @@ class PropertyUserResponse(BaseModel):
     role: str
     is_active: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PropertyUserCreate(BaseModel):

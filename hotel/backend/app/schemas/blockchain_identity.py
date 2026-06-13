@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
 from typing import Optional
 from uuid import UUID
@@ -18,8 +18,7 @@ class BlockchainIdentityResponse(BaseModel):
     verified_at: Optional[datetime] = None
     extra_metadata: Optional[dict] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class BlockchainIdentityCreate(BaseModel):
@@ -44,8 +43,7 @@ class VerifiableCredentialResponse(BaseModel):
     status: str
     is_revoked: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class VerifiableCredentialIssue(BaseModel):
@@ -67,8 +65,7 @@ class IdentityVerificationProofResponse(BaseModel):
     verified_at: Optional[datetime] = None
     expires_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class IdentityVerificationRequest(BaseModel):
@@ -91,8 +88,7 @@ class BlockchainSyncEventResponse(BaseModel):
     status: str
     confirmed_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── GuestConsentLog ──
@@ -108,8 +104,7 @@ class GuestConsentLogResponse(BaseModel):
     ip_address: Optional[str] = None
     notes: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GuestConsentCreate(BaseModel):

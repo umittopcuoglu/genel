@@ -25,7 +25,7 @@ class ChefIQAgent(BaseAgent):
     model_provider = "deepseek"
     prompt_version = "1.0.0"
 
-    async def execute(
+    async def _run(
         self, input_schema: ChefIQInput, context=None, db=None, user=None
     ) -> ChefIQOutput:
         # Hafta sonu talebi %35 artar (mock kural)

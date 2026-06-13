@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional
@@ -8,6 +8,8 @@ from uuid import UUID
 # ── CVModel ──
 
 class CVModelResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True, protected_namespaces=())
+
     id: UUID
     name: str
     version: str
@@ -19,11 +21,10 @@ class CVModelResponse(BaseModel):
     config: Optional[dict] = None
     notes: Optional[str] = None
 
-    class Config:
-        from_attributes = True
-
 
 class CVModelCreate(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
     name: str = Field(..., min_length=1, max_length=100)
     version: str = Field(..., max_length=20)
     model_type: str = Field(..., max_length=30)
@@ -37,6 +38,8 @@ class CVModelCreate(BaseModel):
 # ── RoomInspection ──
 
 class RoomInspectionResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     room_id: UUID
     inspector_id: Optional[str] = None
@@ -49,9 +52,6 @@ class RoomInspectionResponse(BaseModel):
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
     notes: Optional[str] = None
-
-    class Config:
-        from_attributes = True
 
 
 class RoomInspectionCreate(BaseModel):
@@ -82,6 +82,8 @@ class RoomInspectionResult(BaseModel):
 # ── InspectionDefect ──
 
 class InspectionDefectResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     inspection_id: UUID
     defect_type: str
@@ -97,9 +99,6 @@ class InspectionDefectResponse(BaseModel):
     verified_at: Optional[datetime] = None
     work_order_id: Optional[UUID] = None
 
-    class Config:
-        from_attributes = True
-
 
 class DefectVerify(BaseModel):
     is_verified: bool = True
@@ -109,6 +108,8 @@ class DefectVerify(BaseModel):
 # ── InventorySnapshot ──
 
 class InventorySnapshotResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     room_id: UUID
     inspection_id: Optional[UUID] = None
@@ -118,6 +119,3 @@ class InventorySnapshotResponse(BaseModel):
     missing_count: int
     confidence: Optional[Decimal] = None
     snapshot_data: Optional[dict] = None
-
-    class Config:
-        from_attributes = True

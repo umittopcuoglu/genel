@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime, date
 from typing import Optional
 from uuid import UUID
@@ -27,8 +27,7 @@ class OCRDocumentScanResponse(BaseModel):
     verified_at: Optional[datetime] = None
     notes: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OCRDocumentScanCreate(BaseModel):
@@ -63,8 +62,7 @@ class EGMSubmissionResponse(BaseModel):
     retry_count: int
     error_message: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── CheckinSession ──
@@ -82,8 +80,7 @@ class CheckinSessionResponse(BaseModel):
     expires_at: datetime
     notes: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CheckinSessionStart(BaseModel):
@@ -106,8 +103,7 @@ class FacialRecognitionScanResponse(BaseModel):
     image_path: Optional[str] = None
     scanned_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── NFCRoomKey ──
@@ -125,8 +121,7 @@ class NFCRoomKeyResponse(BaseModel):
     use_count: int
     device_id: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class NFCRoomKeyIssue(BaseModel):

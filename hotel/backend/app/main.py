@@ -11,6 +11,8 @@ from starlette.middleware.base import BaseHTTPMiddleware
 import logging
 import uuid
 
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 from app.core.config import settings
 from app.core.db import engine
 from app.core.audit import AuditMiddleware
@@ -33,10 +35,26 @@ from app.routers import blockchain
 from app.routers import integrations
 # Booking Engine (public, komisyonsuz doğrudan satış)
 from app.routers import booking_engine
-# Misafir Wi-Fi Portal (public, herkese açık)
+# Misafir Wi-Fi Portal (public kayıt + self-service)
 from app.routers import guest_wifi
-# Faz 3 - F&B/POS (TASK-016) + Güvenlik & KVKK (TASK-017)
-from app.routers import fnb, security
+# Payment Gateway (Stripe/iyzico/PayTR — parametrik provider)
+from app.routers import payments
+# CRM (Guest 360, Segment, Campaign, Notes, Communication)
+from app.routers import crm
+# WhatsApp Business API (Meta Cloud)
+from app.routers import whatsapp
+# GİB e-Fatura (Foriba/Logo/Uyumsoft/İzibiz)
+from app.routers import einvoice
+# Revenue Management / RevenueIQ
+from app.routers import revenue
+# F&B / POS (Outlet, Menu, Check)
+from app.routers import fnb
+# Güvenlik & KVKK (Access logs + Consent + Data Subject Requests)
+from app.routers import security as security_router
+# InsightAI (KPI özet + kanal mix + aksiyon önerileri)
+from app.routers import insights
+# Domain event abonelikleri (modular monolith iletişim katmanı)
+from app.core import event_handlers  # noqa: F401  — import = subscribe
 
 # Logging yapılandırması
 logging.basicConfig(level=logging.INFO)
@@ -48,7 +66,7 @@ async def lifespan(app: FastAPI):
     """Uygulama yaşam döngüsü: başlangıç ve kapanış işlemleri."""
     # Başlangıç
     logger.info("HotelOps PMS backend başlıyor...")
-    # AI ajanlarını registry'ye kaydet (RevenueQA, GuestAI, InsightAI, ShiftAI, EventIQ, TechCare, ChefIQ, SecureAI)
+    # AI ajanlarını registry'ye kaydet (RevenueQA, GuestAI, InsightAI, ShiftAI, EventIQ, vb.)
     from app.core.agents.init_agents import initialize_agents
     initialize_agents()
     # Veritabanı bağlantılarını kontrol et (opsiyonel)
@@ -81,6 +99,11 @@ app.add_middleware(
 
 # Audit middleware (tüm yazma işlemlerini logla)
 app.add_middleware(AuditMiddleware)
+
+# Rate limiting (auth endpoint'leri)
+from app.routers.auth import limiter
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 # Global exception handler'lar
@@ -180,9 +203,14 @@ app.include_router(blockchain.router)
 app.include_router(integrations.router)
 app.include_router(booking_engine.router)
 app.include_router(guest_wifi.router)
-# Faz 3 - F&B/POS (TASK-016) + Güvenlik & KVKK (TASK-017)
+app.include_router(payments.router)
+app.include_router(crm.router)
+app.include_router(whatsapp.router)
+app.include_router(einvoice.router)
+app.include_router(revenue.router)
 app.include_router(fnb.router)
-app.include_router(security.router)
+app.include_router(security_router.router)
+app.include_router(insights.router)
 
 
 @app.get("/", include_in_schema=False)
