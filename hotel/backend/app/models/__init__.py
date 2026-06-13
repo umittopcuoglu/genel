@@ -47,3 +47,7 @@ from app.models.blockchain_identity import BlockchainIdentity, VerifiableCredent
 from app.models.integration_setting import IntegrationSetting
 # Misafir Wi-Fi Portal
 from app.models.guest_wifi_session import GuestWiFiSession
+# Faz 3 - F&B / POS modelleri (TASK-016)
+from app.models.fnb import POSOutlet, MenuItem, POSCheck, POSCheckItem, StockItem, StockMovement
+# Faz 3 - Güvenlik & KVKK modelleri (TASK-017)
+from app.models.security import DoorLock, KeyCard, AccessLog, Incident, KVKKConsent, DataAccessRequest

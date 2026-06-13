@@ -22,6 +22,7 @@ from app.models import voice, mobile_checkin, cv, blockchain_identity, gds, hr, 
 from app.models import integration_setting, chat_session, chat_message, guest_wifi_session
 from app.models import loyalty_account, loyalty_transaction, complaint, feedback, occupancy_forecast
 from app.models import rate_recommendation, overbooking_rule, budget, ledger_entry, chart_of_accounts, einvoice, custom_report
+from app.models import fnb, security
 # Specific model imports for fixtures
 from app.models.user import User
 from app.models.front_office import RoomType, Room, Guest, Reservation, Stay, Trace
@@ -277,6 +278,54 @@ async def superadmin_headers(superadmin_token):
 @pytest.fixture
 async def frontdesk_headers(frontdesk_token):
     return {"Authorization": f"Bearer {frontdesk_token}"}
+
+
+# ── F&B (fb) rol fixture'ları (TASK-016 testleri için) ──
+@pytest.fixture
+async def test_fb_user(db: AsyncSession):
+    user = User(
+        email="fb@test.com",
+        hashed_password=get_password_hash("FbUser123!"),
+        full_name="Test F&B",
+        role="fb",
+        is_active=True,
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
+
+
+@pytest.fixture
+async def fb_token(async_client, test_fb_user):
+    response = await async_client.post(
+        "/api/v1/auth/login",
+        json={"email": "fb@test.com", "password": "FbUser123!"},
+    )
+    return response.json()["access_token"]
+
+
+@pytest.fixture
+async def fb_headers(fb_token):
+    return {"Authorization": f"Bearer {fb_token}"}
+
+
+@pytest.fixture
+async def folio_db(db: AsyncSession, reservation_db, guest_db):
+    """Açık test folio'su (F&B room charge testi için)."""
+    from decimal import Decimal as _Decimal
+    from app.models.finance import Folio, FolioStatus
+    folio = Folio(
+        reservation_id=reservation_db.id,
+        guest_id=guest_db.id,
+        status=FolioStatus.OPEN.value,
+        total=_Decimal("0"),
+        balance=_Decimal("0"),
+    )
+    db.add(folio)
+    await db.commit()
+    await db.refresh(folio)
+    return folio
 
 
 # ── Groups & Maintenance entity fixture'ları (bu testler kendi fixture'ını tanımlamıyor) ──

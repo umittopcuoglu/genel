@@ -35,6 +35,8 @@ from app.routers import integrations
 from app.routers import booking_engine
 # Misafir Wi-Fi Portal (public, herkese açık)
 from app.routers import guest_wifi
+# Faz 3 - F&B/POS (TASK-016) + Güvenlik & KVKK (TASK-017)
+from app.routers import fnb, security
 
 # Logging yapılandırması
 logging.basicConfig(level=logging.INFO)
@@ -46,6 +48,9 @@ async def lifespan(app: FastAPI):
     """Uygulama yaşam döngüsü: başlangıç ve kapanış işlemleri."""
     # Başlangıç
     logger.info("HotelOps PMS backend başlıyor...")
+    # AI ajanlarını registry'ye kaydet (RevenueQA, GuestAI, InsightAI, ShiftAI, EventIQ, TechCare, ChefIQ, SecureAI)
+    from app.core.agents.init_agents import initialize_agents
+    initialize_agents()
     # Veritabanı bağlantılarını kontrol et (opsiyonel)
     async with engine.begin() as conn:
         logger.info("Veritabanı bağlantısı başarılı.")
@@ -175,6 +180,9 @@ app.include_router(blockchain.router)
 app.include_router(integrations.router)
 app.include_router(booking_engine.router)
 app.include_router(guest_wifi.router)
+# Faz 3 - F&B/POS (TASK-016) + Güvenlik & KVKK (TASK-017)
+app.include_router(fnb.router)
+app.include_router(security.router)
 
 
 @app.get("/", include_in_schema=False)
