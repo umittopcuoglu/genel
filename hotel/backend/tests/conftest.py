@@ -43,7 +43,6 @@ TEST_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
 engine = create_async_engine(TEST_DATABASE_URL, echo=False)
 TestingSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
-
 async def override_get_db() -> AsyncGenerator[AsyncSession, None]:
     async with TestingSessionLocal() as session:
         yield session
@@ -58,14 +57,21 @@ def event_loop():
     loop.close()
 
 
-@pytest.fixture(scope="function", autouse=True)
-async def setup_test_db():
-    """Her testten önce tabloları oluştur, sonra temizle."""
+@pytest.fixture(scope="session", autouse=True, name="_init_test_db")
+async def init_test_db():
+    """Initialize test database once at session start."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
+    # Drop tables after all tests
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
+
+
+@pytest.fixture(scope="function", autouse=True)
+async def setup_test_db(_init_test_db):
+    """Depend on session-scoped DB init to ensure tables exist."""
+    yield
 
 
 @pytest.fixture
