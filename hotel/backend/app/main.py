@@ -69,9 +69,34 @@ async def lifespan(app: FastAPI):
     # AI ajanlarını registry'ye kaydet (RevenueQA, GuestAI, InsightAI, ShiftAI, EventIQ, vb.)
     from app.core.agents.init_agents import initialize_agents
     initialize_agents()
-    # Veritabanı bağlantılarını kontrol et (opsiyonel)
+    # Veritabanı tablolarını oluştur + demo seed (Cloud Run cold start)
+    import app.models  # noqa: F811 — tüm modelleri Base.metadata'ya kaydeder
+    from app.core.db import Base
     async with engine.begin() as conn:
-        logger.info("Veritabanı bağlantısı başarılı.")
+        await conn.run_sync(Base.metadata.create_all)
+        logger.info("Veritabanı tabloları oluşturuldu/doğrulandı.")
+    # Demo kullanıcıları seed et (yoksa)
+    try:
+        from sqlalchemy import select, func
+        from app.models.user import User
+        from app.core.db import AsyncSessionLocal
+        async with AsyncSessionLocal() as session:
+            count = await session.scalar(select(func.count()).select_from(User))
+            if count == 0:
+                from passlib.context import CryptContext
+                pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
+                demo_users = [
+                    ("superadmin@hotelops.com", "Super Admin", "superadmin", "Super123!"),
+                    ("manager@hotelops.com", "Manager User", "manager", "Manager123!"),
+                    ("frontdesk@hotelops.com", "Front Desk", "frontdesk", "Front123!"),
+                ]
+                for email, name, role, password in demo_users:
+                    session.add(User(email=email, hashed_password=pwd.hash(password),
+                                     full_name=name, role=role, is_active=True))
+                await session.commit()
+                logger.info("Demo kullanıcıları seed edildi (3 kullanıcı).")
+    except Exception as e:
+        logger.warning(f"Seed atlandı: {e}")
     yield
     # Kapanış
     logger.info("HotelOps PMS backend kapanıyor...")
