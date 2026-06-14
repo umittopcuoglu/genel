@@ -69,11 +69,12 @@ jobs:
             --platform=managed \
             --allow-unauthenticated \
             --port=8080 \
-            --memory=1Gi \
+            --memory=2Gi \
             --cpu=1 \
             --min-instances=0 \
             --max-instances=2 \
             --cpu-boost \
+            --timeout=60 \
             --set-env-vars="^@@^DATABASE_URL=sqlite+aiosqlite:///./demo.db@@JWT_SECRET_KEY=${{ secrets.JWT_SECRET }}@@CORS_ORIGINS=https://hotelops-216fa.web.app,https://hotelops-216fa.firebaseapp.com@@DEBUG=true@@ENABLE_RATE_LIMIT=false@@REDIS_URL=" \
             --quiet
 
