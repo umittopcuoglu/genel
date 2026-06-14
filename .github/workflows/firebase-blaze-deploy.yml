@@ -61,12 +61,6 @@ jobs:
           docker build -f Dockerfile.cloudrun -t ${{ env.IMAGE }}:${{ github.sha }} .
           docker push ${{ env.IMAGE }}:${{ github.sha }}
 
-      - name: Delete old service if exists
-        continue-on-error: true
-        run: |
-          gcloud run services delete ${{ env.SERVICE_NAME }} \
-            --region=${{ env.REGION }} --quiet 2>/dev/null || true
-
       - name: Deploy to Cloud Run
         id: deploy
         run: |
