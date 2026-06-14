@@ -4,6 +4,7 @@ Pytest yapılandırması: async test client, test veritabanı, global fixture'la
 import os
 # Testlerde LLM ajanları mock moda düşsün (gerçek API anahtarı gerekmez)
 os.environ.setdefault("ENABLE_LLM_MOCK", "true")
+os.environ.setdefault("ENABLE_RATE_LIMIT", "false")
 
 import asyncio
 import pytest
@@ -14,8 +15,16 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 from app.main import app
 from app.core.db import get_db, Base
 from app.core.config import settings
+# Import all models to ensure tables are created during test setup
+from app.models import user, audit, front_office, reservation_ext, housekeeping, finance
+from app.models import channel, channel_mapping, channel_sync_log, groups, maintenance, iot
+from app.models import voice, mobile_checkin, cv, blockchain_identity, gds, hr, ai_invocation
+from app.models import integration_setting, chat_session, chat_message, guest_wifi_session
+from app.models import loyalty_account, loyalty_transaction, complaint, feedback, occupancy_forecast
+from app.models import rate_recommendation, overbooking_rule, budget, ledger_entry, chart_of_accounts, einvoice, custom_report
+from app.models import fnb, security
+# Specific model imports for fixtures
 from app.models.user import User
-from app.models.audit import AuditLog
 from app.models.front_office import RoomType, Room, Guest, Reservation, Stay, Trace
 from app.models.reservation_ext import RatePlan, Availability
 from datetime import date, timedelta
@@ -35,7 +44,6 @@ TEST_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
 engine = create_async_engine(TEST_DATABASE_URL, echo=False)
 TestingSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
-
 async def override_get_db() -> AsyncGenerator[AsyncSession, None]:
     async with TestingSessionLocal() as session:
         yield session
@@ -50,14 +58,36 @@ def event_loop():
     loop.close()
 
 
-@pytest.fixture(scope="function", autouse=True)
-async def setup_test_db():
-    """Her testten önce tabloları oluştur, sonra temizle."""
+@pytest.fixture(scope="session", autouse=True, name="_init_test_db")
+async def init_test_db():
+    """Initialize test database once at session start."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
+    # Drop tables after all tests
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
+
+
+@pytest.fixture(scope="function", autouse=True)
+async def setup_test_db(_init_test_db):
+    """Clean tables between tests."""
+    # Clean all tables BEFORE each test (truncate all data)
+    async with engine.begin() as conn:
+        for table in reversed(Base.metadata.sorted_tables):
+            try:
+                await conn.execute(table.delete())
+            except Exception:
+                # Ignore errors during cleanup (e.g., if table is already empty)
+                pass
+    yield
+    # Also clean AFTER each test for good measure
+    async with engine.begin() as conn:
+        for table in reversed(Base.metadata.sorted_tables):
+            try:
+                await conn.execute(table.delete())
+            except Exception:
+                pass
 
 
 @pytest.fixture
@@ -258,6 +288,54 @@ async def superadmin_headers(superadmin_token):
 @pytest.fixture
 async def frontdesk_headers(frontdesk_token):
     return {"Authorization": f"Bearer {frontdesk_token}"}
+
+
+# ── F&B (fb) rol fixture'ları (TASK-016 testleri için) ──
+@pytest.fixture
+async def test_fb_user(db: AsyncSession):
+    user = User(
+        email="fb@test.com",
+        hashed_password=get_password_hash("FbUser123!"),
+        full_name="Test F&B",
+        role="fb",
+        is_active=True,
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
+
+
+@pytest.fixture
+async def fb_token(async_client, test_fb_user):
+    response = await async_client.post(
+        "/api/v1/auth/login",
+        json={"email": "fb@test.com", "password": "FbUser123!"},
+    )
+    return response.json()["access_token"]
+
+
+@pytest.fixture
+async def fb_headers(fb_token):
+    return {"Authorization": f"Bearer {fb_token}"}
+
+
+@pytest.fixture
+async def folio_db(db: AsyncSession, reservation_db, guest_db):
+    """Açık test folio'su (F&B room charge testi için)."""
+    from decimal import Decimal as _Decimal
+    from app.models.finance import Folio, FolioStatus
+    folio = Folio(
+        reservation_id=reservation_db.id,
+        guest_id=guest_db.id,
+        status=FolioStatus.OPEN.value,
+        total=_Decimal("0"),
+        balance=_Decimal("0"),
+    )
+    db.add(folio)
+    await db.commit()
+    await db.refresh(folio)
+    return folio
 
 
 # ── Groups & Maintenance entity fixture'ları (bu testler kendi fixture'ını tanımlamıyor) ──

@@ -8,6 +8,7 @@ class Channel(BaseModel):
     __tablename__ = "channels"
 
     name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
+    code: Mapped[str | None] = mapped_column(String(50), nullable=True)
     channel_type: Mapped[str] = mapped_column(String(50), nullable=False)
     credentials_encrypted: Mapped[str] = mapped_column(String(1000), nullable=False)
     api_base_url: Mapped[str | None] = mapped_column(String(500), nullable=True)

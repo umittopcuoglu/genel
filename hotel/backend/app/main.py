@@ -11,10 +11,12 @@ from starlette.middleware.base import BaseHTTPMiddleware
 import logging
 import uuid
 
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 from app.core.config import settings
 from app.core.db import engine
 from app.core.audit import AuditMiddleware
-from app.routers import auth, health, front_office, reservations, rate_plans, availability, folios, night_audit, reports, housekeeping, lost_found, minibar
+from app.routers import auth, health, front_office, reservations, rate_plans, availability, folios, night_audit, reports, housekeeping, lost_found, minibar, currency
 # Faz 2 router'ları (Channel Manager, CRM, Loyalty, AI, özel raporlar)
 from app.routers import channels, complaints, feedback, loyalty, ai_endpoints, custom_reports
 # Faz 3 router'ları (Groups & Events, Maintenance, HR, GDS, IoT)
@@ -33,6 +35,26 @@ from app.routers import blockchain
 from app.routers import integrations
 # Booking Engine (public, komisyonsuz doğrudan satış)
 from app.routers import booking_engine
+# Misafir Wi-Fi Portal (public kayıt + self-service)
+from app.routers import guest_wifi
+# Payment Gateway (Stripe/iyzico/PayTR — parametrik provider)
+from app.routers import payments
+# CRM (Guest 360, Segment, Campaign, Notes, Communication)
+from app.routers import crm
+# WhatsApp Business API (Meta Cloud)
+from app.routers import whatsapp
+# GİB e-Fatura (Foriba/Logo/Uyumsoft/İzibiz)
+from app.routers import einvoice
+# Revenue Management / RevenueIQ
+from app.routers import revenue
+# F&B / POS (Outlet, Menu, Check)
+from app.routers import fnb
+# Güvenlik & KVKK (Access logs + Consent + Data Subject Requests)
+from app.routers import security as security_router
+# InsightAI (KPI özet + kanal mix + aksiyon önerileri)
+from app.routers import insights
+# Domain event abonelikleri (modular monolith iletişim katmanı)
+from app.core import event_handlers  # noqa: F401  — import = subscribe
 
 # Logging yapılandırması
 logging.basicConfig(level=logging.INFO)
@@ -44,6 +66,9 @@ async def lifespan(app: FastAPI):
     """Uygulama yaşam döngüsü: başlangıç ve kapanış işlemleri."""
     # Başlangıç
     logger.info("HotelOps PMS backend başlıyor...")
+    # AI ajanlarını registry'ye kaydet (RevenueQA, GuestAI, InsightAI, ShiftAI, EventIQ, vb.)
+    from app.core.agents.init_agents import initialize_agents
+    initialize_agents()
     # Veritabanı bağlantılarını kontrol et (opsiyonel)
     async with engine.begin() as conn:
         logger.info("Veritabanı bağlantısı başarılı.")
@@ -74,6 +99,11 @@ app.add_middleware(
 
 # Audit middleware (tüm yazma işlemlerini logla)
 app.add_middleware(AuditMiddleware)
+
+# Rate limiting (auth endpoint'leri)
+from app.routers.auth import limiter
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 # Global exception handler'lar
@@ -150,6 +180,7 @@ app.include_router(reports.router, prefix="/api/v1", tags=["Reports"])
 app.include_router(housekeeping.router, prefix="/api/v1", tags=["Housekeeping"])
 app.include_router(lost_found.router, prefix="/api/v1", tags=["Lost & Found"])
 app.include_router(minibar.router, prefix="/api/v1", tags=["Minibar"])
+app.include_router(currency.router, tags=["Currency"])
 # Faz 2 router kayıtları
 app.include_router(channels.router, prefix="/api/v1", tags=["Channels"])
 app.include_router(complaints.router, prefix="/api/v1", tags=["Complaints"])
@@ -171,6 +202,15 @@ app.include_router(mobile_checkin.router)
 app.include_router(blockchain.router)
 app.include_router(integrations.router)
 app.include_router(booking_engine.router)
+app.include_router(guest_wifi.router)
+app.include_router(payments.router)
+app.include_router(crm.router)
+app.include_router(whatsapp.router)
+app.include_router(einvoice.router)
+app.include_router(revenue.router)
+app.include_router(fnb.router)
+app.include_router(security_router.router)
+app.include_router(insights.router)
 
 
 @app.get("/", include_in_schema=False)

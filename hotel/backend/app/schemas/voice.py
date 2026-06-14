@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
 from typing import Optional
 from uuid import UUID
@@ -18,8 +18,7 @@ class VoiceIntegrationResponse(BaseModel):
     last_interaction_at: Optional[datetime] = None
     notes: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class VoiceIntegrationCreate(BaseModel):
@@ -54,8 +53,7 @@ class VoiceCommandResponse(BaseModel):
     executed_at: Optional[datetime] = None
     duration_ms: Optional[int] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── VoiceSession ──
@@ -71,8 +69,7 @@ class VoiceSessionResponse(BaseModel):
     context: Optional[dict] = None
     command_count: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── VoiceInteraction ──
@@ -89,8 +86,7 @@ class VoiceInteractionResponse(BaseModel):
     duration_ms: Optional[int] = None
     error_message: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── VoiceIntentsMapping ──
@@ -104,8 +100,7 @@ class VoiceIntentsMappingResponse(BaseModel):
     is_active: bool
     description: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class VoiceIntentsMappingCreate(BaseModel):

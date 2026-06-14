@@ -8,40 +8,154 @@
    Lüks otelcilik yazılımı estetiği (Opera Cloud / Mews seviyesi).
    ============================================================ */
 
-:root {
-  --color-primary: 23 51 92;     /* #17335C gece laciverti */
-  --color-accent: 192 152 74;    /* #C0984A şampanya altını */
-  --color-success: 13 148 99;    /* #0D9463 zümrüt */
-  --color-warning: 202 121 8;    /* #CA7908 kehribar */
-  --color-danger: 196 53 53;     /* #C43535 bordo-kırmızı */
-  --color-info: 14 116 184;      /* #0E74B8 */
-  --color-bg: 247 245 240;       /* #F7F5F0 fildişi */
-  --color-surface: 255 255 254;  /* #FFFFFE */
-  --color-border: 230 225 214;   /* #E6E1D6 sıcak gri */
-  --color-text-1: 26 32 44;      /* #1A202C */
-  --color-text-2: 100 106 122;   /* #646A7A */
-  --sidebar-bg: 16 28 50;        /* #101C32 koyu lacivert */
-  --sidebar-text: 168 178 199;   /* #A8B2C7 */
+/* ── Tema: Grand (varsayılan) — navy/gold lüks ── */
+:root,
+[data-theme="grand"] {
+  --color-primary: 23 51 92;
+  --color-accent: 192 152 74;
+  --color-success: 13 148 99;
+  --color-warning: 202 121 8;
+  --color-danger: 196 53 53;
+  --color-info: 14 116 184;
+  --color-bg: 247 245 240;
+  --color-surface: 255 255 254;
+  --color-border: 230 225 214;
+  --color-text-1: 26 32 44;
+  --color-text-2: 100 106 122;
+  --sidebar-bg: 16 28 50;
+  --sidebar-text: 168 178 199;
   --shadow-soft: 0 1px 2px rgb(23 51 92 / 0.04), 0 4px 16px rgb(23 51 92 / 0.06);
   --shadow-lift: 0 4px 8px rgb(23 51 92 / 0.06), 0 12px 32px rgb(23 51 92 / 0.12);
 }
 
-.dark {
-  --color-primary: 122 162 219;  /* #7AA2DB */
-  --color-accent: 214 178 106;   /* #D6B26A */
+.dark,
+[data-theme="grand"].dark {
+  --color-primary: 122 162 219;
+  --color-accent: 214 178 106;
   --color-success: 52 199 142;
   --color-warning: 240 169 50;
   --color-danger: 235 96 96;
   --color-info: 86 169 230;
-  --color-bg: 11 17 28;          /* #0B111C */
-  --color-surface: 18 26 41;     /* #121A29 */
-  --color-border: 36 46 66;      /* #242E42 */
+  --color-bg: 11 17 28;
+  --color-surface: 18 26 41;
+  --color-border: 36 46 66;
   --color-text-1: 235 238 245;
   --color-text-2: 145 155 175;
   --sidebar-bg: 9 14 24;
   --sidebar-text: 150 160 182;
   --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 16px rgb(0 0 0 / 0.35);
   --shadow-lift: 0 4px 8px rgb(0 0 0 / 0.4), 0 12px 32px rgb(0 0 0 / 0.5);
+}
+
+/* ── Tema: Modern — cool blue-gray, flat ── */
+[data-theme="modern"] {
+  --color-primary: 59 130 246;
+  --color-accent: 99 102 241;
+  --color-success: 16 185 129;
+  --color-warning: 245 158 11;
+  --color-danger: 239 68 68;
+  --color-info: 56 189 248;
+  --color-bg: 248 250 252;
+  --color-surface: 255 255 255;
+  --color-border: 226 232 240;
+  --color-text-1: 15 23 42;
+  --color-text-2: 100 116 139;
+  --sidebar-bg: 30 41 59;
+  --sidebar-text: 148 163 184;
+  --shadow-soft: 0 1px 3px rgb(0 0 0 / 0.06), 0 2px 8px rgb(0 0 0 / 0.04);
+  --shadow-lift: 0 4px 12px rgb(0 0 0 / 0.08), 0 8px 24px rgb(0 0 0 / 0.06);
+}
+
+[data-theme="modern"].dark {
+  --color-primary: 96 165 250;
+  --color-accent: 129 140 248;
+  --color-success: 52 211 153;
+  --color-warning: 251 191 36;
+  --color-danger: 248 113 113;
+  --color-info: 125 211 252;
+  --color-bg: 15 23 42;
+  --color-surface: 30 41 59;
+  --color-border: 51 65 85;
+  --color-text-1: 241 245 249;
+  --color-text-2: 148 163 184;
+  --sidebar-bg: 2 6 23;
+  --sidebar-text: 148 163 184;
+  --shadow-soft: 0 1px 3px rgb(0 0 0 / 0.4), 0 2px 8px rgb(0 0 0 / 0.3);
+  --shadow-lift: 0 4px 12px rgb(0 0 0 / 0.5), 0 8px 24px rgb(0 0 0 / 0.4);
+}
+
+/* ── Tema: Sade — warm neutral, distraction-free ── */
+[data-theme="sade"] {
+  --color-primary: 87 83 78;
+  --color-accent: 168 142 101;
+  --color-success: 22 163 74;
+  --color-warning: 202 138 4;
+  --color-danger: 220 38 38;
+  --color-info: 37 99 235;
+  --color-bg: 250 250 249;
+  --color-surface: 255 255 255;
+  --color-border: 231 229 228;
+  --color-text-1: 41 37 36;
+  --color-text-2: 120 113 108;
+  --sidebar-bg: 68 64 60;
+  --sidebar-text: 168 162 158;
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.03), 0 2px 6px rgb(0 0 0 / 0.04);
+  --shadow-lift: 0 2px 6px rgb(0 0 0 / 0.06), 0 6px 16px rgb(0 0 0 / 0.06);
+}
+
+[data-theme="sade"].dark {
+  --color-primary: 168 162 158;
+  --color-accent: 196 175 140;
+  --color-success: 74 222 128;
+  --color-warning: 250 204 21;
+  --color-danger: 248 113 113;
+  --color-info: 96 165 250;
+  --color-bg: 28 25 23;
+  --color-surface: 41 37 36;
+  --color-border: 68 64 60;
+  --color-text-1: 245 245 244;
+  --color-text-2: 168 162 158;
+  --sidebar-bg: 12 10 9;
+  --sidebar-text: 168 162 158;
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.4), 0 2px 6px rgb(0 0 0 / 0.35);
+  --shadow-lift: 0 2px 6px rgb(0 0 0 / 0.5), 0 6px 16px rgb(0 0 0 / 0.45);
+}
+
+/* ── Tema: Neon — vibrant dark, glowing accents ── */
+[data-theme="neon"] {
+  --color-primary: 139 92 246;
+  --color-accent: 236 72 153;
+  --color-success: 52 211 153;
+  --color-warning: 251 191 36;
+  --color-danger: 248 113 113;
+  --color-info: 34 211 238;
+  --color-bg: 250 245 255;
+  --color-surface: 255 255 255;
+  --color-border: 233 213 255;
+  --color-text-1: 30 10 60;
+  --color-text-2: 107 70 160;
+  --sidebar-bg: 46 16 101;
+  --sidebar-text: 196 181 253;
+  --shadow-soft: 0 1px 3px rgb(139 92 246 / 0.08), 0 4px 12px rgb(139 92 246 / 0.06);
+  --shadow-lift: 0 4px 12px rgb(139 92 246 / 0.12), 0 8px 24px rgb(236 72 153 / 0.08);
+}
+
+[data-theme="neon"].dark {
+  --color-primary: 167 139 250;
+  --color-accent: 244 114 182;
+  --color-success: 110 231 183;
+  --color-warning: 253 224 71;
+  --color-danger: 252 165 165;
+  --color-info: 103 232 249;
+  --color-bg: 13 2 33;
+  --color-surface: 24 10 50;
+  --color-border: 55 30 95;
+  --color-text-1: 243 232 255;
+  --color-text-2: 167 139 250;
+  --sidebar-bg: 6 1 18;
+  --sidebar-text: 167 139 250;
+  --shadow-soft: 0 1px 3px rgb(0 0 0 / 0.5), 0 4px 12px rgb(139 92 246 / 0.15);
+  --shadow-lift: 0 4px 12px rgb(139 92 246 / 0.25), 0 8px 24px rgb(236 72 153 / 0.15);
 }
 
 html {
@@ -197,6 +311,55 @@ body {
 
 /* Sayı geçişleri için tabular rakamlar */
 .tabular { font-variant-numeric: tabular-nums; }
+
+/* ============================================================
+   Mobile-Responsive Tables
+   ============================================================ */
+@media (max-width: 640px) {
+  .responsive-table thead {
+    display: none;
+  }
+  .responsive-table tbody tr {
+    display: block;
+    margin-bottom: 0.75rem;
+    border: 1px solid rgb(var(--color-border));
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    background: rgb(var(--color-surface));
+  }
+  .responsive-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.375rem 0 !important;
+    border-bottom: 1px solid rgb(var(--color-border) / 0.3);
+  }
+  .responsive-table tbody td:last-child {
+    border-bottom: none;
+  }
+  .responsive-table tbody td::before {
+    content: attr(data-label);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: rgb(var(--color-text-2));
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    margin-right: 1rem;
+  }
+  .responsive-table tbody td.text-right {
+    justify-content: space-between;
+    text-align: right;
+  }
+}
+
+/* ============================================================
+   Touch-friendly tap targets on mobile
+   ============================================================ */
+@media (max-width: 640px) {
+  button, a[role="button"], [role="tab"] {
+    min-height: 40px;
+  }
+}
 
 /* Hareket azaltma tercihi */
 @media (prefers-reduced-motion: reduce) {

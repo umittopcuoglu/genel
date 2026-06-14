@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { ArrowDownUp, Globe2, Loader2, Plus, RefreshCw, Share2 } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -28,6 +29,7 @@ type SyncLog = {
 const KNOWN_CHANNELS = ["Booking.com", "Expedia", "Agoda", "Airbnb", "Hotelbeds", "Tatilsepeti", "ETS", "Jolly"];
 
 export default function ChannelsPage() {
+  const { t } = useTranslation();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [logs, setLogs] = useState<SyncLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,13 +50,13 @@ export default function ChannelsPage() {
     } catch (e: any) {
       setError(
         e?.status === 403
-          ? "Bu sayfa için manager/superadmin yetkisi gerekir."
-          : "Backend'e ulaşılamadı — sunucunun çalıştığından emin olun."
+          ? t('channels.unauthorized')
+          : t('channels.backendUnavailable')
       );
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     load();
@@ -79,12 +81,12 @@ export default function ChannelsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Channel Manager"
-        subtitle="Tek envanter, tüm satış kanalları — otomatik stok senkronu ve overbooking koruması"
+        title={t('channels.title')}
+        subtitle={t('channels.subtitle')}
         mock={false}
         action={
-          <button onClick={load} className="btn-navy !px-3 !py-1.5 text-xs" aria-label="Yenile">
-            <RefreshCw className="h-3.5 w-3.5" aria-hidden /> Yenile
+          <button onClick={load} className="btn-navy !px-3 !py-1.5 text-xs" aria-label="Refresh">
+            <RefreshCw className="h-3.5 w-3.5" aria-hidden /> Refresh
           </button>
         }
       />
@@ -112,9 +114,9 @@ export default function ChannelsPage() {
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">
-        {/* Bağlı kanallar */}
+        {/* Linked Channels */}
         <Card
-          title={`Bağlı Kanallar (${channels.length})`}
+          title={`${t('channels.linkedChannels')} (${channels.length})`}
           action={<Share2 className="h-4 w-4 text-accent" aria-hidden />}
         >
           {loading ? (
@@ -139,7 +141,7 @@ export default function ChannelsPage() {
                       <div className="text-[11px] uppercase tracking-wide text-text-2">{ch.channel_type}</div>
                     </div>
                   </div>
-                  <Badge tone={ch.enabled ? "success" : "neutral"}>{ch.enabled ? "Senkron aktif" : "Pasif"}</Badge>
+                  <Badge tone={ch.enabled ? "success" : "neutral"}>{ch.enabled ? t('channels.activeChannel') : t('channels.inactive')}</Badge>
                 </div>
               ))}
               {channels.length === 0 && (
@@ -183,18 +185,18 @@ export default function ChannelsPage() {
           )}
         </Card>
 
-        {/* Canlı senkron akışı */}
-        <Card title="Senkron Akışı (son 50)">
+        {/* Sync Flow */}
+        <Card title={`${t('channels.syncFlow')} (${t('channels.recent')})`}>
           {loading ? (
             <div className="skeleton h-48" />
           ) : (
             <SimpleTable
               columns={[
-                { key: "channel_name", header: "Kanal" },
-                { key: "sync_type", header: "İşlem", render: (r: SyncLog) => r.sync_type.replace("inventory_push:", "stok push · ") },
+                { key: "channel_name", header: "Channel" },
+                { key: "sync_type", header: "Action", render: (r: SyncLog) => r.sync_type.replace("inventory_push:", "inventory push · ") },
                 {
                   key: "status",
-                  header: "Durum",
+                  header: t('common.status'),
                   render: (r: SyncLog) => (
                     <Badge tone={r.status === "success" ? "success" : "danger"}>{r.status}</Badge>
                   ),
@@ -202,8 +204,8 @@ export default function ChannelsPage() {
                 { key: "response_time_ms", header: "ms", align: "right" },
                 {
                   key: "created_at",
-                  header: "Zaman",
-                  render: (r: SyncLog) => new Date(r.created_at).toLocaleString("tr-TR"),
+                  header: "Time",
+                  render: (r: SyncLog) => new Date(r.created_at).toLocaleString(),
                 },
               ]}
               rows={logs}

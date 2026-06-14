@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional, List
@@ -13,8 +13,7 @@ class VenueResponse(BaseModel):
     setup_types: Optional[List[str]] = None
     status: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RoomBlockResponse(BaseModel):
@@ -27,8 +26,7 @@ class RoomBlockResponse(BaseModel):
     release_date: date
     status: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RoomBlockCreate(BaseModel):
@@ -48,8 +46,7 @@ class EventResourceResponse(BaseModel):
     unit_cost: Decimal
     status: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EventResponse(BaseModel):
@@ -66,8 +63,7 @@ class EventResponse(BaseModel):
     notes: Optional[str] = None
     resources: Optional[List[EventResourceResponse]] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EventCreate(BaseModel):
@@ -94,8 +90,7 @@ class GroupRoomingListResponse(BaseModel):
     reservation_id: Optional[UUID] = None
     status: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GroupRoomingListCreate(BaseModel):
@@ -123,8 +118,7 @@ class GroupResponse(BaseModel):
     events: Optional[List[EventResponse]] = None
     rooming_list: Optional[List[GroupRoomingListResponse]] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GroupCreate(BaseModel):

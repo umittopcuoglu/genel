@@ -19,9 +19,12 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.security.param_crypto import decrypt_params
 from app.models.channel import Channel
 from app.models.channel_sync_log import ChannelSyncLog
 from app.models.integration_setting import IntegrationSetting
+from app.services.connectors import get_connector
+from app.services.connectors.base import ConnectorParams
 
 logger = logging.getLogger(__name__)
 
@@ -67,20 +70,50 @@ class ChannelSyncService:
 
         for ch in channels:
             elapsed_ms = int((time.monotonic() - started) * 1000)
-            # Gerçek push: kanal API istemcisi bağlandığında burada çağrılır.
-            # Şimdilik başarı senaryosu loglanır; istemci hatası olursa status=failed yazılır.
+            # Connector pattern: code uyuşan plug-in varsa gerçek API çağrısı
+            connector_cls = get_connector((ch.code or ch.name or "").lower())
+            connector_status = "success"
+            error_msg: str | None = None
+            if connector_cls is not None:
+                # Eşleşen entegrasyon kaydından parametreleri çek (varsa)
+                params_dict: dict = {}
+                for integ in integrations:
+                    p = decrypt_params(integ.params_encrypted) or {}
+                    if (p.get("channel") or integ.name).lower() == (ch.code or ch.name).lower():
+                        params_dict = p
+                        break
+                connector = connector_cls(
+                    ConnectorParams(
+                        api_key=params_dict.get("api_key", ""),
+                        hotel_code=params_dict.get("hotel_code", ""),
+                        endpoint_url=params_dict.get("endpoint_url", ""),
+                        extras=params_dict,
+                    )
+                )
+                try:
+                    # Tek push çağrısı — gerçek allotment hesaplaması ileri seviye iş;
+                    # şimdilik mock connector zaten başarılı dönüyor.
+                    result = await connector.push_availability([])
+                    if not result.ok:
+                        connector_status = "failed"
+                        error_msg = result.error_message
+                except Exception as exc:  # noqa: BLE001
+                    connector_status = "failed"
+                    error_msg = str(exc)
+
             log = ChannelSyncLog(
                 channel_id=ch.id,
                 sync_type=f"inventory_push:{trigger}",
-                status="success",
+                status=connector_status,
                 reservations_synced=1 if trigger == "reservation" else 0,
                 rooms_updated=1,
                 response_time_ms=elapsed_ms,
+                error_message=error_msg,
             )
             db.add(log)
             ch.last_sync_at = now.replace(tzinfo=None)
             notified += 1
-            logs.append({"channel": ch.name, "status": "success"})
+            logs.append({"channel": ch.name, "status": connector_status})
 
         # Entegrasyon Ayarları'ndan gelen OTA kayıtları (Channel tablosunda olmayan)
         channel_names = {c.name.lower() for c in channels}

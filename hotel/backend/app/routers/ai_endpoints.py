@@ -135,3 +135,91 @@ async def scan_competitor_rates(
             },
         ],
     }
+
+
+# ── Faz 3 AI ajanları (TASK-014…017) — registry üzerinden ──
+from app.core.agents.registry import registry
+from app.core.agents.event_qi import EventIQAgent, EventIQInput
+from app.core.agents.tech_care import TechCareAgent, TechCareInput
+from app.core.agents.chef_iq import ChefIQAgent, ChefIQInput
+from app.core.agents.secure_ai import SecureAIAgent, SecureAIInput
+from app.core.agents.frontdesk_ai import FrontDeskAIAgent, FrontDeskInput
+
+
+def _get_agent(name: str, fallback_cls):
+    """Registry'den ajanı al; startup lifespan çalışmadıysa (örn. testler) örnekle."""
+    agent = registry.get(name)
+    if agent is None:
+        agent = fallback_cls()
+        registry.register(agent)
+    return agent
+
+
+@router.post("/eventiq/suggest-setup")
+async def eventiq_suggest_setup(
+    req: EventIQInput,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """EventIQ AI: etkinlik tipi + pax → salon/kurulum/catering önerisi."""
+    if current_user.role not in ["superadmin", "manager", "fb"]:
+        raise HTTPException(status_code=403)
+    agent = _get_agent("event_qi", EventIQAgent)
+    output = await agent.execute(req, db=db, user=current_user)
+    return {"data": output.model_dump(), "meta": {"agent": "event_qi"}}
+
+
+@router.post("/techcare/triage")
+async def techcare_triage(
+    req: TechCareInput,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """TechCare AI: arıza açıklaması → kategori + öncelik + tahmini süre."""
+    if current_user.role not in ["superadmin", "manager", "maintenance"]:
+        raise HTTPException(status_code=403)
+    agent = _get_agent("tech_care", TechCareAgent)
+    output = await agent.execute(req, db=db, user=current_user)
+    return {"data": output.model_dump(), "meta": {"agent": "tech_care"}}
+
+
+@router.post("/chefiq/forecast-demand")
+async def chefiq_forecast_demand(
+    req: ChefIQInput,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """ChefIQ AI: geçmiş satış → ürün talep tahmini + önerilen stok."""
+    if current_user.role not in ["superadmin", "manager", "fb"]:
+        raise HTTPException(status_code=403)
+    agent = _get_agent("chef_iq", ChefIQAgent)
+    output = await agent.execute(req, db=db, user=current_user)
+    return {"data": output.model_dump(), "meta": {"agent": "chef_iq"}}
+
+
+@router.post("/secureai/anomaly-scan")
+async def secureai_anomaly_scan(
+    req: SecureAIInput,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """SecureAI: erişim logları → anomali tespiti + risk skoru."""
+    if current_user.role not in ["superadmin", "manager"]:
+        raise HTTPException(status_code=403)
+    agent = _get_agent("secure_ai", SecureAIAgent)
+    output = await agent.execute(req, db=db, user=current_user)
+    return {"data": output.model_dump(), "meta": {"agent": "secure_ai"}}
+
+
+@router.post("/frontdesk/checkin-assist")
+async def frontdesk_checkin_assist(
+    req: FrontDeskInput,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """FrontDesk AI: misafir profili → karşılama + oda/upgrade önerisi + upsell + öncelik."""
+    if current_user.role not in ["superadmin", "manager", "frontdesk"]:
+        raise HTTPException(status_code=403)
+    agent = _get_agent("frontdesk_ai", FrontDeskAIAgent)
+    output = await agent.execute(req, db=db, user=current_user)
+    return {"data": output.model_dump(), "meta": {"agent": "frontdesk_ai"}}

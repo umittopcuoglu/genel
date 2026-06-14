@@ -89,7 +89,10 @@ class AuditMiddleware(BaseHTTPMiddleware):
                     db_session.add(audit_entry)
                     await db_session.commit()
             except Exception as e:
-                logger.error(f"Audit log kaydedilemedi: {e}")
+                if "no such table" in str(e):
+                    logger.debug(f"Audit log tablosu yok (test/dev ortamı): {e}")
+                else:
+                    logger.error(f"Audit log kaydedilemedi: {e}")
 
         # Context'i temizle
         current_user_id_var.reset(token)

@@ -18,7 +18,7 @@ from app.models.finance import (
     Folio, FolioItem, Payment,
     FolioStatus, PaymentStatus,
 )
-from app.models.front_office import Reservation
+from app.models.front_office import Reservation, Guest
 from app.schemas.finance import (
     FolioItemCreate, FolioPaymentCreate, FolioResponse, FolioListResponse,
 )
@@ -31,6 +31,38 @@ def err(code: str, msg: str, status_code: int = 400, details: dict = None):
         status_code=status_code,
         detail={"error": {"code": code, "message": msg, "details": details or {}}}
     )
+
+
+async def _enrich_folios(db: AsyncSession, folios: list[Folio]) -> list[FolioResponse]:
+    """Folio ORM nesnelerini misafir adı + oda no ile zenginleştirilmiş yanıta çevir.
+    Ön yüzün UUID yerine okunabilir alanları göstermesi için (rezervasyon deseniyle simetrik)."""
+    guest_ids = {f.guest_id for f in folios if f.guest_id}
+    res_ids = {f.reservation_id for f in folios if f.reservation_id}
+
+    guest_map: dict = {}
+    if guest_ids:
+        rows = await db.execute(select(Guest).where(Guest.id.in_(guest_ids)))
+        for g in rows.scalars():
+            guest_map[g.id] = f"{g.first_name} {g.last_name}".strip()
+
+    room_map: dict = {}
+    if res_ids:
+        rows = await db.execute(
+            select(Reservation)
+            .options(selectinload(Reservation.assigned_room))
+            .where(Reservation.id.in_(res_ids))
+        )
+        for r in rows.scalars():
+            room = getattr(r, "assigned_room", None)
+            room_map[r.id] = getattr(room, "room_number", None) if room else None
+
+    out: list[FolioResponse] = []
+    for f in folios:
+        resp = FolioResponse.model_validate(f)
+        resp.guest_name = guest_map.get(f.guest_id)
+        resp.room_no = room_map.get(f.reservation_id)
+        out.append(resp)
+    return out
 
 
 async def _get_folio(db: AsyncSession, folio_id: uuid.UUID) -> Optional[Folio]:
@@ -58,7 +90,8 @@ async def get_folio(
     folio = await _get_folio(db, folio_id)
     if not folio:
         err("NOT_FOUND", "Folio bulunamadı", 404)
-    return folio
+    enriched = await _enrich_folios(db, [folio])
+    return enriched[0]
 
 
 @router.get("/folios", response_model=FolioListResponse,
@@ -90,7 +123,7 @@ async def list_folios(
     items = list(result.scalars().all())
 
     return FolioListResponse(
-        data=items,
+        data=await _enrich_folios(db, items),
         meta={"page": page, "per_page": per_page, "total": total,
               "total_pages": (total + per_page - 1) // per_page}
     )

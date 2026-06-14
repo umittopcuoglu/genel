@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { I18nProvider } from "@/components/providers/I18nProvider";
+import { ToastContainer } from "@/components/ui/Toast";
 
 const inter = Inter({ subsets: ["latin", "latin-ext"], variable: "--font-sans", display: "swap" });
 const playfair = Playfair_Display({ subsets: ["latin", "latin-ext"], variable: "--font-display", display: "swap" });
@@ -13,7 +15,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="tr" suppressHydrationWarning className={`${inter.variable} ${playfair.variable}`}>
-      <body className="font-sans">{children}</body>
+      <body className="font-sans">
+        <I18nProvider>
+          {children}
+          <ToastContainer />
+        </I18nProvider>
+      </body>
     </html>
   );
 }

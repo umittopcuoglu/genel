@@ -1,0 +1,6 @@
+
+# Playwright test artıfaktları
+qa/e2e/screenshots/
+qa/e2e/test-results/
+qa/e2e/node_modules/
+qa/e2e/playwright-report/

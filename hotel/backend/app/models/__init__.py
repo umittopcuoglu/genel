@@ -45,3 +45,13 @@ from app.models.mobile_checkin import OCRDocumentScan, EGMSubmission, CheckinSes
 from app.models.blockchain_identity import BlockchainIdentity, VerifiableCredential, IdentityVerificationProof, BlockchainSyncEvent, GuestConsentLog
 # Entegrasyon Ayarları (parametrik dış entegrasyonlar)
 from app.models.integration_setting import IntegrationSetting
+# Misafir Wi-Fi Portal
+from app.models.guest_wifi_session import GuestWiFiSession
+# Payment Gateway (Stripe/iyzico/PayTR — provider parametrik)
+from app.models.payment_transaction import PaymentTransaction, PaymentTxnStatus, PaymentTxnKind
+# CRM (Guest 360, Segment, Campaign, Notes, Communication)
+from app.models.crm import Segment, Campaign, GuestNote, CommunicationLog, CampaignStatus, CampaignChannel
+# Faz 3 - F&B / POS modelleri (TASK-016)
+from app.models.fnb import POSOutlet, MenuItem, POSCheck, POSCheckItem, StockItem, StockMovement
+# Faz 3 - Güvenlik & KVKK modelleri (TASK-017)
+from app.models.security import DoorLock, KeyCard, AccessLog, Incident, KVKKConsent, DataAccessRequest

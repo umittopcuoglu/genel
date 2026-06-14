@@ -5,7 +5,7 @@ from datetime import date, datetime, date as DateType
 from decimal import Decimal
 from typing import Optional, Any
 from uuid import UUID
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class FolioItemCreate(BaseModel):
@@ -38,8 +38,7 @@ class FolioItemResponse(BaseModel):
     posted_at: Optional[datetime] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaymentResponse(BaseModel):
@@ -52,8 +51,7 @@ class PaymentResponse(BaseModel):
     status: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FolioResponse(BaseModel):
@@ -63,13 +61,15 @@ class FolioResponse(BaseModel):
     status: str
     total: Decimal
     balance: Decimal
+    # Denormalize edilmiş görüntüleme alanları (ön yüz için; router doldurur).
+    guest_name: Optional[str] = None
+    room_no: Optional[str] = None
     items: list[FolioItemResponse] = []
     payments: list[PaymentResponse] = []
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FolioListResponse(BaseModel):
@@ -89,8 +89,7 @@ class NightAuditRunResponse(BaseModel):
     stats: Optional[dict] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OccupancyRow(BaseModel):
@@ -127,3 +126,24 @@ class RevPARRow(BaseModel):
 class RevPARReport(BaseModel):
     data: list[RevPARRow]
     meta: dict[str, Any]
+
+
+# ── Analitik Dashboard (TASK-013 / InsightAI) ──
+class TrendPoint(BaseModel):
+    label: str
+    value: float
+    secondary: Optional[float] = None
+
+
+class SourceMixRow(BaseModel):
+    label: str
+    value: float
+    tone: str
+
+
+class TrendReport(BaseModel):
+    data: list[TrendPoint]
+
+
+class SourceMixReport(BaseModel):
+    data: list[SourceMixRow]

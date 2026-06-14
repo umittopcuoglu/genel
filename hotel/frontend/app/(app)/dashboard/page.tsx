@@ -1,11 +1,10 @@
+'use client';
+
+import { useTranslation } from '@/lib/i18n';
 import { StatCard } from "@/components/kpi/StatCard";
 import { AIPanel } from "@/components/ai/AIPanel";
 import { PageHeader } from "@/components/ui/PageHeader";
 
-/**
- * Manager Dashboard — docs/03 §3. Şimdilik mock veri;
- * backend Modül 10 (GET /api/v1/dashboard/manager) teslim edilince canlanır.
- */
 const MOCK = {
   occupancy: "78%",
   adr: "₺2.450",
@@ -16,28 +15,30 @@ const MOCK = {
 };
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Dashboard"
-        subtitle="Bugünün operasyon özeti ve gelir göstergeleri"
+        title={t('dashboard.title')}
+        subtitle={t('dashboard.subtitle')}
         mock={false}
       />
 
       <div className="stagger grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-        <StatCard label="Doluluk" value={MOCK.occupancy} hint="son 7 gün ↑" tone="success" />
-        <StatCard label="ADR" value={MOCK.adr} />
-        <StatCard label="RevPAR" value={MOCK.revpar} />
-        <StatCard label="Arrivals" value={MOCK.arrivals} hint="gelen / beklenen" />
-        <StatCard label="Departures" value={MOCK.departures} hint="çıkan / beklenen" />
-        <StatCard label="OOO Oda" value={MOCK.ooo} tone="danger" />
+        <StatCard label={t('dashboard.occupancy')} value={MOCK.occupancy} hint={t('dashboard.last7Days')} tone="success" />
+        <StatCard label={t('dashboard.adr')} value={MOCK.adr} />
+        <StatCard label={t('dashboard.revpar')} value={MOCK.revpar} />
+        <StatCard label={t('dashboard.arrivals')} value={MOCK.arrivals} hint={t('dashboard.expected')} />
+        <StatCard label={t('dashboard.departures')} value={MOCK.departures} hint={t('dashboard.expected')} />
+        <StatCard label={t('dashboard.oooRooms')} value={MOCK.ooo} tone="danger" />
       </div>
 
       <div className="max-w-xl">
         <AIPanel
           agent="InsightAI"
-          suggestion="Önümüzdeki hafta sonu doluluk %91 öngörülüyor. Cuma-Cumartesi için BAR fiyatını %8 artırmayı değerlendirin."
-          rationale="90 günlük tahmin modeli · şehirde konser etkinliği · rakip fiyatları yükseldi"
+          suggestion="Next weekend occupancy forecast: 91%. Consider BAR increase of 8% for Fri-Sat."
+          rationale="90-day forecast model · concert event in city · competitor rates increased"
         />
       </div>
     </div>

@@ -32,6 +32,24 @@ async def get_param_specs(current_user: User = Depends(require_roles(ADMIN_ROLES
     return PARAM_SPECS
 
 
+@router.get("/connectors")
+async def list_available_connectors(current_user: User = Depends(require_roles(ADMIN_ROLES))):
+    """C4: Plugin Marketplace — kayıtlı tüm OTA connector'ları listele."""
+    from app.services.connectors import available_connectors, get_connector
+
+    items = []
+    for code in available_connectors():
+        cls = get_connector(code)
+        items.append({
+            "code": code,
+            "name": getattr(cls, "display_name", code.title()),
+            "class_name": cls.__name__ if cls else None,
+            "category": "ota",
+            "description": (cls.__doc__ or "").strip().split("\n")[0] if cls else "",
+        })
+    return {"available": items, "count": len(items)}
+
+
 @router.post("", response_model=IntegrationResponse, status_code=status.HTTP_201_CREATED)
 async def create_integration(
     data: IntegrationCreate,

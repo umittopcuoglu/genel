@@ -1,0 +1,55 @@
+[project]
+name = "hotelops-backend"
+version = "1.0.0"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[tool.importlinter]
+root_packages = ["app"]
+
+[[tool.importlinter.contracts]]
+name = "PMS Core cannot import Distribution"
+type = "forbidden"
+source_modules = [
+    "app.routers.front_office",
+    "app.routers.reservations",
+    "app.routers.housekeeping",
+    "app.services.housekeeping_service",
+]
+forbidden_modules = [
+    "app.routers.channels",
+    "app.services.channel_sync_service",
+]
+ignore_imports = [
+    "app.core.event_handlers -> app.services.channel_sync_service",
+]
+
+[[tool.importlinter.contracts]]
+name = "Guest Experience cannot import Revenue"
+type = "forbidden"
+source_modules = [
+    "app.routers.crm",
+    "app.routers.whatsapp",
+    "app.routers.feedback",
+    "app.routers.complaints",
+    "app.routers.loyalty",
+]
+forbidden_modules = [
+    "app.routers.revenue",
+    "app.services.revenue_service",
+]
+
+[[tool.importlinter.contracts]]
+name = "Cross-context only via EventBus"
+type = "independence"
+modules = [
+    "app.routers.front_office",
+    "app.routers.channels",
+    "app.routers.revenue",
+    "app.routers.crm",
+]
+ignore_imports = [
+    "app.core.event_handlers -> *",
+]
