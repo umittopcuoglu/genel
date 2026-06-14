@@ -41,7 +41,7 @@ jobs:
             artifactregistry.googleapis.com \
             cloudbuild.googleapis.com \
             firebasehosting.googleapis.com \
-            --quiet 2>&1 || echo "API enable skipped (enable manually in Cloud Console if needed)"
+            --quiet 2>&1 || echo "API enable skipped"
 
       - name: Ensure Artifact Registry repo
         run: |
@@ -61,7 +61,7 @@ jobs:
           docker build -f Dockerfile.cloudrun -t ${{ env.IMAGE }}:${{ github.sha }} .
           docker push ${{ env.IMAGE }}:${{ github.sha }}
 
-      - name: Delete old broken service (fresh deploy)
+      - name: Delete old service if exists
         continue-on-error: true
         run: |
           gcloud run services delete ${{ env.SERVICE_NAME }} \
@@ -76,12 +76,11 @@ jobs:
             --platform=managed \
             --allow-unauthenticated \
             --port=8080 \
-            --memory=512Mi \
+            --memory=1Gi \
             --cpu=1 \
             --min-instances=0 \
             --max-instances=2 \
-            --set-env-vars="^@@^DATABASE_URL=sqlite+aiosqlite:///./demo.db@@JWT_SECRET_KEY=${{ secrets.JWT_SECRET }}@@CORS_ORIGINS=https://hotelops-216fa.web.app,https://hotelops-216fa.firebaseapp.com@@DEBUG=true@@ENABLE_RATE_LIMIT=false@@REDIS_URL=" \
-            --quiet
+            --set-env-vars="^@@^DATABASE_URL=sqlite+aiosqlite:///./demo.db@@JWT_SECRET_KEY=${{ secrets.JWT_SECRET }}@@CORS_ORIGINS=https://hotelops-216fa.web.app,https://hotelops-216fa.firebaseapp.com@@DEBUG=true@@ENABLE_RATE_LIMIT=false@@REDIS_URL="
 
       - name: Show Cloud Run logs on failure
         if: failure() && steps.deploy.outcome == 'failure'
@@ -97,7 +96,7 @@ jobs:
             --region=${{ env.REGION }} --format='value(status.url)')
           echo "Cloud Run URL: $URL"
           sleep 10
-          curl -sf "$URL/api/v1/health" || echo "Health check will pass after first request warms up the instance"
+          curl -sf "$URL/api/v1/health" || echo "Health check will pass after first cold start"
 
   deploy-frontend:
     name: Build & Deploy Frontend to Firebase Hosting
