@@ -15,6 +15,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [demoMode, setDemoMode] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,10 +34,15 @@ export default function LoginPage() {
       });
       localStorage.setItem("access_token", res.access_token);
       router.push("/dashboard");
-    } catch {
-      // Backend erişilemiyorsa demo moduna düş (mock ekranlar yine de gezilebilir)
-      localStorage.setItem("access_token", "demo");
-      router.push("/dashboard");
+    } catch (err) {
+      const { ApiRequestError } = await import("@/lib/api");
+      if (err instanceof ApiRequestError) {
+        setError(err.message || "Geçersiz e-posta veya şifre.");
+      } else {
+        setDemoMode(true);
+        localStorage.setItem("access_token", "demo");
+        router.push("/dashboard");
+      }
     } finally {
       setLoading(false);
     }
@@ -146,7 +152,12 @@ export default function LoginPage() {
               {loading ? "Giriş yapılıyor…" : "Giriş Yap"}
             </button>
           </form>
-          <p className="mt-5 text-center text-xs text-text-2">
+          {demoMode && (
+            <p role="status" className="mt-4 rounded-lg border border-amber-500/25 bg-amber-500/[0.07] px-3 py-2 text-sm text-amber-600 dark:text-amber-400">
+              Backend bağlantısı kurulamadı — demo modunda devam ediliyor. Kayıt, rezervasyon vb. işlemler çalışmayacaktır.
+            </p>
+          )}
+          <p className="mt-3 text-center text-xs text-text-2">
             Demo: backend kapalıyken herhangi bir bilgiyle giriş yapın.
           </p>
         </div>

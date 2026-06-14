@@ -78,7 +78,7 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto"
+      className="fixed inset-0 z-50 overflow-y-auto bg-black/50"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -86,10 +86,12 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
       aria-modal="true"
       aria-labelledby="modal-title"
     >
-      <div
-        ref={modalRef}
-        className={`w-full ${SIZE_CLASSES[size]} rounded-lg bg-surface border border-line shadow-xl my-8`}
-      >
+      <div className="flex min-h-full items-center justify-center p-4">
+        <div
+          ref={modalRef}
+          className={`w-full ${SIZE_CLASSES[size]} rounded-lg bg-surface border border-line shadow-xl`}
+          onClick={(e) => e.stopPropagation()}
+        >
         <div className="flex items-center justify-between border-b border-line p-4">
           <h2 id="modal-title" className="text-lg font-semibold">{title}</h2>
           <button
@@ -101,6 +103,7 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
           </button>
         </div>
         {children}
+        </div>
       </div>
     </div>
   );

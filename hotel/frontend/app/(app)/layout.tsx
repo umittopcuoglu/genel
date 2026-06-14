@@ -1,7 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, WifiOff } from "lucide-react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -9,6 +10,11 @@ import { useTranslation } from "@/lib/i18n";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { t, language } = useTranslation();
+  const [isDemo, setIsDemo] = useState(false);
+
+  useEffect(() => {
+    setIsDemo(localStorage.getItem("access_token") === "demo");
+  }, []);
 
   return (
     <div className="flex min-h-screen">
@@ -50,6 +56,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </Link>
           </div>
         </header>
+        {isDemo && (
+          <div className="flex items-center gap-2 border-b border-amber-500/25 bg-amber-500/[0.07] px-6 py-2 text-sm text-amber-600 dark:text-amber-400">
+            <WifiOff className="h-4 w-4 shrink-0" />
+            <span>{language === "tr" ? "Demo modu — backend bağlantısı yok. Kayıt, rezervasyon vb. işlemler çalışmaz." : "Demo mode — no backend connection. Create, update, and delete operations will not work."}</span>
+          </div>
+        )}
         <main id="main-content" className="flex-1 p-6 lg:p-8" tabIndex={-1}>{children}</main>
       </div>
     </div>
