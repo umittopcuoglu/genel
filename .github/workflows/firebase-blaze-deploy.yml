@@ -35,12 +35,13 @@ jobs:
           project_id: ${{ env.PROJECT_ID }}
 
       - name: Enable required GCP APIs
+        continue-on-error: true
         run: |
           gcloud services enable run.googleapis.com \
             artifactregistry.googleapis.com \
             cloudbuild.googleapis.com \
             firebasehosting.googleapis.com \
-            --quiet
+            --quiet 2>&1 || echo "API enable skipped (enable manually in Cloud Console if needed)"
 
       - name: Ensure Artifact Registry repo
         run: |
