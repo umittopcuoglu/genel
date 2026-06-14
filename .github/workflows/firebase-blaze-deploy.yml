@@ -68,6 +68,7 @@ jobs:
             --region=${{ env.REGION }} --quiet 2>/dev/null || true
 
       - name: Deploy to Cloud Run
+        id: deploy
         run: |
           gcloud run deploy ${{ env.SERVICE_NAME }} \
             --image=${{ env.IMAGE }}:${{ github.sha }} \
@@ -80,6 +81,14 @@ jobs:
             --min-instances=0 \
             --max-instances=2 \
             --set-env-vars="^@@^DATABASE_URL=sqlite+aiosqlite:///./demo.db@@JWT_SECRET_KEY=${{ secrets.JWT_SECRET }}@@CORS_ORIGINS=https://hotelops-216fa.web.app,https://hotelops-216fa.firebaseapp.com@@DEBUG=true@@ENABLE_RATE_LIMIT=false@@REDIS_URL="
+
+      - name: Show Cloud Run logs on failure
+        if: failure() && steps.deploy.outcome == 'failure'
+        run: |
+          echo "=== Recent Cloud Run logs ==="
+          gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=${{ env.SERVICE_NAME }}" \
+            --limit=50 --format="table(timestamp,textPayload,jsonPayload.message)" \
+            --freshness=5m 2>&1 || echo "Could not fetch logs"
 
       - name: Verify backend health
         run: |
