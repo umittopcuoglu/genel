@@ -9,16 +9,20 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-import redis.asyncio as redis
-
 from app.core.config import settings
 from app.core.db import get_db
 from app.models.user import User, RefreshToken
 
 security = HTTPBearer(auto_error=False)
 
-# Redis bağlantısı (blacklist için)
-redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
+# Redis bağlantısı (blacklist için) — yoksa None
+redis_client = None
+if settings.REDIS_URL:
+    try:
+        import redis.asyncio as _redis
+        redis_client = _redis.from_url(settings.REDIS_URL, decode_responses=True)
+    except Exception:
+        pass
 
 
 def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
@@ -74,7 +78,7 @@ async def verify_token(token: str, token_type: str = "access") -> Dict[str, Any]
         # Blacklist kontrolü (sadece access token için yapılabilir)
         # Redis erişilemezse (lokal kurulum) kontrol atlanır — logout blacklist'i
         # yalnızca Redis'in bulunduğu ortamlarda devrededir.
-        if token_type == "access":
+        if token_type == "access" and redis_client is not None:
             try:
                 is_blacklisted = await redis_client.get(f"blacklist:access:{token}")
             except Exception:
@@ -168,11 +172,12 @@ async def refresh_access_token(refresh_token: str) -> str:
     # Not: Burada basitçe blacklist kontrolü yapılabilir. Daha sıkı güvenlik için veritabanında refresh token modeli de tutulabilir.
     # Örnek: RefreshToken tablosundan kontrol et
     # Kısa kesmek için sadece Redis blacklist kullanıyoruz.
-    try:
-        is_blacklisted = await redis_client.get(f"blacklist:refresh:{refresh_token}")
-    except Exception:
-        # Redis yoksa (lokal kurulum) blacklist kontrolü atlanır
-        is_blacklisted = None
+    is_blacklisted = None
+    if redis_client is not None:
+        try:
+            is_blacklisted = await redis_client.get(f"blacklist:refresh:{refresh_token}")
+        except Exception:
+            pass
     if is_blacklisted:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -191,6 +196,8 @@ async def refresh_access_token(refresh_token: str) -> str:
 async def revoke_tokens(access_token: str, refresh_token: str):
     """Kullanıcının access ve refresh token'larını blacklist'e ekler (logout)."""
     # Sürelerini almak için token'ları decode et (exp süresini al)
+    if redis_client is None:
+        return
     try:
         access_payload = jwt.decode(access_token, options={"verify_signature": False})
         refresh_payload = jwt.decode(refresh_token, options={"verify_signature": False})
